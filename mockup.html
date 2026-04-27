@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>安通综合物流系统 - EAS</title>
+<title>安通综合物流系统 - RJT</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
@@ -167,7 +167,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 <div class="sys-header">
   <div class="sys-title-bar">
     <span class="sys-logo"></span>
-    <span>安通综合物流系统 - EAS</span>
+    <span>安通综合物流系统 - RJT</span>
   </div>
   <div class="sys-menu-bar">
     <div class="sys-menu-links">
@@ -272,7 +272,8 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 <div class="tab-bar" id="mainTabBar"></div>
 <div class="content-stage">
 
-<div id="tab-home" class="main-content active">
+<div id="tab-home" class="main-content">
+
   <div class="app-center">
     <div class="app-welcome">
       <h2>安通综合物流系统</h2>
@@ -538,7 +539,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
     <span>时间：2026-04-24 14:44</span>
   </div>
   <div class="status-user">
-    <span>用户名：gemin</span>
+    <span>用户名：geliming</span>
     <span>姓名：葛礼明</span>
     <div class="status-icons"><span>🔔</span><span>⚙</span><span>→</span></div>
   </div>
@@ -560,7 +561,34 @@ const TAB_REGISTRY = [
   { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', closable: true, level: 2, showInAppCenter: false, defaultVisible: false }
 ];
 const TAB_REGISTRY_MAP = Object.fromEntries(TAB_REGISTRY.map(item => [item.id, item]));
+const DEFAULT_OPEN_MODE = 'latest-modified';
+function parseModifiedTime(value) {
+  return value ? new Date(value.replace(' ', 'T')).getTime() : 0;
+}
+function getLatestModifiedTab() {
+  return TAB_REGISTRY
+    .filter(item => item.id !== 'home' && !!item.modifiedAt)
+    .sort((a, b) => parseModifiedTime(b.modifiedAt) - parseModifiedTime(a.modifiedAt))[0] || null;
+}
+function getInitialVisibleTabs() {
+  const visibleTabs = new Set(TAB_REGISTRY.filter(item => item.defaultVisible).map(item => item.id));
+  if (DEFAULT_OPEN_MODE === 'latest-modified') {
+    const latestTab = getLatestModifiedTab();
+    if (latestTab) visibleTabs.add(latestTab.id);
+  }
+  return visibleTabs;
+}
+function getInitialActiveTab() {
+  if (DEFAULT_OPEN_MODE === 'latest-modified') {
+    const latestTab = getLatestModifiedTab();
+    if (latestTab) return latestTab.id;
+  }
+  return 'home';
+}
+const INITIAL_VISIBLE_TABS = getInitialVisibleTabs();
+const INITIAL_ACTIVE_TAB = getInitialActiveTab();
 const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
+
   '<button class="tab-action-btn" title="切换到左边标签" onclick="prevTab()">◁</button>' +
   '<button class="tab-action-btn" title="切换到右边标签" onclick="nextTab()">▷</button>' +
   '<button class="tab-action-btn" title="标签列表" onclick="toggleTabList()">☰</button>' +
@@ -571,7 +599,8 @@ function escapeHtml(text) {
 }
 function renderShellFrame() {
   const tabBar = document.getElementById('mainTabBar');
-  const tabItemsHtml = TAB_REGISTRY.map(item => '<div class="tab' + (item.defaultVisible ? '' : ' hidden') + (item.id === 'home' ? ' active' : '') + '" data-tab="' + item.id + '" data-closable="' + (item.closable ? 'true' : 'false') + '"><span class="tab-label">' + escapeHtml(item.label) + '</span><span class="tab-close">×</span></div>').join('');
+  const tabItemsHtml = TAB_REGISTRY.map(item => '<div class="tab' + (INITIAL_VISIBLE_TABS.has(item.id) ? '' : ' hidden') + (item.id === INITIAL_ACTIVE_TAB ? ' active' : '') + '" data-tab="' + item.id + '" data-closable="' + (item.closable ? 'true' : 'false') + '"><span class="tab-label">' + escapeHtml(item.label) + '</span><span class="tab-close">×</span></div>').join('');
+
   tabBar.innerHTML = '<div class="tab-scroll">' + tabItemsHtml + '</div>' + TAB_ACTION_MARKUP;
   const homeAppGrid = document.getElementById('homeAppGrid');
   const appCenterTabs = TAB_REGISTRY.filter(item => item.showInAppCenter).sort((a, b) => {
@@ -663,7 +692,9 @@ function renderSelectedVoyage() {
 }
 function selectVoyage(row, voyageId) { document.querySelectorAll('.voyage-row').forEach(r => r.classList.remove('active')); row.classList.add('active'); selectedVoyageId = voyageId; renderSelectedVoyage(); }
 renderShellFrame();
+switchTab(INITIAL_ACTIVE_TAB);
 renderSelectedVoyage();
+
 </script>
 </body>
 </html>
