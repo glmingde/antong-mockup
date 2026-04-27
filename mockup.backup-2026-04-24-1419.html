@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安通综合物流系统 - EAS公共原型基座</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif; font-size: 12px; background: #F1F5F7; color: #333; min-height: 100vh; display: flex; flex-direction: column; }
+.sys-header { background: #F3F3F3; }
+.sys-title-bar { display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #F3F3F3; color: #000; font-size: 13px; }
+.sys-logo { width: 16px; height: 16px; border-radius: 3px; background: linear-gradient(135deg, #2467A0, #5A94C2); display: inline-block; }
+.sys-menu-bar { display: flex; align-items: center; justify-content: space-between; padding: 2px 6px; font-size: 12px; background: #1F629B; border-bottom: 1px solid #366A98; }
+.sys-menu-links { display: flex; }
+.sys-menu-links a { color: #E4ECF3; text-decoration: none; padding: 3px 10px; border-radius: 2px; }
+.sys-menu-links a:hover { background: #5A94C2; }
+.sys-menu-search { display: flex; align-items: center; gap: 4px; margin-right: 30px; }
+.sys-menu-search input { width: 220px; height: 22px; padding: 2px 6px; border: 1px solid #8CC4EE; border-radius: 2px; background: #DAF0FF; color: #333; font-size: 11px; font-family: inherit; }
+.toolbar-bar { display: none; align-items: center; gap: 0; flex-wrap: wrap; padding: 3px 8px; background: #3E7BAE; border-bottom: 1px solid #366A98; }
+.toolbar-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.25); margin: 0 8px; }
+.toolbar-btn { height: 22px; padding: 2px 8px; border: none; border-radius: 2px; background: transparent; color: #E4ECF3; cursor: pointer; font-size: 12px; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; }
+.toolbar-btn:hover { background: rgba(255,255,255,0.15); }
+.toolbar-info { margin-left: auto; color: #E4ECF3; font-size: 11px; }
+.tab-bar { display: flex; gap: 2px; padding: 4px 4px 0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-bottom: 2px solid #2467A0; flex-wrap: wrap; }
+.tab { padding: 4px 12px; background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.6); border-bottom: none; border-radius: 3px 3px 0 0; color: #2A4A6A; cursor: pointer; font-size: 12px; }
+.tab.active { background: #FFF; color: #2467A0; font-weight: bold; border-color: #2467A0; border-bottom: 2px solid #FFF; margin-bottom: -2px; position: relative; z-index: 1; }
+.tab.hidden { display: none; }
+.tab-close { margin-left: 6px; font-weight: bold; }
+.tab[data-closable="false"] .tab-close { display: none; }
+.tab-bar-actions { display: flex; gap: 1px; margin-left: auto; padding: 2px 0; border-left: 1px solid rgba(255,255,255,0.5); }
+.tab-action-btn { width: 22px; height: 20px; border: none; background: transparent; color: #2A4A6A; border-radius: 2px; cursor: pointer; }
+.tab-action-btn:hover { background: rgba(255,255,255,0.5); }
+.main-content { display: none; padding: 8px; }
+.main-content.active { display: block; }
+.query-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; }
+.query-bar label { color: #555; white-space: nowrap; }
+.query-bar input, .query-bar select { height: 22px; padding: 2px 4px; border: 1px solid #C0C0C0; font-size: 12px; font-family: inherit; }
+.query-bar input { width: 120px; }
+.query-bar select { width: 100px; }
+.btn { height: 22px; padding: 2px 12px; border: 1px solid; border-radius: 2px; cursor: pointer; font-size: 12px; font-family: inherit; white-space: nowrap; }
+.btn-query { background: #F1F5F7; color: #333; border-color: #1F629B; }
+.btn-primary { background: #417DB0; color: #FFF; border-color: #366A98; }
+.btn-success { background: #5A9A5A; color: #FFF; border-color: #4A8A4A; }
+.btn-warning { background: #D8A030; color: #FFF; border-color: #B88020; }
+.btn-gray { background: #888; color: #FFF; border-color: #777; }
+.action-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+.action-bar .total-info { margin-left: auto; color: #555; }
+.data-table-wrap { background: #FFF; border: 1px solid #C0C0C0; overflow: auto; }
+.data-table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #FFF; }
+.data-table th { position: sticky; top: 0; z-index: 1; padding: 4px 6px; border: 1px solid #D8DCE0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; text-align: center; font-weight: bold; white-space: nowrap; }
+.data-table td { padding: 3px 6px; border: 1px solid #D8DCE0; white-space: nowrap; }
+.data-table tr:hover td { background: #DDEEFF; }
+.card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+.card { background: #FFF; border: 1px solid #C0C0C0; border-radius: 3px; padding: 10px 12px; }
+.card-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+.card-value { font-size: 22px; font-weight: bold; }
+.card-blue .card-value { color: #1A5EA8; }
+.card-orange .card-value { color: #CC4400; }
+.card-gray .card-value { color: #555; }
+.dual-panel { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 8px; }
+.side-card { background: #FFF; border: 1px solid #C0C0C0; padding: 8px; }
+.side-card h3 { margin-bottom: 8px; padding: 4px 8px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 12px; }
+.note-list { list-style: none; }
+.note-list li { padding: 6px 4px; border-bottom: 1px dashed #D9D9D9; color: #555; }
+.app-center { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+.app-welcome { text-align: center; margin-bottom: 32px; }
+.app-welcome h2 { margin-bottom: 6px; color: #1F629B; font-size: 20px; }
+.app-welcome p { color: #888; font-size: 13px; }
+.app-grid { width: 100%; max-width: 720px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.app-card { background: #FFF; border: 1px solid #D0D5DC; border-radius: 6px; padding: 20px 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.app-card:hover { border-color: #1F629B; box-shadow: 0 2px 12px rgba(31,98,155,0.15); transform: translateY(-2px); }
+.app-icon { width: 44px; height: 44px; margin: 0 auto 10px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.app-icon.blue { background: #E3F0FF; color: #1A5EA8; }
+.app-icon.green { background: #E0F5E0; color: #2A7A2A; }
+.app-icon.orange { background: #FFF0D0; color: #A06000; }
+.app-name { margin-bottom: 4px; color: #333; font-size: 13px; font-weight: bold; }
+.app-desc { color: #999; font-size: 11px; }
+.badge { display: inline-block; padding: 1px 6px; border-radius: 2px; font-size: 11px; font-weight: bold; }
+.pos-deck { background: #FF6B35; color: #FFF; border: 1px solid #CC4400; }
+.pos-upper { background: #2A7FD4; color: #FFF; border: 1px solid #1A5EA8; }
+.pos-bottom { background: #555; color: #FFF; border: 1px solid #333; }
+.preview-note { margin-bottom: 8px; padding: 6px 8px; background: #F7FBFF; border: 1px solid #CFE0F0; color: #2A4A6A; }
+.status-bar { margin-top: auto; height: 28px; display: flex; align-items: center; justify-content: flex-end; gap: 14px; padding: 0 10px; background: #2467A0; border-top: 1px solid #1E5687; color: #F5E009; font-size: 11px; }
+.status-icons { display: flex; align-items: center; gap: 8px; color: #FFF; }
+.base-tag { margin-left: 8px; padding: 2px 6px; border-radius: 10px; background: #E3F0FF; color: #1A5EA8; font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="sys-header">
+  <div class="sys-title-bar">
+    <span class="sys-logo"></span>
+    <span>安通综合物流系统 - EAS</span>
+    <span class="base-tag">公共原型基座</span>
+  </div>
+  <div class="sys-menu-bar">
+    <div class="sys-menu-links">
+      <a href="#">系统(S)</a>
+      <a href="#">文件(F)</a>
+      <a href="#">工具(T)</a>
+      <a href="#">帮助(H)</a>
+    </div>
+    <div class="sys-menu-search">
+      <input type="text" placeholder="搜索菜单...">
+    </div>
+  </div>
+</div>
+
+<div class="toolbar-bar" id="toolbar-module-main">
+  <button class="toolbar-btn">查询</button>
+  <button class="toolbar-btn">新增</button>
+  <button class="toolbar-btn">导出</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn">刷新</button>
+  <span class="toolbar-info">一级入口模块工具栏示意</span>
+</div>
+<div class="toolbar-bar" id="toolbar-module-archive">
+  <button class="toolbar-btn">新增</button>
+  <button class="toolbar-btn">导入</button>
+  <button class="toolbar-btn">导出</button>
+  <span class="toolbar-info">辅助页工具栏示意</span>
+</div>
+<div class="toolbar-bar" id="toolbar-module-report">
+  <button class="toolbar-btn">生成报表</button>
+  <button class="toolbar-btn">打印</button>
+  <span class="toolbar-info">辅助页报表示意</span>
+</div>
+<div class="toolbar-bar" id="toolbar-cold-chain-dashboard">
+  <button class="toolbar-btn">查询</button>
+  <button class="toolbar-btn">刷新</button>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-records')">综合记录</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-voyage')">航次详情</button>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-repair')">补录修正</button>
+  <span class="toolbar-info">冷柜管理数字化 · 一级入口工具栏</span>
+</div>
+<div class="toolbar-bar" id="toolbar-cold-chain-records">
+  <button class="toolbar-btn">查询</button>
+  <button class="toolbar-btn">重置</button>
+  <button class="toolbar-btn">导出</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-voyage')">航次详情</button>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-repair')">补录修正</button>
+  <span class="toolbar-info">冷柜管理数字化 · 综合记录辅助页</span>
+</div>
+<div class="toolbar-bar" id="toolbar-cold-chain-voyage">
+  <button class="toolbar-btn">导出航次报告</button>
+  <button class="toolbar-btn">查看全链路</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-records')">返回记录</button>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-repair')">发起补录</button>
+  <span class="toolbar-info">冷柜管理数字化 · 航次详情辅助页</span>
+</div>
+<div class="toolbar-bar" id="toolbar-cold-chain-repair">
+  <button class="toolbar-btn">保存草稿</button>
+  <button class="toolbar-btn">提交修正</button>
+  <button class="toolbar-btn">驳回重传</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-records')">返回记录</button>
+  <span class="toolbar-info">冷柜管理数字化 · 补录修正辅助页</span>
+</div>
+
+<div class="tab-bar" id="mainTabBar"></div>
+
+<div id="tab-home" class="main-content active">
+  <div class="app-center">
+    <div class="app-welcome">
+      <h2>EAS 公共原型基座</h2>
+      <p>以后不同项目新增功能，统一在这份公共原型上增量调整，再落到项目实例。</p>
+    </div>
+    <div class="app-grid" id="homeAppGrid"></div>
+  </div>
+</div>
+
+<div id="tab-module-main" class="main-content">
+  <div class="query-bar">
+    <label>业务单号：</label><input type="text" placeholder="输入单号">
+    <label>状态：</label>
+    <select><option>全部</option><option>处理中</option><option>已完成</option></select>
+    <label>日期：</label>
+    <select><option>近7天</option><option selected>近15天</option><option>近30天</option></select>
+    <button class="btn btn-query">查询</button>
+    <button class="btn btn-query">重置</button>
+  </div>
+  <div class="card-grid">
+    <div class="card card-blue"><div class="card-label">业务总量</div><div class="card-value">128</div></div>
+    <div class="card card-orange"><div class="card-label">待处理</div><div class="card-value">16</div></div>
+    <div class="card card-gray"><div class="card-label">预警数</div><div class="card-value">5</div></div>
+    <div class="card card-blue"><div class="card-label">完成率</div><div class="card-value">87%</div></div>
+  </div>
+  <div class="action-bar">
+    <button class="btn btn-success">新增</button>
+    <button class="btn btn-primary">批量处理</button>
+    <button class="btn btn-warning">导出</button>
+    <button class="btn btn-gray" onclick="switchTab('module-archive')">打开辅助页</button>
+    <span class="total-info">一级业务页示意：查询区 + 汇总卡片 + 列表区</span>
+  </div>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:48px">序号</th>
+          <th>业务单号</th>
+          <th>业务名称</th>
+          <th>归属模块</th>
+          <th>建议位置</th>
+          <th>当前状态</th>
+          <th>负责人</th>
+          <th>更新时间</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center">1</td><td>EAS-001</td><td>主业务页面示例A</td><td>一级入口</td><td><span class="badge pos-upper">二层以上</span></td><td>处理中</td><td>葛礼明</td><td>2026-04-24</td></tr>
+        <tr><td style="text-align:center">2</td><td>EAS-002</td><td>主业务页面示例B</td><td>一级入口</td><td><span class="badge pos-deck">甲板</span></td><td>待确认</td><td>李昂</td><td>2026-04-24</td></tr>
+        <tr><td style="text-align:center">3</td><td>EAS-003</td><td>主业务页面示例C</td><td>一级入口</td><td><span class="badge pos-bottom">船底</span></td><td>已完成</td><td>产品组</td><td>2026-04-24</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-module-archive" class="main-content">
+  <div class="query-bar">
+    <label>档案名称：</label><input type="text" placeholder="输入关键字">
+    <label>分类：</label><select><option>全部</option><option>主数据</option><option>参数</option></select>
+    <button class="btn btn-query">查询</button>
+    <button class="btn btn-query">重置</button>
+  </div>
+  <div class="preview-note">辅助页不进入应用中心，首次打开后才进入标签栏；适合档案维护、参数设置、日志查询等页面。</div>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th style="width:48px">序号</th><th>档案名称</th><th>分类</th><th>维护说明</th><th>最后修改人</th><th>最后修改时间</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center">1</td><td>基础档案A</td><td>主数据</td><td>用于演示辅助页表格结构</td><td>产品组</td><td>2026-04-24</td></tr>
+        <tr><td style="text-align:center">2</td><td>参数配置B</td><td>参数</td><td>用于演示配置类页面挂接方式</td><td>产品组</td><td>2026-04-24</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-module-report" class="main-content">
+  <div class="dual-panel">
+    <div class="side-card">
+      <h3>报表区块示意</h3>
+      <div class="preview-note">如果项目需要图表、统计、说明区，可以在业务页面层扩展，不要改公共壳层。</div>
+      <div class="card-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 0;">
+        <div class="card card-blue"><div class="card-label">指标A</div><div class="card-value">32</div></div>
+        <div class="card card-orange"><div class="card-label">指标B</div><div class="card-value">7</div></div>
+      </div>
+    </div>
+    <div class="side-card">
+      <h3>基座使用约束</h3>
+      <ul class="note-list">
+        <li>公共框架层：顶部、菜单、工具栏容器、标签栏、状态栏，默认锁定。</li>
+        <li>配置层：模块注册、首页入口、默认显隐、closable 等统一从注册表维护。</li>
+        <li>业务页面层：各项目新增内容只在当前模块容器里扩展。</li>
+        <li>跨项目新需求先基于本文件初始化，再落到项目实例，不再从旧项目随手拷贝。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="tab-cold-chain-dashboard" class="main-content">
+  <div class="query-bar">
+    <label>船名：</label><input type="text" value="安盛1号">
+    <label>航次：</label><input type="text" value="V2026042401">
+    <label>起运港：</label><input type="text" value="上海">
+    <label>目的港：</label><input type="text" value="大阪">
+    <label>时间范围：</label><input type="text" style="width:160px" value="2026-04-18 至 2026-04-24">
+    <button class="btn btn-query">查询</button>
+    <button class="btn btn-query">重置</button>
+  </div>
+  <div class="card-grid" style="grid-template-columns: repeat(5, 1fr);">
+    <div class="card card-blue"><div class="card-label">在途航次</div><div class="card-value">12</div></div>
+    <div class="card card-blue"><div class="card-label">在途冷柜数</div><div class="card-value">486</div></div>
+    <div class="card card-orange"><div class="card-label">温度异常数</div><div class="card-value">18</div></div>
+    <div class="card card-orange"><div class="card-label">待确认交接单</div><div class="card-value">9</div></div>
+    <div class="card card-gray"><div class="card-label">待修正OCR</div><div class="card-value">14</div></div>
+  </div>
+  <div class="dual-panel">
+    <div class="side-card">
+      <h3>高优先级异常 / 待办</h3>
+      <ul class="note-list">
+        <li>安盛1号 · V2026042401 · TGHU1234567：三文鱼实际温度 -16.5℃，较设定值偏差 +1.5℃。</li>
+        <li>安盛3号 · 装船交接单待确认：盖章照片已回传，等待岸端确认接收。</li>
+        <li>安盛5号 · OCR待修正：箱号识别存在偏差，需进入补录修正页处理。</li>
+        <li>建议先看异常，再进入综合记录或航次详情继续跟踪。</li>
+      </ul>
+    </div>
+    <div class="side-card">
+      <h3>综合记录快捷列表</h3>
+      <div class="action-bar">
+        <button class="btn btn-primary" onclick="switchTab('cold-chain-records')">进入综合记录</button>
+        <button class="btn btn-warning" onclick="switchTab('cold-chain-voyage')">查看航次详情</button>
+        <span class="total-info">冷柜管理数字化一级入口：总览 + 待办 + 快速跳转</span>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th style="width:70px">记录类型</th><th>船名</th><th>航次</th><th>箱号</th><th>设定温度</th><th>实际温度</th><th>异常状态</th><th>上报时间</th><th>处理状态</th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>巡检记录</td><td>安盛1号</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">V2026042401</td><td>TGHU1234567</td><td>-18℃</td><td>-16.5℃</td><td>异常</td><td>2026-04-24 08:00</td><td>跟踪中</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">详情</td></tr>
+            <tr><td>交接记录</td><td>安盛3号</td><td>V2026042310</td><td>TCLU8899012</td><td>-20℃</td><td>-20℃</td><td>正常</td><td>2026-04-24 09:20</td><td>待确认</td><td>确认接收</td></tr>
+            <tr><td>预警记录</td><td>安盛5号</td><td>V2026042403</td><td>MSCU3321456</td><td>-15℃</td><td>-12.8℃</td><td>超阈值</td><td>2026-04-24 10:05</td><td>待复核</td><td onclick="switchTab('cold-chain-repair')" style="color:#1A4A99;cursor:pointer;">修正</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-cold-chain-records" class="main-content">
+  <div class="query-bar">
+    <label>船名：</label><input type="text" value="全部">
+    <label>航次：</label><input type="text" value="V2026042401">
+    <label>箱号：</label><input type="text" value="TGHU1234567">
+    <label>记录类型：</label><select><option selected>全部记录</option><option>巡检记录</option><option>交接记录</option><option>预警记录</option></select>
+    <label>异常状态：</label><select><option selected>全部</option><option>异常</option><option>正常</option></select>
+    <button class="btn btn-query">查询</button>
+    <button class="btn btn-query">重置</button>
+    <button class="btn btn-primary">导出</button>
+  </div>
+  <div class="preview-note">综合记录页作为冷柜管理数字化的辅助页面挂接，不进入应用中心，首次打开后进入标签栏。</div>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th style="width:70px">记录类型</th><th>船名</th><th>航次</th><th>箱号</th><th>贝位</th><th>货物名称</th><th>配载位置</th><th>设定温度</th><th>实际温度</th><th>温差</th><th>异常状态</th><th>处理状态</th><th>上报时间</th><th>上报方式</th><th>操作</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>巡检记录</td><td>安盛1号</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">V2026042401</td><td>TGHU1234567</td><td>030204</td><td>三文鱼</td><td><span class="badge pos-deck">甲板</span></td><td>-18℃</td><td>-16.5℃</td><td style="color:#C84040;font-weight:bold;">+1.5℃</td><td>异常</td><td>跟踪中</td><td>2026-04-24 08:00</td><td>OCR识别</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">查看</td></tr>
+        <tr><td>交接记录</td><td>安盛1号</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">V2026042401</td><td>TGHU1234567</td><td>030204</td><td>三文鱼</td><td><span class="badge pos-deck">甲板</span></td><td>-18℃</td><td>-18℃</td><td>0℃</td><td>正常</td><td>已确认</td><td>2026-04-24 06:10</td><td>拍照回传</td><td>查看交接单</td></tr>
+        <tr><td>预警记录</td><td>安盛5号</td><td>V2026042403</td><td>MSCU3321456</td><td>070106</td><td>冻鱼</td><td><span class="badge pos-upper">二层以上</span></td><td>-15℃</td><td>-12.8℃</td><td style="color:#C84040;font-weight:bold;">+2.2℃</td><td>超阈值</td><td>待复核</td><td>2026-04-24 10:05</td><td>预警引擎</td><td onclick="switchTab('cold-chain-repair')" style="color:#1A4A99;cursor:pointer;">修正</td></tr>
+        <tr><td>巡检记录</td><td>安盛3号</td><td>V2026042310</td><td>TCLU8899012</td><td>050302</td><td>冷冻肉类</td><td><span class="badge pos-bottom">船底</span></td><td>-20℃</td><td>-19.8℃</td><td>+0.2℃</td><td>正常</td><td>已完成</td><td>2026-04-24 09:40</td><td>手工填报</td><td>查看</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-cold-chain-voyage" class="main-content">
+  <div class="preview-note">航次详情页用于围绕单个航次查看完整冷柜状态，集中处理交接、巡检、预警与全链路追溯。</div>
+  <div class="card-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="card card-blue"><div class="card-label">起运港</div><div class="card-value" style="font-size:18px;">上海</div></div>
+    <div class="card card-blue"><div class="card-label">目的港</div><div class="card-value" style="font-size:18px;">大阪</div></div>
+    <div class="card card-orange"><div class="card-label">异常数</div><div class="card-value">2</div></div>
+    <div class="card card-gray"><div class="card-label">当前处置</div><div class="card-value" style="font-size:18px;">已跟踪</div></div>
+  </div>
+  <div class="dual-panel">
+    <div class="side-card">
+      <h3>冷柜总览</h3>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>箱号</th><th>贝位</th><th>货物名称</th><th>货值等级</th><th>最新温度</th><th>当前状态</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TGHU1234567</td><td>030204</td><td>三文鱼</td><td>高货值</td><td>-16.5℃</td><td>异常</td></tr>
+            <tr><td>TCLU8899012</td><td>050302</td><td>冷冻肉类</td><td>中货值</td><td>-19.8℃</td><td>正常</td></tr>
+            <tr><td>MSCU3321456</td><td>070106</td><td>冻鱼</td><td>普通</td><td>-12.8℃</td><td>待复核</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="side-card">
+      <h3>全链路温度时间轴</h3>
+      <ul class="note-list">
+        <li>2026-04-24 06:10 · 装船交接：交接温度 -18℃，盖章交接单已回传并完成OCR归档。</li>
+        <li>2026-04-24 04:00 · 航行巡检1：实际温度 -18.1℃，处于正常范围。</li>
+        <li>2026-04-24 08:00 · 航行巡检2：实际温度 -16.5℃，触发高货值异常预警。</li>
+        <li>预计 2026-04-25 18:00 · 卸船交接：待完成卸船交接温度确认，后续生成追溯报告。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="tab-cold-chain-repair" class="main-content">
+  <div class="preview-note">补录 / 修正页用于处理OCR识别不准、照片缺失、数据漏录和人工修正，保证岸上数据最终可用。</div>
+  <div class="dual-panel">
+    <div class="side-card">
+      <h3>待处理任务</h3>
+      <ul class="note-list">
+        <li>OCR修正 · 安盛5号：箱号 MSCU33Z1456 → MSCU3321456，温度 -1B.8℃ → -12.8℃。</li>
+        <li>照片补交 · 安盛3号：装船交接照片缺失，待船方补交。</li>
+        <li>手工补录 · 安盛1号：根据纸质台账补录巡检记录。</li>
+      </ul>
+    </div>
+    <div class="side-card">
+      <h3>修正表单</h3>
+      <div class="query-bar" style="margin-bottom:0;border:none;padding:0;background:#FFF;">
+        <label>识别箱号：</label><input type="text" value="MSCU33Z1456">
+        <label>修正箱号：</label><input type="text" value="MSCU3321456">
+        <label>识别温度：</label><input type="text" value="-1B.8℃">
+        <label>修正温度：</label><input type="text" value="-12.8℃">
+        <label>修正原因：</label><input type="text" style="width:220px" value="字母B识别错误，已按照片人工核对">
+        <button class="btn btn-primary">提交修正</button>
+        <button class="btn btn-warning">保存草稿</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span>版本：EAS-BASE 2026-04-24</span>
+  <span>基座路径：D:\AnTong_Leon\eas\desgin\antong-eas-prototype-base\mockup.html</span>
+  <div class="status-icons"><span>🔔</span><span>⚙</span><span>→</span></div>
+</div>
+
+<script>
+const TAB_REGISTRY = [
+  { id: 'home', label: '应用中心', shortLabel: '应用中心', closable: false, level: 0, showInAppCenter: false, defaultVisible: true },
+  { id: 'module-main', label: '一级业务示例', shortLabel: '一级业务示例', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, appCard: { iconClass: 'blue', iconText: '业', desc: '一级入口模块示意' } },
+  { id: 'module-archive', label: '辅助页示例', shortLabel: '辅助页示例', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
+  { id: 'module-report', label: '报表示例', shortLabel: '报表示例', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
+  { id: 'cold-chain-dashboard', label: '冷柜管理数字化', shortLabel: '冷柜管理', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, appCard: { iconClass: 'green', iconText: '冷', desc: '岸上端冷柜管理总览入口' } },
+  { id: 'cold-chain-records', label: '综合记录', shortLabel: '综合记录', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
+  { id: 'cold-chain-voyage', label: '航次详情', shortLabel: '航次详情', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
+  { id: 'cold-chain-repair', label: '补录修正', shortLabel: '补录修正', closable: true, level: 2, showInAppCenter: false, defaultVisible: false }
+];
+const TAB_REGISTRY_MAP = Object.fromEntries(TAB_REGISTRY.map(item => [item.id, item]));
+const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
+  '<button class="tab-action-btn" title="切换到左边标签" onclick="prevTab()">◁</button>' +
+  '<button class="tab-action-btn" title="切换到右边标签" onclick="nextTab()">▷</button>' +
+  '<button class="tab-action-btn" title="标签列表" onclick="toggleTabList()">☰</button>' +
+  '<button class="tab-action-btn" title="关闭当前标签" onclick="closeCurrentTab()">✕</button>' +
+'</div>';
+function escapeHtml(text) {
+  return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function renderShellFrame() {
+  const tabBar = document.getElementById('mainTabBar');
+  tabBar.innerHTML = TAB_REGISTRY.map(item => '<div class="tab' + (item.defaultVisible ? '' : ' hidden') + (item.id === 'home' ? ' active' : '') + '" data-tab="' + item.id + '" data-closable="' + (item.closable ? 'true' : 'false') + '"><span class="tab-label">' + escapeHtml(item.label) + '</span><span class="tab-close">×</span></div>').join('') + TAB_ACTION_MARKUP;
+  const homeAppGrid = document.getElementById('homeAppGrid');
+  homeAppGrid.innerHTML = TAB_REGISTRY.filter(item => item.showInAppCenter).map(item => '<div class="app-card" onclick="goTab(\'' + item.id + '\')"><div class="app-icon ' + item.appCard.iconClass + '">' + item.appCard.iconText + '</div><div class="app-name">' + escapeHtml(item.shortLabel || item.label) + '</div><div class="app-desc">' + escapeHtml(item.appCard.desc) + '</div></div>').join('');
+  bindTabEvents();
+}
+function bindTabEvents() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.onclick = function(event) {
+      if (event.target.classList.contains('tab-close')) {
+        event.stopPropagation();
+        if (this.getAttribute('data-closable') !== 'false') closeTabById(this.getAttribute('data-tab'));
+        return;
+      }
+      switchTab(this.getAttribute('data-tab'));
+    };
+    tab.ondblclick = function() {
+      if (this.getAttribute('data-closable') !== 'false') closeTabById(this.getAttribute('data-tab'));
+    };
+  });
+}
+function setTabVisibility(tab, visible) {
+  const el = document.querySelector('.tab[data-tab="' + tab + '"]');
+  if (el) el.classList.toggle('hidden', !visible);
+}
+function switchTab(tab) {
+  document.querySelectorAll('.main-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.toolbar-bar').forEach(t => t.style.display = 'none');
+  setTabVisibility(tab, true);
+  const tabEl = document.querySelector('.tab[data-tab="' + tab + '"]');
+  if (tabEl) tabEl.classList.add('active');
+  const contentEl = document.getElementById('tab-' + tab);
+  if (contentEl) contentEl.classList.add('active');
+  const toolbarEl = document.getElementById('toolbar-' + tab);
+  if (toolbarEl) toolbarEl.style.display = 'flex';
+}
+function goTab(tab) { switchTab(tab); }
+function getVisibleTabs() { return Array.from(document.querySelectorAll('.tab')).filter(t => !t.classList.contains('hidden')); }
+function closeTabById(tabId) {
+  const tabMeta = TAB_REGISTRY_MAP[tabId];
+  if (!tabMeta || tabMeta.closable === false) return;
+  const activeTab = document.querySelector('.tab.active');
+  const tabs = getVisibleTabs();
+  const current = document.querySelector('.tab[data-tab="' + tabId + '"]');
+  const idx = tabs.indexOf(current);
+  setTabVisibility(tabId, false);
+  if (current) current.classList.remove('active');
+  if (activeTab && activeTab.getAttribute('data-tab') === tabId) {
+    const target = idx > 0 ? tabs[idx - 1] : tabs[idx + 1];
+    if (target && target.getAttribute('data-tab') !== tabId) switchTab(target.getAttribute('data-tab'));
+    else switchTab('home');
+  }
+}
+function closeCurrentTab() {
+  const activeTab = document.querySelector('.tab.active');
+  if (activeTab) closeTabById(activeTab.getAttribute('data-tab'));
+}
+function prevTab() {
+  const tabs = getVisibleTabs();
+  const idx = tabs.findIndex(t => t.classList.contains('active'));
+  if (idx > 0) switchTab(tabs[idx - 1].getAttribute('data-tab'));
+}
+function nextTab() {
+  const tabs = getVisibleTabs();
+  const idx = tabs.findIndex(t => t.classList.contains('active'));
+  if (idx < tabs.length - 1) switchTab(tabs[idx + 1].getAttribute('data-tab'));
+}
+function toggleTabList() {
+  const list = getVisibleTabs().map(t => (t.classList.contains('active') ? '● ' : '  ') + t.querySelector('.tab-label').textContent.trim()).join('\n');
+  alert('当前标签列表：\n\n' + list);
+}
+renderShellFrame();
+</script>
+</body>
+</html>
