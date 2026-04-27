@@ -6,7 +6,10 @@
 <title>安通综合物流系统 - EAS</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif; font-size: 12px; background: #F1F5F7; color: #333; min-height: 100vh; display: flex; flex-direction: column; }
+html, body { height: 100%; }
+body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif; font-size: 12px; background: #F1F5F7; color: #333; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+.shell-main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.content-stage { flex: 1; min-height: 0; overflow: hidden; }
 .sys-header { background: #F3F3F3; }
 .sys-title-bar { display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #F3F3F3; color: #000; font-size: 13px; }
 .sys-logo { width: 16px; height: 16px; border-radius: 3px; background: linear-gradient(135deg, #2467A0, #5A94C2); display: inline-block; }
@@ -21,7 +24,8 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .toolbar-btn { height: 22px; padding: 2px 8px; border: none; border-radius: 2px; background: transparent; color: #E4ECF3; cursor: pointer; font-size: 12px; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; }
 .toolbar-btn:hover { background: rgba(255,255,255,0.15); }
 .toolbar-info { margin-left: auto; color: #E4ECF3; font-size: 11px; }
-.tab-bar { display: flex; gap: 2px; padding: 4px 4px 0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-bottom: 2px solid #2467A0; flex-wrap: wrap; }
+.tab-bar { display: flex; gap: 2px; padding: 4px 4px 0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-bottom: 2px solid #2467A0; flex-wrap: nowrap; flex: 0 0 auto; min-width: 0; overflow: hidden; }
+.tab-scroll { flex: 1; min-width: 0; display: flex; gap: 2px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
 .tab { padding: 4px 12px; background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.6); border-bottom: none; border-radius: 3px 3px 0 0; color: #2A4A6A; cursor: pointer; font-size: 12px; }
 .tab.active { background: #FFF; color: #2467A0; font-weight: bold; border-color: #2467A0; border-bottom: 2px solid #FFF; margin-bottom: -2px; position: relative; z-index: 1; }
 .tab.hidden { display: none; }
@@ -30,7 +34,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .tab-bar-actions { display: flex; gap: 1px; margin-left: auto; padding: 2px 0; border-left: 1px solid rgba(255,255,255,0.5); }
 .tab-action-btn { width: 22px; height: 20px; border: none; background: transparent; color: #2A4A6A; border-radius: 2px; cursor: pointer; }
 .tab-action-btn:hover { background: rgba(255,255,255,0.5); }
-.main-content { display: none; padding: 8px; }
+.main-content { display: none; height: 100%; min-height: 0; padding: 8px; overflow-y: auto; overflow-x: hidden; }
 .main-content.active { display: block; }
 .query-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; }
 .query-bar label { color: #555; white-space: nowrap; }
@@ -80,7 +84,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .pos-upper { background: #2A7FD4; color: #FFF; border: 1px solid #1A5EA8; }
 .pos-bottom { background: #555; color: #FFF; border: 1px solid #333; }
 .preview-note { margin-bottom: 8px; padding: 6px 8px; background: #F7FBFF; border: 1px solid #CFE0F0; color: #2A4A6A; }
-.status-bar { margin-top: auto; height: 28px; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 10px; background: #2467A0; border-top: 1px solid #1E5687; color: #F5E009; font-size: 11px; }
+.status-bar { flex: 0 0 28px; height: 28px; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 10px; background: #2467A0; border-top: 1px solid #1E5687; color: #F5E009; font-size: 11px; }
 .status-meta { display: flex; align-items: center; gap: 14px; justify-content: flex-start; min-width: 0; }
 .status-user { display: flex; align-items: center; gap: 10px; color: #FFF; }
 .status-icons { display: flex; align-items: center; gap: 8px; color: #FFF; }
@@ -264,7 +268,9 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
   <span class="toolbar-info">导出口径：一箱一行，偏差箱按浅红底色高亮</span>
 </div>
 
+<div class="shell-main">
 <div class="tab-bar" id="mainTabBar"></div>
+<div class="content-stage">
 
 <div id="tab-home" class="main-content active">
   <div class="app-center">
@@ -523,6 +529,9 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 <div class="modal-overlay" id="editModal"><div class="modal"><div class="modal-header"><span>编辑货名配载信息</span><span class="modal-close" onclick="closeModal('editModal')">×</span></div><div class="modal-body"><div class="form-row"><label>货名</label><input type="text" value="液袋货"></div><div class="form-row"><label>货类大类</label><select><option>化工品类</option><option>粮食类</option><option>钢材类</option><option>建材类</option></select></div><div class="form-row"><label>水湿风险</label><select><option selected>高风险</option><option>中等风险</option><option>一般风险</option></select></div><div class="form-row"><label>货值等级</label><select><option selected>高货值</option><option>中等货值</option><option>普通货值</option></select></div><div class="form-row"><label>配载位置</label><select><option selected>甲板</option><option>二层以上</option><option>船底</option></select><span class="hint">系统依据此字段给出配载建议</span></div><div class="form-row"><label>是否特殊货</label><select><option selected>液袋</option><option>否</option><option>液氮柜</option><option>危险品</option></select></div><div class="form-row"><label>备注说明</label><input type="text" value="必须甲板，禁止入舱"></div></div><div class="modal-footer"><button class="btn btn-success">保存</button><button class="btn btn-gray" onclick="closeModal('editModal')">取消</button></div></div></div>
 <div class="modal-overlay" id="importModal"><div class="modal" style="width:520px"><div class="modal-header"><span>Excel批量导入货名配载信息</span><span class="modal-close" onclick="closeModal('importModal')">×</span></div><div class="modal-body"><div style="font-size:12px;color:#555;margin-bottom:8px;">请按模板格式准备Excel文件，包含字段：货名、货类大类、水湿风险等级、货值等级、配载建议位置、备注说明</div><div class="import-area">点击选择 Excel 文件</div><div style="background:#E8F0FA;border:1px solid #B0C4DE;border-radius:3px;padding:8px;font-size:11px;margin-top:8px;"><strong>导入规则：</strong><br>· 货名已存在时，以导入数据覆盖原记录<br>· 货名不存在时，自动新建记录<br>· 配载建议位置仅接受：甲板 / 二层以上 / 船底</div></div><div class="modal-footer"><button class="btn btn-primary">开始导入</button><button class="btn btn-gray" onclick="closeModal('importModal')">取消</button></div></div></div>
 
+</div>
+</div>
+
 <div class="status-bar">
   <div class="status-meta">
     <span>版本：EAS V3.2</span>
@@ -562,7 +571,8 @@ function escapeHtml(text) {
 }
 function renderShellFrame() {
   const tabBar = document.getElementById('mainTabBar');
-  tabBar.innerHTML = TAB_REGISTRY.map(item => '<div class="tab' + (item.defaultVisible ? '' : ' hidden') + (item.id === 'home' ? ' active' : '') + '" data-tab="' + item.id + '" data-closable="' + (item.closable ? 'true' : 'false') + '"><span class="tab-label">' + escapeHtml(item.label) + '</span><span class="tab-close">×</span></div>').join('') + TAB_ACTION_MARKUP;
+  const tabItemsHtml = TAB_REGISTRY.map(item => '<div class="tab' + (item.defaultVisible ? '' : ' hidden') + (item.id === 'home' ? ' active' : '') + '" data-tab="' + item.id + '" data-closable="' + (item.closable ? 'true' : 'false') + '"><span class="tab-label">' + escapeHtml(item.label) + '</span><span class="tab-close">×</span></div>').join('');
+  tabBar.innerHTML = '<div class="tab-scroll">' + tabItemsHtml + '</div>' + TAB_ACTION_MARKUP;
   const homeAppGrid = document.getElementById('homeAppGrid');
   const appCenterTabs = TAB_REGISTRY.filter(item => item.showInAppCenter).sort((a, b) => {
     if (!!a.sortPinLast !== !!b.sortPinLast) return a.sortPinLast ? 1 : -1;
