@@ -50,7 +50,8 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .tab-action-btn:hover, .tab-action-btn.active { background: rgba(255,255,255,0.68); }
 .tab-list-backdrop { position: fixed; inset: 0; z-index: 34; display: none; }
 .tab-list-backdrop.show { display: block; }
-.tab-list-panel { position: absolute; top: calc(100% + 6px); right: 4px; width: 280px; max-height: 320px; background: #FFF; border: 1px solid #7AA8CF; box-shadow: 0 6px 18px rgba(0,0,0,0.16); z-index: 35; display: none; }
+.tab-list-panel { position: fixed; top: 0; left: 0; width: 280px; max-height: 320px; background: #FFF; border: 1px solid #7AA8CF; box-shadow: 0 6px 18px rgba(0,0,0,0.16); z-index: 35; display: none; }
+.tab-list-panel::before { content: ''; position: absolute; top: -8px; right: var(--tab-list-arrow-right, 18px); width: 12px; height: 12px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-top: 1px solid #7AA8CF; border-left: 1px solid #7AA8CF; transform: rotate(45deg); }
 .tab-list-panel.show { display: block; }
 .tab-list-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-weight: bold; border-bottom: 1px solid #B9CEE2; }
 .tab-list-header-text { display: flex; align-items: center; gap: 6px; }
@@ -67,9 +68,10 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .tab-list-name { color: #2A4A6A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tab-list-meta { margin-top: 2px; font-size: 11px; color: #7A8796; }
 .tab-list-actions { display: flex; align-items: center; gap: 4px; }
-.tab-list-btn { min-width: 42px; height: 22px; padding: 0 8px; border: 1px solid #B7CBE0; border-radius: 2px; background: #F7FBFF; color: #2A4A6A; cursor: pointer; font-size: 11px; font-family: inherit; }
-.tab-list-btn:hover { border-color: #7AA8CF; background: #EAF4FF; }
-.tab-list-btn-danger { color: #B24343; }
+.tab-list-icon-btn { width: 22px; height: 22px; border: 1px solid #B7CBE0; border-radius: 2px; background: #F7FBFF; color: #2A4A6A; cursor: pointer; font-size: 12px; font-family: inherit; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
+.tab-list-icon-btn:hover { border-color: #7AA8CF; background: #EAF4FF; }
+.tab-list-icon-btn-danger { color: #B24343; }
+
 
 
 .main-content { display: none; height: 100%; min-height: 0; padding: 8px; overflow-y: auto; overflow-x: hidden; }
@@ -789,7 +791,7 @@ const INITIAL_ACTIVE_TAB = getInitialActiveTab();
 const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
   '<button class="tab-action-btn" title="切换到左边标签" onclick="prevTab()">◁</button>' +
   '<button class="tab-action-btn" title="切换到右边标签" onclick="nextTab()">▷</button>' +
-  '<button class="tab-action-btn" id="tabListToggleBtn" title="标签列表" onclick="toggleTabList()">☰</button>' +
+  '<button class="tab-action-btn" id="tabListToggleBtn" title="标签列表" onclick="toggleTabList(); return false;">☰</button>' +
   '<button class="tab-action-btn" title="关闭当前标签" onclick="closeCurrentTab()">✕</button>' +
 '</div>';
 const TAB_LIST_PANEL_MARKUP = '<div class="tab-list-panel" id="tabListPanel">' +
@@ -806,7 +808,12 @@ function renderShellFrame() {
   const tabBar = document.getElementById('mainTabBar');
   const tabItemsHtml = TAB_REGISTRY.map(item => '<div class="tab' + (INITIAL_VISIBLE_TABS.has(item.id) ? '' : ' hidden') + (item.id === INITIAL_ACTIVE_TAB ? ' active' : '') + '" data-tab="' + item.id + '" data-closable="' + (item.closable ? 'true' : 'false') + '"><span class="tab-label">' + escapeHtml(item.label) + '</span><span class="tab-close">×</span></div>').join('');
 
-  tabBar.innerHTML = '<div class="tab-scroll">' + tabItemsHtml + '</div>' + TAB_ACTION_MARKUP + TAB_LIST_PANEL_MARKUP;
+  tabBar.innerHTML = '<div class="tab-scroll">' + tabItemsHtml + '</div>' + TAB_ACTION_MARKUP;
+  const existingTabListPanel = document.getElementById('tabListPanel');
+  const existingTabListBackdrop = document.getElementById('tabListBackdrop');
+  if (existingTabListPanel) existingTabListPanel.remove();
+  if (existingTabListBackdrop) existingTabListBackdrop.remove();
+  document.body.insertAdjacentHTML('beforeend', TAB_LIST_PANEL_MARKUP);
   const homeAppGrid = document.getElementById('homeAppGrid');
   const appCenterTabs = TAB_REGISTRY.filter(item => item.pageType === 'module' && item.showInAppCenter).sort((a, b) => {
     if (!!a.sortPinLast !== !!b.sortPinLast) return a.sortPinLast ? 1 : -1;
@@ -819,6 +826,8 @@ function renderShellFrame() {
   renderTabListPanel();
 }
 
+
+let hasBoundTabListKeydown = false;
 function bindTabEvents() {
 
 
@@ -835,22 +844,66 @@ function bindTabEvents() {
       if (this.getAttribute('data-closable') !== 'false') closeTabById(this.getAttribute('data-tab'));
     };
   });
+  const tabListPanel = document.getElementById('tabListPanel');
+  if (tabListPanel) {
+    tabListPanel.onclick = function(event) {
+      event.stopPropagation();
+    };
+  }
+  if (!hasBoundTabListKeydown) {
+    document.addEventListener('keydown', handleTabListKeydown);
+    hasBoundTabListKeydown = true;
+  }
 }
+
+
+
+
 function setTabVisibility(tab, visible) {
   const el = document.querySelector('.tab[data-tab="' + tab + '"]');
   if (el) el.classList.toggle('hidden', !visible);
+}
+function isTabListPanelOpen() {
+  const panel = document.getElementById('tabListPanel');
+  return !!(panel && panel.classList.contains('show'));
+}
+function handleTabListKeydown(event) {
+  if (event.key === 'Escape' && isTabListPanelOpen()) {
+    hideTabList();
+  }
+}
+function positionTabListPanel() {
+  const panel = document.getElementById('tabListPanel');
+  const toggleBtn = document.getElementById('tabListToggleBtn');
+  if (!panel || !toggleBtn) return;
+  const btnRect = toggleBtn.getBoundingClientRect();
+  const panelWidth = panel.offsetWidth || 280;
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+  const left = Math.max(8, Math.min(btnRect.right - panelWidth, viewportWidth - panelWidth - 8));
+  const arrowRight = Math.max(18, Math.min(panelWidth - 24, btnRect.right - left - (btnRect.width / 2) - 6));
+  panel.style.top = (btnRect.bottom + 6) + 'px';
+  panel.style.left = left + 'px';
+  panel.style.right = 'auto';
+  panel.style.setProperty('--tab-list-arrow-right', arrowRight + 'px');
 }
 function setTabListPanelVisible(visible) {
   const panel = document.getElementById('tabListPanel');
   const backdrop = document.getElementById('tabListBackdrop');
   const toggleBtn = document.getElementById('tabListToggleBtn');
-  if (panel) panel.classList.toggle('show', !!visible);
+  if (panel) {
+    panel.classList.toggle('show', !!visible);
+    if (visible) positionTabListPanel();
+  }
   if (backdrop) backdrop.classList.toggle('show', !!visible);
   if (toggleBtn) toggleBtn.classList.toggle('active', !!visible);
 }
+
+
 function hideTabList() {
   setTabListPanelVisible(false);
 }
+
+
 function renderTabListPanel() {
   const panelBody = document.getElementById('tabListBody');
   const countEl = document.getElementById('tabListCount');
@@ -872,8 +925,7 @@ function renderTabListPanel() {
       '<div class="tab-list-meta">' + escapeHtml(getPageTypeLabel(tabMeta.pageType)) + (tabMeta.parentId ? ' · 所属：' + escapeHtml((TAB_REGISTRY_MAP[tabMeta.parentId] || {}).label || '') : '') + '</div>' +
       '</div>' +
       '<div class="tab-list-actions">' +
-      '<button class="tab-list-btn" onclick="openTabFromList(\'' + tabId + '\')">打开</button>' +
-      (closable ? '<button class="tab-list-btn tab-list-btn-danger" onclick="closeTabFromList(\'' + tabId + '\')">关闭</button>' : '') +
+      (closable ? '<button class="tab-list-icon-btn tab-list-icon-btn-danger" title="关闭标签" onclick="closeTabFromList(\'' + tabId + '\')">✕</button>' : '') +
       '</div>' +
     '</div>';
   }).join('');
@@ -922,11 +974,12 @@ function closeCurrentTab() { const activeTab = document.querySelector('.tab.acti
 function prevTab() { const tabs = getVisibleTabs(); const idx = tabs.findIndex(t => t.classList.contains('active')); if (idx > 0) switchTab(tabs[idx - 1].getAttribute('data-tab')); }
 function nextTab() { const tabs = getVisibleTabs(); const idx = tabs.findIndex(t => t.classList.contains('active')); if (idx < tabs.length - 1) switchTab(tabs[idx + 1].getAttribute('data-tab')); }
 function toggleTabList() {
-  const panel = document.getElementById('tabListPanel');
-  const shouldShow = !(panel && panel.classList.contains('show'));
+  const shouldShow = !isTabListPanelOpen();
   renderTabListPanel();
   setTabListPanelVisible(shouldShow);
 }
+
+
 
 function showEditModal() { document.getElementById('editModal').classList.add('show'); }
 function showImportModal() { document.getElementById('importModal').classList.add('show'); }
