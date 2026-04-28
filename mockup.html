@@ -1071,7 +1071,7 @@ renderSelectedVoyage();
 </script>
 </body>
 <script>
-/* ===== 全局表格增强：右键菜单 ===== */
+/* ===== 全局表格增强：右键菜单（事件委托，一次绑定全部行） ===== */
 (function() {
   var activeCtxTable = null, activeCtxRow = null, ctxMenu = null;
 
@@ -1153,36 +1153,55 @@ renderSelectedVoyage();
     URL.revokeObjectURL(a.href);
   }
 
-  function bindAllCtx() {
+  // 事件委托：绑定到 document，row 上的右键自动冒泡上来
+  function bindDelegation() {
     initCtxMenu();
-    document.querySelectorAll('.data-table tbody tr').forEach(function(row) {
-      row.setAttribute('data-row-ctx', 'true');
-      row.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        showCtxMenu(e.clientX, e.clientY, row.closest('.data-table'), row);
+    document.addEventListener('contextmenu', function(e) {
+      var row = e.target.closest('tr[data-row-ctx]');
+      if (!row) return;
+      var table = row.closest('.data-table');
+      if (!table) return;
+      e.preventDefault();
+      showCtxMenu(e.clientX, e.clientY, table, row);
+    });
+  }
+
+  // MutationObserver：监听 tbody 的 innerHTML 变化，自动给新增行加 data-row-ctx
+  function bindObserver() {
+    document.querySelectorAll('.data-table tbody').forEach(function(tbody) {
+      if (tbody.dataset.ctxObserverBound) return;
+      tbody.dataset.ctxObserverBound = 'true';
+      var observer = new MutationObserver(function() {
+        tbody.querySelectorAll('tr:not([data-row-ctx])').forEach(function(row) {
+          row.setAttribute('data-row-ctx', 'true');
+        });
+      });
+      observer.observe(tbody, { childList: true });
+      // 首次运行：已有行也要补标记
+      tbody.querySelectorAll('tr:not([data-row-ctx])').forEach(function(row) {
+        row.setAttribute('data-row-ctx', 'true');
       });
     });
   }
 
-  // 标签切换后重新绑定
   var _origST = window.switchTab;
   window.switchTab = function(tab) {
     if (_origST) _origST(tab);
-    setTimeout(bindAllCtx, 50);
+    setTimeout(function() { bindDelegation(); bindObserver(); }, 60);
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindAllCtx);
-  } else { bindAllCtx(); }
+    document.addEventListener('DOMContentLoaded', function() { bindDelegation(); bindObserver(); });
+  } else { bindDelegation(); bindObserver(); }
 })();
 
-/* ===== 全局表格增强：列排序 ===== */
+/* ===== 全局表格增强：列排序（MutationObserver 兼容动态行） ===== */
 (function() {
   function bindSort() {
     document.querySelectorAll('.data-table').forEach(function(table) {
+      if (table.dataset.sortBound) return;
+      table.dataset.sortBound = 'true';
       table.querySelectorAll('th').forEach(function(th, ci) {
-        if (th.dataset.sortBound) return;
-        th.dataset.sortBound = 'true';
         th.classList.add('sortable');
         th.addEventListener('click', function(e) {
           if (e.target.closest('.col-resize-handle')) return;
@@ -1205,7 +1224,7 @@ renderSelectedVoyage();
     });
   }
   var _origST2 = window.switchTab;
-  window.switchTab = function(tab) { if (_origST2) _origST2(tab); setTimeout(bindSort, 60); };
+  window.switchTab = function(tab) { if (_origST2) _origST2(tab); setTimeout(bindSort, 80); };
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bindSort); } else { bindSort(); }
 })();
 
