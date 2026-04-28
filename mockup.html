@@ -21,8 +21,18 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .sys-menu-links { display: flex; }
 .sys-menu-links a { color: #E4ECF3; text-decoration: none; padding: 3px 10px; border-radius: 2px; }
 .sys-menu-links a:hover { background: #5A94C2; }
-.sys-menu-search { display: flex; align-items: center; gap: 4px; margin-right: 30px; }
+.sys-menu-search { position: relative; display: flex; align-items: center; gap: 4px; margin-right: 30px; }
 .sys-menu-search input { width: 220px; height: 22px; padding: 2px 6px; border: 1px solid #8CC4EE; border-radius: 2px; background: #DAF0FF; color: #333; font-size: 11px; font-family: inherit; }
+.search-dropdown { position: absolute; top: 26px; left: 0; width: 320px; max-height: 280px; overflow-y: auto; background: #FFF; border: 1px solid #7AA8CF; box-shadow: 0 4px 12px rgba(0,0,0,0.16); z-index: 30; display: none; }
+.search-dropdown.show { display: block; }
+.search-result-item { padding: 8px 10px; border-bottom: 1px solid #E6EEF5; cursor: pointer; background: #FFF; }
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover, .search-result-item.active { background: #EAF4FF; }
+.search-result-title { color: #1A4A80; font-size: 12px; font-weight: bold; }
+.search-result-meta { margin-top: 3px; font-size: 11px; color: #666; display: flex; gap: 8px; flex-wrap: wrap; }
+.search-result-type { color: #2467A0; }
+.search-empty { padding: 10px; color: #888; font-size: 11px; }
+
 .toolbar-bar { display: none; align-items: center; gap: 0; flex-wrap: wrap; padding: 3px 8px; background: #3E7BAE; border-bottom: 1px solid #366A98; }
 .toolbar-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.25); margin: 0 8px; }
 .toolbar-btn { height: 22px; padding: 2px 8px; border: none; border-radius: 2px; background: transparent; color: #E4ECF3; cursor: pointer; font-size: 12px; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; }
@@ -184,8 +194,10 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
       <a href="#">帮助(H)</a>
     </div>
     <div class="sys-menu-search">
-      <input type="text" placeholder="搜索菜单...">
+      <input type="text" id="functionSearchInput" placeholder="搜索功能 / 页面...">
+      <div class="search-dropdown" id="functionSearchDropdown"></div>
     </div>
+
   </div>
 </div>
 
@@ -567,9 +579,117 @@ const TAB_REGISTRY = [
   { id: 'stowage-deviation', label: '配载偏差预警', shortLabel: '配载偏差预警', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
   { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', closable: true, level: 2, showInAppCenter: false, defaultVisible: false }
 ];
-const TAB_REGISTRY_MAP = Object.fromEntries(TAB_REGISTRY.map(item => [item.id, item]));
-const DEFAULT_OPEN_MODE = 'latest-modified';
-function parseModifiedTime(value) {
+const SEARCH_INDEX = [
+  { tabId: 'home', label: '应用中心', type: '首页', keywords: ['首页', '应用中心', '系统首页', '主页'] },
+  { tabId: 'module-main', label: '一级业务示例', type: '一级页面', keywords: ['一级业务', '业务示例', '示例页面'] },
+  { tabId: 'cold-chain-dashboard', label: '冷柜管理数字化', type: '一级页面', keywords: ['冷柜', '冷链', '冷柜管理', '冷柜管理数字化'] },
+  { tabId: 'cold-chain-records', label: '综合记录', type: '辅助页面', keywords: ['综合记录', '记录', '冷柜记录'] },
+  { tabId: 'cold-chain-voyage', label: '航次详情', type: '辅助页面', keywords: ['航次', '航次详情', '详情'] },
+  { tabId: 'cold-chain-repair', label: '补录修正', type: '辅助页面', keywords: ['补录', '修正', '补录修正'] },
+  { tabId: 'stowage-query', label: '船舶配载建议查询', type: '一级页面', keywords: ['配载', '配载建议', '建议查询', '船舶配载', '查询'] },
+  { tabId: 'cargo-archive', label: '货名档案维护', type: '辅助页面', keywords: ['货名', '档案', '货名档案', '档案维护'] },
+  { tabId: 'stowage-deviation', label: '配载偏差预警', type: '辅助页面', keywords: ['偏差', '预警', '偏差预警', '配载偏差'] },
+  { tabId: 'export-preview', label: '出口清单导出示意', type: '辅助页面', keywords: ['出口清单', '导出', '导出示意', '清单导出'] },
+  { tabId: 'module-archive', label: '辅助页示例', type: '辅助页面', keywords: ['辅助页', '辅助页示例'] },
+  { tabId: 'module-report', label: '报表示例', type: '辅助页面', keywords: ['报表', '报表示例'] }
+];
+let searchResults = [];
+let searchActiveIndex = -1;
+let searchBlurTimer = null;
+function normalizeSearchText(text) {
+  return String(text || '').trim().toLowerCase();
+}
+function getSearchMatches(keyword) {
+  const normalized = normalizeSearchText(keyword);
+  if (!normalized) return [];
+  return SEARCH_INDEX.map(item => {
+    const pool = [item.label].concat(item.keywords || []);
+    const matchedKeyword = pool.find(entry => normalizeSearchText(entry).includes(normalized));
+    if (!matchedKeyword) return null;
+    return Object.assign({}, item, { matchedKeyword });
+  }).filter(Boolean);
+}
+function renderSearchDropdown(items) {
+  const dropdown = document.getElementById('functionSearchDropdown');
+  if (!dropdown) return;
+  if (!items.length) {
+    dropdown.innerHTML = '<div class="search-empty">未找到相关功能，请换个关键词试试</div>';
+    dropdown.classList.add('show');
+    return;
+  }
+  dropdown.innerHTML = items.map((item, index) => '<div class="search-result-item' + (index === searchActiveIndex ? ' active' : '') + '" data-index="' + index + '"><div class="search-result-title">' + escapeHtml(item.label) + '</div><div class="search-result-meta"><span class="search-result-type">' + escapeHtml(item.type) + '</span><span>匹配：' + escapeHtml(item.matchedKeyword) + '</span></div></div>').join('');
+  dropdown.classList.add('show');
+  dropdown.querySelectorAll('.search-result-item').forEach(node => {
+    node.onmousedown = function(event) {
+      event.preventDefault();
+      const index = Number(this.getAttribute('data-index'));
+      openSearchResult(index);
+    };
+  });
+}
+function hideSearchDropdown() {
+  const dropdown = document.getElementById('functionSearchDropdown');
+  if (!dropdown) return;
+  dropdown.classList.remove('show');
+}
+function openSearchResult(index) {
+  const item = searchResults[index];
+  if (!item) return;
+  const input = document.getElementById('functionSearchInput');
+  if (input) input.value = item.label;
+  hideSearchDropdown();
+  goTab(item.tabId);
+}
+function updateSearchResults(keyword) {
+  searchResults = getSearchMatches(keyword);
+  searchActiveIndex = searchResults.length ? 0 : -1;
+  if (!normalizeSearchText(keyword)) {
+    hideSearchDropdown();
+    return;
+  }
+  renderSearchDropdown(searchResults);
+}
+function moveSearchActive(step) {
+  if (!searchResults.length) return;
+  searchActiveIndex = (searchActiveIndex + step + searchResults.length) % searchResults.length;
+  renderSearchDropdown(searchResults);
+}
+function bindFunctionSearch() {
+  const input = document.getElementById('functionSearchInput');
+  const dropdown = document.getElementById('functionSearchDropdown');
+  if (!input || !dropdown) return;
+  input.addEventListener('input', function() {
+    updateSearchResults(this.value);
+  });
+  input.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      moveSearchActive(1);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      moveSearchActive(-1);
+    } else if (event.key === 'Enter') {
+      if (searchResults.length) {
+        event.preventDefault();
+        openSearchResult(searchActiveIndex >= 0 ? searchActiveIndex : 0);
+      }
+    } else if (event.key === 'Escape') {
+      hideSearchDropdown();
+    }
+  });
+  input.addEventListener('focus', function() {
+    if (searchBlurTimer) clearTimeout(searchBlurTimer);
+    if (normalizeSearchText(this.value)) renderSearchDropdown(searchResults.length ? searchResults : getSearchMatches(this.value));
+  });
+  input.addEventListener('blur', function() {
+    searchBlurTimer = setTimeout(() => hideSearchDropdown(), 180);
+  });
+  dropdown.addEventListener('mousedown', function(event) {
+    event.preventDefault();
+  });
+}
+const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
+
   return value ? new Date(value.replace(' ', 'T')).getTime() : 0;
 }
 function getLatestModifiedTab() {
@@ -618,8 +738,10 @@ function renderShellFrame() {
   });
   homeAppGrid.innerHTML = appCenterTabs.map(item => '<div class="app-card" onclick="goTab(\'' + item.id + '\')"><div class="app-icon ' + item.appCard.iconClass + '">' + item.appCard.iconText + '</div><div class="app-name">' + escapeHtml(item.shortLabel || item.label) + '</div><div class="app-desc">' + escapeHtml(item.appCard.desc) + '</div></div>').join('');
   bindTabEvents();
+  bindFunctionSearch();
 }
 function bindTabEvents() {
+
   document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = function(event) {
       if (event.target.classList.contains('tab-close')) {
