@@ -792,10 +792,11 @@ const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
   '<button class="tab-action-btn" id="tabListToggleBtn" title="标签列表" onclick="toggleTabList()">☰</button>' +
   '<button class="tab-action-btn" title="关闭当前标签" onclick="closeCurrentTab()">✕</button>' +
 '</div>';
-const TAB_LIST_PANEL_MARKUP = '<div class="tab-list-backdrop" id="tabListBackdrop" onclick="hideTabList()"></div><div class="tab-list-panel" id="tabListPanel">' +
+const TAB_LIST_PANEL_MARKUP = '<div class="tab-list-panel" id="tabListPanel">' +
   '<div class="tab-list-header"><div class="tab-list-header-text"><span>已开标签</span><span class="tab-list-count" id="tabListCount"></span></div><button class="tab-list-close-btn" title="收起" onclick="hideTabList()">✕</button></div>' +
   '<div class="tab-list-body" id="tabListBody"></div>' +
-'</div>';
+'</div><div class="tab-list-backdrop" id="tabListBackdrop" onclick="hideTabList()"></div>';
+
 
 
 function escapeHtml(text) {
