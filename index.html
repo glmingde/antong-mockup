@@ -2,14 +2,1338 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=./mockup.html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>安通综合物流系统 - RJT</title>
-<script>
-window.location.replace("./mockup.html");
-</script>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif; font-size: 12px; background: #F1F5F7; color: #333; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+.shell-main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.content-stage { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.sys-header { background: #F3F3F3; }
+.sys-title-bar { display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #F3F3F3; color: #000; font-size: 13px; }
+.sys-logo { width: 16px; height: 16px; display: inline-block; object-fit: contain; flex: 0 0 16px; }
+
+
+.sys-menu-bar { display: flex; align-items: center; justify-content: space-between; padding: 2px 6px; font-size: 12px; background: #1F629B; border-bottom: 1px solid #366A98; }
+.sys-menu-links { display: flex; }
+.sys-menu-links a { color: #E4ECF3; text-decoration: none; padding: 3px 10px; border-radius: 2px; }
+.sys-menu-links a:hover { background: #5A94C2; }
+.sys-menu-search { position: relative; display: flex; align-items: center; gap: 4px; }
+.sys-menu-search input { width: 220px; height: 22px; padding: 2px 6px; border: 1px solid #8CC4EE; border-radius: 2px; background: #DAF0FF; color: #333; font-size: 11px; font-family: inherit; }
+.search-dropdown { position: absolute; top: 26px; left: 0; width: 320px; max-height: 280px; overflow-y: auto; background: #FFF; border: 1px solid #7AA8CF; box-shadow: 0 4px 12px rgba(0,0,0,0.16); z-index: 30; display: none; }
+.search-dropdown.show { display: block; }
+.search-result-item { padding: 8px 10px; border-bottom: 1px solid #E6EEF5; cursor: pointer; background: #FFF; }
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover, .search-result-item.active { background: #EAF4FF; }
+.search-result-title { color: #1A4A80; font-size: 12px; font-weight: bold; }
+.search-result-meta { margin-top: 3px; font-size: 11px; color: #666; display: flex; gap: 8px; flex-wrap: wrap; }
+.search-result-type { color: #2467A0; }
+.search-empty { padding: 10px; color: #888; font-size: 11px; }
+
+.toolbar-bar { display: none; align-items: center; gap: 0; flex-wrap: wrap; padding: 3px 8px; background: #3E7BAE; border-bottom: 1px solid #366A98; }
+.toolbar-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.25); margin: 0 8px; }
+.toolbar-btn { height: 22px; padding: 2px 8px; border: none; border-radius: 2px; background: transparent; color: #E4ECF3; cursor: pointer; font-size: 12px; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; }
+.toolbar-btn:hover { background: rgba(255,255,255,0.15); }
+.toolbar-info { margin-left: auto; color: #E4ECF3; font-size: 11px; }
+.tab-bar { position: relative; display: flex; gap: 2px; padding: 4px 4px 0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-bottom: 2px solid #2467A0; flex-wrap: nowrap; flex: 0 0 auto; min-width: 0; overflow: hidden; }
+.tab-scroll { flex: 1; min-width: 0; display: flex; gap: 2px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+.tab { padding: 4px 12px; background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.6); border-bottom: none; border-radius: 3px 3px 0 0; color: #2A4A6A; cursor: pointer; font-size: 12px; }
+.tab.active { background: #FFF; color: #2467A0; font-weight: bold; border-color: #2467A0; border-bottom: 2px solid #FFF; margin-bottom: -2px; position: relative; z-index: 1; }
+.tab.hidden { display: none; }
+.tab-close { margin-left: 6px; font-weight: bold; }
+.tab[data-closable="false"] .tab-close { display: none; }
+.tab-bar-actions { display: flex; gap: 1px; margin-left: auto; padding: 2px 0; border-left: 1px solid rgba(255,255,255,0.5); }
+.tab-action-btn { width: 22px; height: 20px; border: none; background: transparent; color: #2A4A6A; border-radius: 2px; cursor: pointer; }
+.tab-action-btn:hover, .tab-action-btn.active { background: rgba(255,255,255,0.68); }
+.tab-list-backdrop { position: fixed; inset: 0; z-index: 34; display: none; }
+.tab-list-backdrop.show { display: block; }
+.tab-list-panel { position: fixed; top: 0; left: 0; width: 280px; max-height: 320px; background: #DEEDF8; border: 1px solid #7AA8CF; box-shadow: 2px 2px 6px rgba(36,103,160,0.25); z-index: 35; display: none; font-family: "Microsoft YaHei", "微软雅黑", SimSun, sans-serif; }
+.tab-list-panel.show { display: block; }
+.tab-list-header { display: flex; align-items: center; justify-content: space-between; padding: 5px 10px; background: linear-gradient(to bottom, #C8DCF0, #B5D0E8); color: #1A4A80; font-size: 12px; font-weight: bold; border-bottom: 1px solid #7AA8CF; }
+.tab-list-header-text { display: flex; align-items: center; gap: 6px; }
+.tab-list-count { font-size: 11px; color: #56738F; font-weight: normal; }
+.tab-list-close-btn { width: 18px; height: 18px; border: none; background: transparent; color: #2A4A6A; border-radius: 2px; cursor: pointer; font-size: 12px; }
+.tab-list-close-btn:hover { background: rgba(0,0,0,0.08); }
+.tab-list-body { max-height: 276px; overflow-y: auto; }
+.tab-list-empty { padding: 14px 12px; text-align: center; color: #888; }
+.tab-list-item { position: relative; padding: 3px 8px 3px 26px; font-size: 12px; color: #000; cursor: default; white-space: nowrap; line-height: 18px; background-color: #DEEDF8; background-image: linear-gradient(to right, #B5D0E8 0%, #9EC0DC 22px, transparent 22px); background-repeat: no-repeat; }
+.tab-list-item::after { content: '✓'; position: absolute; left: 4px; top: 50%; transform: translateY(-50%); font-size: 12px; color: transparent; }
+.tab-list-item.active::after { color: #2467A0; }
+.tab-list-item:hover { background-color: #3E7BAE; background-image: linear-gradient(to right, #5A94C2 0%, #5A94C2 22px, transparent 22px); color: #FFF; }
+.tab-list-item:hover::after { color: #FFF; }
+.tab-list-item.active:hover::after { color: #FFF; }
+.tab-list-item-row { padding: 2px 0; }
+.tab-list-item-name { font-size: 12px; color: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab-list-item-meta { font-size: 10px; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab-list-item:hover .tab-list-item-meta { color: rgba(255,255,255,0.8); }
+.tab-list-actions { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; gap: 2px; }
+.tab-list-close-tab { width: 16px; height: 16px; border: none; background: rgba(0,0,0,0.1); color: inherit; border-radius: 2px; cursor: pointer; font-size: 10px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; opacity: 0; }
+.tab-list-item:hover .tab-list-close-tab { opacity: 1; background: rgba(0,0,0,0.15); }
+.tab-list-close-tab:hover { background: rgba(0,0,0,0.25) !important; }
+
+
+
+.main-content { display: none; flex: 1; min-height: 0; padding: 8px; overflow: hidden; }
+.main-content.active { display: flex; flex-direction: column; overflow: hidden; }
+.main-content.active > * { flex-shrink: 0; }
+.query-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; }
+.query-bar label { color: #555; white-space: nowrap; }
+.query-bar input, .query-bar select { height: 22px; padding: 2px 4px; border: 1px solid #C0C0C0; font-size: 12px; font-family: inherit; }
+.query-bar input { width: 120px; }
+.query-bar select { width: 100px; }
+.btn { height: 22px; padding: 2px 12px; border: 1px solid; border-radius: 2px; cursor: pointer; font-size: 12px; font-family: inherit; white-space: nowrap; }
+.btn-query { background: #F1F5F7; color: #333; border-color: #1F629B; }
+.btn-primary { background: #417DB0; color: #FFF; border-color: #366A98; }
+.btn-success { background: #5A9A5A; color: #FFF; border-color: #4A8A4A; }
+.btn-warning { background: #D8A030; color: #FFF; border-color: #B88020; }
+.btn-gray { background: #888; color: #FFF; border-color: #777; }
+.action-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+.action-bar .total-info { margin-left: auto; color: #555; }
+.data-table-wrap { background: #FFF; border: 1px solid #1F629B; overflow: auto; flex: 1; min-height: 0; }
+.side-card .data-table-wrap { border: none; }
+.data-table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #FFF; }
+.data-table th { position: sticky; top: 0; z-index: 1; padding: 4px 6px; border: 1px solid #D8DCE0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; text-align: center; font-weight: bold; white-space: nowrap; }
+.data-table td { padding: 3px 6px; border: 1px solid #D8DCE0; white-space: nowrap; }
+.data-table tr:hover td { background: #DDEEFF; }
+.card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+.card { background: #FFF; border: 1px solid #C0C0C0; border-radius: 3px; padding: 10px 12px; }
+.card-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+.card-value { font-size: 22px; font-weight: bold; }
+.card-blue .card-value { color: #1A5EA8; }
+.card-orange .card-value { color: #CC4400; }
+.card-gray .card-value { color: #555; }
+.dual-panel { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 8px; }
+.side-card { background: #FFF; border: 1px solid #C0C0C0; padding: 8px; }
+.side-card h3 { margin-bottom: 8px; padding: 4px 8px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 12px; }
+.note-list { list-style: none; }
+.note-list li { padding: 6px 4px; border-bottom: 1px dashed #D9D9D9; color: #555; }
+.app-center { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+.app-welcome { text-align: center; margin-bottom: 32px; }
+.app-welcome h2 { margin-bottom: 6px; color: #1F629B; font-size: 20px; }
+.app-welcome p { color: #888; font-size: 13px; }
+.app-grid { width: 100%; max-width: 720px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.app-card { background: #FFF; border: 1px solid #D0D5DC; border-radius: 6px; padding: 20px 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.app-card:hover { border-color: #1F629B; box-shadow: 0 2px 12px rgba(31,98,155,0.15); transform: translateY(-2px); }
+.app-icon { width: 44px; height: 44px; margin: 0 auto 10px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.app-icon.blue { background: #E3F0FF; color: #1A5EA8; }
+.app-icon.green { background: #E0F5E0; color: #2A7A2A; }
+.app-icon.orange { background: #FFF0D0; color: #A06000; }
+.app-name { margin-bottom: 4px; color: #333; font-size: 13px; font-weight: bold; }
+.app-desc { color: #999; font-size: 11px; }
+.badge { display: inline-block; padding: 1px 6px; border-radius: 2px; font-size: 11px; font-weight: bold; }
+.pos-deck { background: #FF6B35; color: #FFF; border: 1px solid #CC4400; }
+.pos-upper { background: #2A7FD4; color: #FFF; border: 1px solid #1A5EA8; }
+.pos-bottom { background: #555; color: #FFF; border: 1px solid #333; }
+.preview-note { margin-bottom: 8px; padding: 6px 8px; background: #F7FBFF; border: 1px solid #CFE0F0; color: #2A4A6A; }
+.status-bar { flex: 0 0 28px; height: 28px; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 10px; background: #2467A0; border-top: 1px solid #1E5687; color: #F5E009; font-size: 11px; }
+.status-meta { display: flex; align-items: center; gap: 14px; justify-content: flex-start; min-width: 0; }
+.status-user { display: flex; align-items: center; gap: 10px; color: #FFF; }
+.status-icons { display: flex; align-items: center; gap: 8px; color: #FFF; }
+.window-controls { display: flex; align-items: center; gap: 0; margin-left: auto; }
+.window-btn { width: 28px; height: 20px; border: none; background: transparent; color: #444; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; font-family: 'Segoe UI Symbol', Arial, sans-serif; border-radius: 2px; }
+.window-btn:hover { background: rgba(0,0,0,0.1); color: #000; }
+.window-btn.close:hover { background: #E81123; color: #FFF; }
+.badge-danger { background: #FFD0D0; color: #C00; border: 1px solid #F08080; }
+.badge-warning { background: #FFF0CC; color: #A06000; border: 1px solid #E0C060; }
+.badge-normal { background: #E8F0E8; color: #448844; border: 1px solid #88BB88; }
+.badge-blue { background: #D0E4FF; color: #1A4A99; border: 1px solid #7AACEE; }
+.badge-purple { background: #EAD0FF; color: #6600AA; border: 1px solid #BB88EE; }
+.pagination { display: flex; align-items: center; gap: 4px; padding: 6px 4px; font-size: 12px; }
+.page-btn { padding: 2px 8px; border: 1px solid #1F629B; background: #F1F5F7; cursor: pointer; font-size: 12px; font-family: inherit; color: #333; }
+.page-btn.active { background: #1F629B; color: white; border-color: #1F629B; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 100; justify-content: center; align-items: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border: 2px solid #2467A0; border-radius: 4px; width: 480px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.modal-header { background: #2467A0; color: #CACACA; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+.modal-close { cursor: pointer; font-size: 16px; }
+.modal-body { padding: 16px; }
+.form-row { display: flex; align-items: center; margin-bottom: 10px; gap: 8px; }
+.form-row label { width: 90px; text-align: right; flex-shrink: 0; }
+.form-row input, .form-row select { flex: 1; border: 1px solid #AAA; padding: 3px 6px; font-size: 12px; height: 24px; font-family: inherit; }
+.form-row .hint { font-size: 11px; color: #888; }
+.modal-footer { padding: 8px 16px; border-top: 1px solid #DDD; display: flex; justify-content: flex-end; gap: 8px; }
+.import-area { border: 2px dashed #AAA; border-radius: 4px; padding: 20px; text-align: center; color: #888; margin: 8px 0; cursor: pointer; background: #FAFAFA; }
+.import-area:hover { background: #F0F6FF; border-color: #4A86C8; }
+.stat-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 6px; flex-shrink: 0; }
+.stat-card { background: white; border: 1px solid #C0C0C0; border-radius: 3px; padding: 8px 12px; text-align: center; }
+.stat-card .stat-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+.stat-card .stat-value { font-size: 22px; font-weight: bold; }
+.stat-card.deck .stat-value { color: #CC4400; }
+.stat-card.upper .stat-value { color: #1A5EA8; }
+.stat-card.bottom .stat-value { color: #555; }
+.stat-card.total .stat-value { color: #2A7A2A; }
+.chart-row { display: grid; grid-template-columns: 220px 1fr; gap: 8px; margin-bottom: 8px; flex-shrink: 0; }
+.chart-box { background: white; border: 1px solid #C0C0C0; border-radius: 3px; padding: 8px; }
+.chart-box .chart-title { font-size: 12px; font-weight: bold; color: #1A4A80; margin-bottom: 8px; padding: 4px 8px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-radius: 2px; }
+.ship-diagram { width: 100%; }
+.bar-row { display: flex; align-items: center; margin-bottom: 6px; gap: 6px; }
+.bar-label { width: 70px; text-align: right; flex-shrink: 0; }
+.bar-track { flex: 1; background: #E0E8F4; border-radius: 2px; height: 16px; overflow: hidden; position: relative; }
+.bar-fill { height: 100%; border-radius: 2px; display: flex; align-items: center; padding-left: 6px; font-size: 11px; color: white; font-weight: bold; }
+.bar-fill.deck { background: #E05020; }
+.bar-fill.upper { background: #2A7FD4; }
+.bar-fill.bottom { background: #666; }
+.bar-count { width: 40px; text-align: right; font-weight: bold; font-size: 12px; }
+.warn-row td { background: #FFF8E8 !important; }
+.warn-row:hover td { background: #FFF0CC !important; }
+.alert-row td { background: #FFF0F0 !important; }
+.alert-row:hover td { background: #FFD8D8 !important; }
+.warn-icon, .alert-icon { display: inline-block; width: 14px; height: 14px; color: white; border-radius: 50%; text-align: center; line-height: 14px; font-size: 10px; font-weight: bold; margin-right: 3px; }
+.warn-icon { background: #E08820; }
+.alert-icon { background: #CC2020; }
+.export-bar { display: flex; gap: 6px; align-items: center; padding: 6px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); flex-shrink: 0; margin-bottom: 6px; }
+.export-bar .export-info { font-size: 12px; color: #2A4A6A; margin-left: auto; }
+.query-layout { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
+.query-layout-left { width: 340px; min-width: 340px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
+.query-layout-right { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.voyage-list-panel { border: 1px solid #1F629B; background: white; display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+.voyage-list-header { display: flex; align-items: center; justify-content: space-between; padding: 5px 10px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 12px; font-weight: bold; border-bottom: 1px solid #1F629B; }
+.voyage-list-body { flex: 1; min-height: 0; overflow-y: auto; border-top: 1px solid #C0C0C0; }
+.voyage-table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #FFF; }
+.voyage-table th { position: sticky; top: 0; z-index: 1; padding: 4px 6px; background: #F0F5FA; color: #1A4A80; text-align: center; font-size: 11px; font-weight: bold; border-bottom: 1px solid #D8DCE0; white-space: nowrap; }
+.voyage-table td { padding: 4px 6px; font-size: 11px; border-bottom: 1px solid #E8ECF0; }
+.voyage-table tr { cursor: pointer; }
+.voyage-table tbody tr:hover td { background: #DDEEFF; }
+.voyage-table tr.active td { background: #B8D4F0; }
+.voyage-ship { font-weight: bold; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.voyage-code { color: #1F629B; font-weight: bold; }
+.voyage-route { color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.voyage-count-warn { color: #CC2020; font-weight: bold; }
+.voyage-count-ok { color: #2A7A2A; }
+.summary-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px; flex-shrink: 0; }
+.summary-item { background: #FFF; border: 1px solid #C0C0C0; padding: 8px 10px; border-radius: 3px; }
+.summary-item .label { color: #666; font-size: 11px; margin-bottom: 4px; }
+.summary-item .value { font-size: 18px; font-weight: bold; color: #1A5EA8; }
+.summary-item.warn .value { color: #CC2020; }
+.legend-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.legend-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 3px; font-size: 11px; border: 1px solid #D0D0D0; background: #FFF; }
+.red-highlight td, tr.red-highlight td { background: #FFE2E2 !important; }
+.blue-highlight { background: #E7F1FF !important; }
+.gray-highlight { background: #F0F0F0 !important; }
+
+/* ===== 全局表格增强：右键菜单（金蝶/Win 经典紧凑风格） ===== */
+.ctx-menu {
+  position: fixed;
+  z-index: 9999;
+  min-width: 130px;
+  background: #DEEDF8;
+  border: 1px solid #7AA8CF;
+  box-shadow: 2px 2px 6px rgba(36,103,160,0.25);
+  padding: 1px 0;
+  display: none;
+  font-family: "Microsoft YaHei", "微软雅黑", SimSun, sans-serif;
+}
+.ctx-menu.show { display: block; }
+.ctx-menu-item {
+  position: relative;
+  padding: 3px 8px 3px 24px;
+  font-size: 12px;
+  color: #000;
+  cursor: default;
+  white-space: nowrap;
+  line-height: 18px;
+  background-color: #DEEDF8;
+  background-image: linear-gradient(to right, #B5D0E8 0%, #9EC0DC 22px, transparent 22px);
+  background-repeat: no-repeat;
+}
+.ctx-menu-item:hover { background-color: #3E7BAE; background-image: linear-gradient(to right, #5A94C2 0%, #5A94C2 22px, transparent 22px); color: #FFF; }
+.ctx-menu-item.disabled { color: #808080; cursor: default; pointer-events: none; }
+.ctx-menu-sep { display: none; }
+.ctx-menu-icon { display: none; }
+.ctx-menu { background: #DEEDF8; border-collapse: collapse; }
+
+/* ===== 全局表格增强：列排序 ===== */
+.data-table th.sortable { cursor: pointer; user-select: none; }
+.data-table th.sort-asc::after { content: ' ▲'; font-size: 9px; color: #2467A0; }
+.data-table th.sort-desc::after { content: ' ▼'; font-size: 9px; color: #2467A0; }
+.data-table th.sort-asc.sort-desc::after { content: ''; }
+.data-table th:not(.sort-asc):not(.sort-desc):hover { background: #C0D8F0; }
+
+/* ===== 全局表格增强：列拖拽重排 ===== */
+.data-table th.draggable { cursor: col-resize; }
+.data-table th.dragging { opacity: 0.4; }
+.data-table th.drag-over { background: #C8DCF0 !important; border-left: 2px solid #2467A0; }
+.data-table { border-collapse: collapse; table-layout: fixed; }
+.data-table th, .data-table td { border: 1px solid #C0C0C0; }
+
+/* ===== 全局表格增强：列宽拖拽手柄 ===== */
+.col-resize-handle {
+  position: absolute;
+  right: -3px; top: 0; bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 2;
+}
+.col-resize-handle:hover { background: rgba(36,103,160,0.3); }
+.data-table th { overflow: visible; }
+.data-table th .col-resize-handle { display: none; }
+.data-table th:hover .col-resize-handle { display: block; }
+
+/* ===== 全局表格增强：行悬停提示 ===== */
+.data-table tr[data-row-ctx] { cursor: context-menu; }
+</style>
 </head>
 <body>
-<p>正在跳转到 <a href="./mockup.html">mockup.html</a> ...</p>
+<div class="sys-header">
+  <div class="sys-title-bar">
+    <img class="sys-logo" src="./favicon.ico" alt="RJT">
+    <span>安通综合物流系统 - RJT</span>
+    <div class="window-controls" style="margin-left: auto;">
+      <button class="window-btn minimize" title="最小化" onclick="window.__winMinimize()">─</button>
+      <button class="window-btn maximize" title="最大化" onclick="window.__winMaximize()">☐</button>
+      <button class="window-btn close" title="关闭" onclick="window.__winClose()">✕</button>
+    </div>
+  </div>
+  <div class="sys-menu-bar">
+    <div class="sys-menu-links">
+      <a href="#">系统(S)</a>
+      <a href="#">文件(F)</a>
+      <a href="#">工具(T)</a>
+      <a href="#">帮助(H)</a>
+    </div>
+    <div class="sys-menu-search">
+      <input type="text" id="functionSearchInput" placeholder="搜索功能 / 页面...">
+      <div class="search-dropdown" id="functionSearchDropdown"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toolbar-bar" id="toolbar-module-main">
+  <button class="toolbar-btn">查询</button>
+  <button class="toolbar-btn">新增</button>
+  <button class="toolbar-btn">导出</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn">刷新</button>
+  <span class="toolbar-info">一级入口模块工具栏示意</span>
+</div>
+<div class="toolbar-bar" id="toolbar-module-archive">
+  <button class="toolbar-btn">新增</button>
+  <button class="toolbar-btn">导入</button>
+  <button class="toolbar-btn">导出</button>
+  <span class="toolbar-info">辅助页工具栏示意</span>
+</div>
+<div class="toolbar-bar" id="toolbar-module-report">
+  <button class="toolbar-btn">生成报表</button>
+  <button class="toolbar-btn">打印</button>
+  <span class="toolbar-info">辅助页报表示意</span>
+</div>
+<div class="toolbar-bar" id="toolbar-cold-chain-dashboard">
+  <button class="toolbar-btn">查询</button>
+  <button class="toolbar-btn">刷新</button>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-records')">综合记录</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-voyage')">航次详情</button>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-repair')">补录修正</button>
+  <span class="toolbar-info">冷柜管理数字化 · 一级入口工具栏</span>
+</div>
+<div class="toolbar-bar" id="toolbar-cold-chain-records">
+  <button class="toolbar-btn">查询</button>
+  <button class="toolbar-btn">重置</button>
+  <button class="toolbar-btn">导出</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-voyage')">航次详情</button>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-repair')">补录修正</button>
+  <span class="toolbar-info">冷柜管理数字化 · 综合记录辅助页</span>
+</div>
+<div class="toolbar-bar" id="toolbar-cold-chain-voyage">
+  <button class="toolbar-btn">导出航次报告</button>
+  <button class="toolbar-btn">查看全链路</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-records')">返回记录</button>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-repair')">发起补录</button>
+  <span class="toolbar-info">冷柜管理数字化 · 航次详情辅助页</span>
+</div>
+<div class="toolbar-bar" id="toolbar-cold-chain-repair">
+  <button class="toolbar-btn">保存草稿</button>
+  <button class="toolbar-btn">提交修正</button>
+  <button class="toolbar-btn">驳回重传</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('cold-chain-records')">返回记录</button>
+  <span class="toolbar-info">冷柜管理数字化 · 补录修正辅助页</span>
+</div>
+
+<div class="toolbar-bar" id="toolbar-cargo-archive">
+  <button class="toolbar-btn" onclick="showEditModal()">新增</button>
+  <button class="toolbar-btn">编辑</button>
+  <button class="toolbar-btn">删除</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="showImportModal()">导入</button>
+  <button class="toolbar-btn">导出</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn">刷新</button>
+  <span class="toolbar-info">维护部门：配载部 | 分类配载业务档案页</span>
+</div>
+<div class="toolbar-bar" id="toolbar-stowage-query">
+  <button class="toolbar-btn" onclick="renderSelectedVoyage()">查询</button>
+  <button class="toolbar-btn" onclick="switchTab('cargo-archive')">货名档案维护</button>
+  <button class="toolbar-btn" onclick="switchTab('stowage-deviation')">偏差预警</button>
+  <button class="toolbar-btn" onclick="switchTab('export-preview')">导出示意</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="renderSelectedVoyage()">刷新</button>
+  <span class="toolbar-info">船名：仁建上海 | 航次：2612N | 航线：桂平 → 太仓 | 箱数：82 | 偏差箱：5</span>
+</div>
+<div class="toolbar-bar" id="toolbar-stowage-deviation">
+  <button class="toolbar-btn" onclick="switchTab('stowage-query')">返回查询</button>
+  <button class="toolbar-btn" onclick="switchTab('cargo-archive')">货名档案</button>
+  <button class="toolbar-btn" onclick="switchTab('export-preview')">导出示意</button>
+  <span class="toolbar-info">偏差口径：箱号建议位置 vs 箱号实装区域</span>
+</div>
+<div class="toolbar-bar" id="toolbar-export-preview">
+  <button class="toolbar-btn" onclick="switchTab('stowage-query')">返回查询</button>
+  <button class="toolbar-btn" onclick="switchTab('stowage-deviation')">偏差预警</button>
+  <span class="toolbar-info">导出口径：一箱一行，偏差箱按浅红底色高亮</span>
+</div>
+
+<div class="shell-main">
+<div class="tab-bar" id="mainTabBar"></div>
+<div class="content-stage">
+
+<div id="tab-home" class="main-content">
+
+  <div class="app-center">
+    <div class="app-welcome">
+      <h2>安通综合物流系统</h2>
+      <p>欢迎使用，请选择要进入的功能模块</p>
+    </div>
+    <div class="app-grid" id="homeAppGrid"></div>
+  </div>
+</div>
+
+<div id="tab-module-main" class="main-content">
+  <div class="query-bar">
+    <label>业务单号：</label><input type="text" placeholder="输入单号">
+    <label>状态：</label>
+    <select><option>全部</option><option>处理中</option><option>已完成</option></select>
+    <label>日期：</label>
+    <select><option>近7天</option><option selected>近15天</option><option>近30天</option></select>
+    <button class="btn btn-query">查询</button>
+    <button class="btn btn-query">重置</button>
+  </div>
+  <div class="card-grid">
+    <div class="card card-blue"><div class="card-label">业务总量</div><div class="card-value">128</div></div>
+    <div class="card card-orange"><div class="card-label">待处理</div><div class="card-value">16</div></div>
+    <div class="card card-gray"><div class="card-label">预警数</div><div class="card-value">5</div></div>
+    <div class="card card-blue"><div class="card-label">完成率</div><div class="card-value">87%</div></div>
+  </div>
+  <div class="action-bar">
+    <button class="btn btn-success">新增</button>
+    <button class="btn btn-primary">批量处理</button>
+    <button class="btn btn-warning">导出</button>
+    <button class="btn btn-gray" onclick="switchTab('module-archive')">打开辅助页</button>
+    <span class="total-info">一级业务页示意：查询区 + 汇总卡片 + 列表区</span>
+  </div>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:48px">序号</th>
+          <th>业务单号</th>
+          <th>业务名称</th>
+          <th>归属模块</th>
+          <th>建议位置</th>
+          <th>当前状态</th>
+          <th>负责人</th>
+          <th>更新时间</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center">1</td><td>EAS-001</td><td>主业务页面示例A</td><td>一级入口</td><td><span class="badge pos-upper">二层以上</span></td><td>处理中</td><td>葛礼明</td><td>2026-04-24</td></tr>
+        <tr><td style="text-align:center">2</td><td>EAS-002</td><td>主业务页面示例B</td><td>一级入口</td><td><span class="badge pos-deck">甲板</span></td><td>待确认</td><td>李昂</td><td>2026-04-24</td></tr>
+        <tr><td style="text-align:center">3</td><td>EAS-003</td><td>主业务页面示例C</td><td>一级入口</td><td><span class="badge pos-bottom">船底</span></td><td>已完成</td><td>产品组</td><td>2026-04-24</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-module-archive" class="main-content">
+  <div class="query-bar">
+    <label>档案名称：</label><input type="text" placeholder="输入关键字">
+    <label>分类：</label><select><option>全部</option><option>主数据</option><option>参数</option></select>
+    <button class="btn btn-query">查询</button>
+    <button class="btn btn-query">重置</button>
+  </div>
+  <div class="preview-note">辅助页不进入应用中心，首次打开后才进入标签栏；适合档案维护、参数设置、日志查询等页面。</div>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th style="width:48px">序号</th><th>档案名称</th><th>分类</th><th>维护说明</th><th>最后修改人</th><th>最后修改时间</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center">1</td><td>基础档案A</td><td>主数据</td><td>用于演示辅助页表格结构</td><td>产品组</td><td>2026-04-24</td></tr>
+        <tr><td style="text-align:center">2</td><td>参数配置B</td><td>参数</td><td>用于演示配置类页面挂接方式</td><td>产品组</td><td>2026-04-24</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-module-report" class="main-content">
+  <div class="dual-panel">
+    <div class="side-card">
+      <h3>报表区块示意</h3>
+      <div class="preview-note">如果项目需要图表、统计、说明区，可以在业务页面层扩展，不要改公共壳层。</div>
+      <div class="card-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 0;">
+        <div class="card card-blue"><div class="card-label">指标A</div><div class="card-value">32</div></div>
+        <div class="card card-orange"><div class="card-label">指标B</div><div class="card-value">7</div></div>
+      </div>
+    </div>
+    <div class="side-card">
+      <h3>原型使用约束</h3>
+      <ul class="note-list">
+        <li>公共框架层：顶部、菜单、工具栏容器、标签栏、状态栏，默认锁定。</li>
+        <li>配置层：模块注册、首页入口、默认显隐、closable 等统一从注册表维护。</li>
+        <li>业务页面层：新增内容优先沉淀可复用结构，避免每个项目各自漂移。</li>
+        <li>项目目录中的页面可按交付需要调整，但公共规则必须保持一致。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="tab-cold-chain-dashboard" class="main-content">
+  <div class="query-bar">
+    <label>船名：</label><input type="text" value="安盛1号">
+    <label>航次：</label><input type="text" value="V2026042401">
+    <label>起运港：</label><input type="text" value="上海">
+    <label>目的港：</label><input type="text" value="大阪">
+    <label>时间范围：</label><input type="text" style="width:160px" value="2026-04-18 至 2026-04-24">
+    <button class="btn btn-query">查询</button>
+    <button class="btn btn-query">重置</button>
+  </div>
+  <div class="card-grid" style="grid-template-columns: repeat(5, 1fr);">
+    <div class="card card-blue"><div class="card-label">在途航次</div><div class="card-value">12</div></div>
+    <div class="card card-blue"><div class="card-label">在途冷柜数</div><div class="card-value">486</div></div>
+    <div class="card card-orange"><div class="card-label">温度异常数</div><div class="card-value">18</div></div>
+    <div class="card card-orange"><div class="card-label">待确认交接单</div><div class="card-value">9</div></div>
+    <div class="card card-gray"><div class="card-label">待修正OCR</div><div class="card-value">14</div></div>
+  </div>
+  <div class="dual-panel">
+    <div class="side-card">
+      <h3>高优先级异常 / 待办</h3>
+      <ul class="note-list">
+        <li>安盛1号 · V2026042401 · TGHU1234567：三文鱼实际温度 -16.5℃，较设定值偏差 +1.5℃。</li>
+        <li>安盛3号 · 装船交接单待确认：盖章照片已回传，等待岸端确认接收。</li>
+        <li>安盛5号 · OCR待修正：箱号识别存在偏差，需进入补录修正页处理。</li>
+        <li>建议先看异常，再进入综合记录或航次详情继续跟踪。</li>
+      </ul>
+    </div>
+    <div class="side-card">
+      <h3>综合记录快捷列表</h3>
+      <div class="action-bar">
+        <button class="btn btn-primary" onclick="switchTab('cold-chain-records')">进入综合记录</button>
+        <button class="btn btn-warning" onclick="switchTab('cold-chain-voyage')">查看航次详情</button>
+        <span class="total-info">冷柜管理数字化一级入口：总览 + 待办 + 快速跳转</span>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th style="width:70px">记录类型</th><th>船名</th><th>航次</th><th>箱号</th><th>设定温度</th><th>实际温度</th><th>异常状态</th><th>上报时间</th><th>处理状态</th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>巡检记录</td><td>安盛1号</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">V2026042401</td><td>TGHU1234567</td><td>-18℃</td><td>-16.5℃</td><td>异常</td><td>2026-04-24 08:00</td><td>跟踪中</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">详情</td></tr>
+            <tr><td>交接记录</td><td>安盛3号</td><td>V2026042310</td><td>TCLU8899012</td><td>-20℃</td><td>-20℃</td><td>正常</td><td>2026-04-24 09:20</td><td>待确认</td><td>确认接收</td></tr>
+            <tr><td>预警记录</td><td>安盛5号</td><td>V2026042403</td><td>MSCU3321456</td><td>-15℃</td><td>-12.8℃</td><td>超阈值</td><td>2026-04-24 10:05</td><td>待复核</td><td onclick="switchTab('cold-chain-repair')" style="color:#1A4A99;cursor:pointer;">修正</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-cold-chain-records" class="main-content">
+  <div class="query-bar">
+    <label>船名：</label><input type="text" value="全部">
+    <label>航次：</label><input type="text" value="V2026042401">
+    <label>箱号：</label><input type="text" value="TGHU1234567">
+    <label>记录类型：</label><select><option selected>全部记录</option><option>巡检记录</option><option>交接记录</option><option>预警记录</option></select>
+    <label>异常状态：</label><select><option selected>全部</option><option>异常</option><option>正常</option></select>
+    <button class="btn btn-query">查询</button>
+    <button class="btn btn-query">重置</button>
+    <button class="btn btn-primary">导出</button>
+  </div>
+  <div class="preview-note">综合记录页作为冷柜管理数字化的辅助页面挂接，不进入应用中心，首次打开后进入标签栏。</div>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th style="width:70px">记录类型</th><th>船名</th><th>航次</th><th>箱号</th><th>贝位</th><th>货物名称</th><th>配载位置</th><th>设定温度</th><th>实际温度</th><th>温差</th><th>异常状态</th><th>处理状态</th><th>上报时间</th><th>上报方式</th><th>操作</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>巡检记录</td><td>安盛1号</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">V2026042401</td><td>TGHU1234567</td><td>030204</td><td>三文鱼</td><td><span class="badge pos-deck">甲板</span></td><td>-18℃</td><td>-16.5℃</td><td style="color:#C84040;font-weight:bold;">+1.5℃</td><td>异常</td><td>跟踪中</td><td>2026-04-24 08:00</td><td>OCR识别</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">查看</td></tr>
+        <tr><td>交接记录</td><td>安盛1号</td><td onclick="switchTab('cold-chain-voyage')" style="color:#1A4A99;cursor:pointer;">V2026042401</td><td>TGHU1234567</td><td>030204</td><td>三文鱼</td><td><span class="badge pos-deck">甲板</span></td><td>-18℃</td><td>-18℃</td><td>0℃</td><td>正常</td><td>已确认</td><td>2026-04-24 06:10</td><td>拍照回传</td><td>查看交接单</td></tr>
+        <tr><td>预警记录</td><td>安盛5号</td><td>V2026042403</td><td>MSCU3321456</td><td>070106</td><td>冻鱼</td><td><span class="badge pos-upper">二层以上</span></td><td>-15℃</td><td>-12.8℃</td><td style="color:#C84040;font-weight:bold;">+2.2℃</td><td>超阈值</td><td>待复核</td><td>2026-04-24 10:05</td><td>预警引擎</td><td onclick="switchTab('cold-chain-repair')" style="color:#1A4A99;cursor:pointer;">修正</td></tr>
+        <tr><td>巡检记录</td><td>安盛3号</td><td>V2026042310</td><td>TCLU8899012</td><td>050302</td><td>冷冻肉类</td><td><span class="badge pos-bottom">船底</span></td><td>-20℃</td><td>-19.8℃</td><td>+0.2℃</td><td>正常</td><td>已完成</td><td>2026-04-24 09:40</td><td>手工填报</td><td>查看</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-cold-chain-voyage" class="main-content">
+  <div class="preview-note">航次详情页用于围绕单个航次查看完整冷柜状态，集中处理交接、巡检、预警与全链路追溯。</div>
+  <div class="card-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="card card-blue"><div class="card-label">起运港</div><div class="card-value" style="font-size:18px;">上海</div></div>
+    <div class="card card-blue"><div class="card-label">目的港</div><div class="card-value" style="font-size:18px;">大阪</div></div>
+    <div class="card card-orange"><div class="card-label">异常数</div><div class="card-value">2</div></div>
+    <div class="card card-gray"><div class="card-label">当前处置</div><div class="card-value" style="font-size:18px;">已跟踪</div></div>
+  </div>
+  <div class="dual-panel">
+    <div class="side-card">
+      <h3>冷柜总览</h3>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>箱号</th><th>贝位</th><th>货物名称</th><th>货值等级</th><th>最新温度</th><th>当前状态</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TGHU1234567</td><td>030204</td><td>三文鱼</td><td>高货值</td><td>-16.5℃</td><td>异常</td></tr>
+            <tr><td>TCLU8899012</td><td>050302</td><td>冷冻肉类</td><td>中货值</td><td>-19.8℃</td><td>正常</td></tr>
+            <tr><td>MSCU3321456</td><td>070106</td><td>冻鱼</td><td>普通</td><td>-12.8℃</td><td>待复核</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="side-card">
+      <h3>全链路温度时间轴</h3>
+      <ul class="note-list">
+        <li>2026-04-24 06:10 · 装船交接：交接温度 -18℃，盖章交接单已回传并完成OCR归档。</li>
+        <li>2026-04-24 04:00 · 航行巡检1：实际温度 -18.1℃，处于正常范围。</li>
+        <li>2026-04-24 08:00 · 航行巡检2：实际温度 -16.5℃，触发高货值异常预警。</li>
+        <li>预计 2026-04-25 18:00 · 卸船交接：待完成卸船交接温度确认，后续生成追溯报告。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="tab-cold-chain-repair" class="main-content">
+  <div class="preview-note">补录 / 修正页用于处理OCR识别不准、照片缺失、数据漏录和人工修正，保证岸上数据最终可用。</div>
+  <div class="dual-panel">
+    <div class="side-card">
+      <h3>待处理任务</h3>
+      <ul class="note-list">
+        <li>OCR修正 · 安盛5号：箱号 MSCU33Z1456 → MSCU3321456，温度 -1B.8℃ → -12.8℃。</li>
+        <li>照片补交 · 安盛3号：装船交接照片缺失，待船方补交。</li>
+        <li>手工补录 · 安盛1号：根据纸质台账补录巡检记录。</li>
+      </ul>
+    </div>
+    <div class="side-card">
+      <h3>修正表单</h3>
+      <div class="query-bar" style="margin-bottom:0;border:none;padding:0;background:#FFF;">
+        <label>识别箱号：</label><input type="text" value="MSCU33Z1456">
+        <label>修正箱号：</label><input type="text" value="MSCU3321456">
+        <label>识别温度：</label><input type="text" value="-1B.8℃">
+        <label>修正温度：</label><input type="text" value="-12.8℃">
+        <label>修正原因：</label><input type="text" style="width:220px" value="字母B识别错误，已按照片人工核对">
+        <button class="btn btn-primary">提交修正</button>
+        <button class="btn btn-warning">保存草稿</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-cargo-archive" class="main-content">
+  <div class="query-bar"><label>货名：</label><input type="text" placeholder="输入货名关键字"><label>货类：</label><select><option value="">-- 全部 --</option><option>粮食类</option><option>钢材类</option><option>化工品类</option><option>建材类</option><option>机械设备类</option><option>冷冻食品类</option></select><label>水湿风险：</label><select><option value="">-- 全部 --</option><option>高风险</option><option>中等风险</option><option>一般风险</option></select><label>货值等级：</label><select><option value="">-- 全部 --</option><option>高货值</option><option>中等货值</option><option>普通货值</option></select><label>配载位置：</label><select><option value="">-- 全部 --</option><option>甲板</option><option>二层以上</option><option>船底</option><option>未设置</option></select><button class="btn btn-query">查询</button><button class="btn btn-query">重置</button></div>
+  <div class="action-bar"><button class="btn btn-success" onclick="showEditModal()">＋ 新增货名</button><button class="btn btn-primary" onclick="showImportModal()">↑ Excel批量导入</button><button class="btn btn-warning">↓ 导出当前列表</button><button class="btn btn-gray">批量修改配载位置</button><span class="total-info">共 <strong>4,377</strong> 条，已筛选 <strong>739</strong> 条（水湿风险货物）</span></div>
+  <div class="data-table-wrap"><table class="data-table"><thead><tr><th style="width:28px"><input type="checkbox" title="全选"></th><th>序号</th><th>货名</th><th>货类大类</th><th>水湿风险等级</th><th>货值等级</th><th>配载建议位置</th><th>液袋/特殊货</th><th>备注说明</th><th>最后修改人</th><th>最后修改时间</th><th>操作</th></tr></thead><tbody><tr><td><input type="checkbox" checked></td><td style="text-align:center">1</td><td><strong>液袋货</strong></td><td>化工品类</td><td><span class="badge badge-danger">高风险</span></td><td><span class="badge badge-danger">高货值</span></td><td><span class="badge pos-deck">甲板</span></td><td><span class="badge badge-purple">液袋</span></td><td>必须甲板，禁止入舱</td><td>刘海龙</td><td>2026-04-15</td><td><a href="#" onclick="showEditModal()" style="color:#2A5EA8;text-decoration:none">编辑</a></td></tr><tr><td><input type="checkbox"></td><td style="text-align:center">2</td><td>大米</td><td>粮食类</td><td><span class="badge badge-danger">高风险</span></td><td><span class="badge badge-warning">中等货值</span></td><td><span class="badge pos-upper">二层以上</span></td><td>—</td><td>避免舱底潮湿导致货损</td><td>系统导入</td><td>2026-04-10</td><td><a href="#" onclick="showEditModal()" style="color:#2A5EA8;text-decoration:none">编辑</a></td></tr><tr><td><input type="checkbox"></td><td style="text-align:center">3</td><td>卷钢</td><td>钢材类</td><td><span class="badge badge-normal">一般风险</span></td><td><span class="badge badge-normal">普通货值</span></td><td><span class="badge pos-bottom">船底</span></td><td>—</td><td>重量大、重心低，稳定船舶</td><td>刘海龙</td><td>2026-04-15</td><td><a href="#" onclick="showEditModal()" style="color:#2A5EA8;text-decoration:none">编辑</a></td></tr><tr><td><input type="checkbox"></td><td style="text-align:center">4</td><td>碳酸钙粉</td><td>建材类</td><td><span class="badge badge-danger">高风险</span></td><td><span class="badge badge-normal">普通货值</span></td><td><span class="badge pos-upper">二层以上</span></td><td>—</td><td>受潮固结</td><td>系统导入</td><td>2026-04-10</td><td><a href="#" onclick="showEditModal()" style="color:#2A5EA8;text-decoration:none">编辑</a></td></tr></tbody></table></div>
+  <div class="pagination"><button class="page-btn">上一页</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">...</button><button class="page-btn">52</button><button class="page-btn">下一页</button></div>
+</div>
+
+<div id="tab-stowage-query" class="main-content">
+  <div class="query-bar"><label>日期范围：</label><select style="width:80px"><option>近7天</option><option selected>近15天</option><option>近30天</option></select><label>船名：</label><select style="width:100px"><option>全部船舶</option><option selected>仁建上海</option><option>海南洋浦航</option><option>中建上海</option></select><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>出发港：</label><select style="width:80px"><option>全部</option><option selected>桂平</option><option>太仓</option><option>南沙</option></select><label>目的港：</label><select style="width:80px"><option>全部</option><option>韩雨</option><option selected>太仓</option></select><label>偏差：</label><select style="width:70px"><option value="">全部</option><option>有偏差</option><option>正常</option></select><button class="btn btn-query">查询</button><button class="btn btn-query">重置</button></div>
+  <div class="query-layout"><div class="query-layout-left"><div class="voyage-list-panel"><div class="voyage-list-header"><span>航次列表（24） · 偏差<strong style="color:#CC2020">4</strong>个</span></div><div class="voyage-list-body"><table class="voyage-table"><tbody><tr class="active" data-row-ctx onclick="selectVoyage(this, 'rj2612')"><td class="voyage-ship">仁建上海</td><td class="voyage-code">2612N</td><td class="voyage-route">桂平→太仓</td><td><span class="voyage-count-warn">2</span></td></tr><tr data-row-ctx onclick="selectVoyage(this, 'rj2611')"><td class="voyage-ship">仁建上海</td><td class="voyage-code">2611N</td><td class="voyage-route">太仓→南沙</td><td><span class="voyage-count-ok">0</span></td></tr><tr data-row-ctx onclick="selectVoyage(this, 'hn2609')"><td class="voyage-ship">海南洋浦航</td><td class="voyage-code">2609S</td><td class="voyage-route">桂平→韩雨</td><td><span class="voyage-count-warn">1</span></td></tr><tr data-row-ctx onclick="selectVoyage(this, 'zj2608')"><td class="voyage-ship">中建上海</td><td class="voyage-code">2608N</td><td class="voyage-route">南沙→太仓</td><td><span class="voyage-count-ok">0</span></td></tr><tr data-row-ctx onclick="selectVoyage(this, 'rj2607')"><td class="voyage-ship">仁建上海</td><td class="voyage-code">2607N</td><td class="voyage-route">桂平→太仓</td><td><span class="voyage-count-warn">3</span></td></tr></tbody></table></div></div></div><div class="query-layout-right"><div class="stat-cards"><div class="stat-card total"><div class="stat-label">总箱数</div><div class="stat-value" id="stat-total-boxes" style="color:#2A5EA8">82</div><div style="font-size:11px;color:#888;margin-top:2px">折合 <span id="stat-total-teu">136</span> TEU</div></div><div class="stat-card deck"><div class="stat-label"><span class="badge pos-deck" style="font-size:10px">甲板</span></div><div class="stat-value" id="stat-deck-count">12</div></div><div class="stat-card upper"><div class="stat-label"><span class="badge pos-upper" style="font-size:10px">二层以上</span></div><div class="stat-value" id="stat-upper-count">46</div></div><div class="stat-card bottom"><div class="stat-label"><span class="badge pos-bottom" style="font-size:10px">船底</span></div><div class="stat-value" id="stat-bottom-count">24</div></div><div class="stat-card" style="border-color:#F0B7B7;"><div class="stat-label">偏差箱数</div><div class="stat-value" id="stat-deviation-count" style="color:#CC2020">5</div></div></div><div class="chart-row"><div class="chart-box"><div class="chart-title">本航次船体配载示意</div><svg viewBox="0 0 200 160" class="ship-diagram" xmlns="http://www.w3.org/2000/svg"><path d="M10 40 L10 140 L30 155 L170 155 L190 140 L190 40 Z" fill="#E8F0FA" stroke="#4A86C8" stroke-width="2"/><rect x="10" y="40" width="180" height="35" fill="#FFE0CC" stroke="#CC6030" stroke-width="1.5"/><text x="100" y="63" text-anchor="middle" font-size="12" fill="#CC4400" font-weight="bold">甲板</text><text x="100" y="75" text-anchor="middle" font-size="10" fill="#CC4400" id="ship-deck-text">12箱 · 20TEU</text><rect x="10" y="75" width="180" height="40" fill="#D4E8FF" stroke="#2A7FD4" stroke-width="1.5"/><text x="100" y="99" text-anchor="middle" font-size="12" fill="#1A5EA8" font-weight="bold">舱内二层</text><text x="100" y="110" text-anchor="middle" font-size="10" fill="#1A5EA8" id="ship-upper-text">46箱 · 76TEU</text><path d="M10 115 L10 140 L30 154 L170 154 L190 140 L190 115 Z" fill="#DDD" stroke="#666" stroke-width="1.5"/><text x="100" y="137" text-anchor="middle" font-size="12" fill="#444" font-weight="bold">舱底</text><text x="100" y="149" text-anchor="middle" font-size="10" fill="#444" id="ship-bottom-text">24箱 · 40TEU</text></svg></div><div class="chart-box"><div class="chart-title">各区域箱量分布</div><div class="bar-row"><span class="bar-label"><span class="badge pos-deck" style="font-size:10px">甲板</span></span><div class="bar-track"><div class="bar-fill deck" id="bar-deck" style="width:14.6%">12箱</div></div><span class="bar-count" id="bar-deck-teu">20TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-deck-note">液袋货×6 · 特殊设备×4 · 危险品×2</div><div class="bar-row" style="margin-top:8px"><span class="bar-label"><span class="badge pos-upper" style="font-size:10px">二层以上</span></span><div class="bar-track"><div class="bar-fill upper" id="bar-upper" style="width:56.1%">46箱</div></div><span class="bar-count" id="bar-upper-teu">76TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-upper-note">大米×16 · 面粉×10 · 瓷砖×8 · 调味品×12</div><div class="bar-row" style="margin-top:8px"><span class="bar-label"><span class="badge pos-bottom" style="font-size:10px">船底</span></span><div class="bar-track"><div class="bar-fill bottom" id="bar-bottom" style="width:29.3%">24箱</div></div><span class="bar-count" id="bar-bottom-teu">40TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-bottom-note">卷钢×12 · 带钢×8 · 型钢×4</div></div></div><div class="export-bar"><button class="btn btn-primary" onclick="switchTab('export-preview')">↓ 导出配载清单</button><button class="btn btn-warning" onclick="switchTab('stowage-deviation')">↓ 查看偏差预警报告</button><span class="export-info">导出说明：甲板橙色 · 二层以上蓝色 · 船底灰色 · 偏差箱浅红底色</span></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>序号</th><th>箱号</th><th>运单号</th><th>货名</th><th>箱型</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差状态</th><th>客户</th><th>备注</th></tr></thead><tbody id="stowage-table-body"></tbody></table></div></div></div>
+</div>
+
+<div id="tab-stowage-deviation" class="main-content"><div class="query-bar"><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>偏差等级：</label><select style="width:90px"><option selected>全部</option><option>严重偏差</option><option>一般偏差</option></select><label>货名：</label><input type="text" placeholder="输入货名/箱号" style="width:130px"><button class="btn btn-query" onclick="renderSelectedVoyage()">查询</button><button class="btn btn-query">重置</button></div><div class="summary-strip"><div class="summary-item"><div class="label">当前航次</div><div class="value" id="deviation-voyage-title">仁建上海 / 2612N</div></div><div class="summary-item"><div class="label">总箱数</div><div class="value" id="deviation-total-boxes">82</div></div><div class="summary-item warn"><div class="label">偏差箱数</div><div class="value" id="deviation-boxes">5</div></div><div class="summary-item"><div class="label">偏差率</div><div class="value" id="deviation-rate">6.1%</div></div><div class="summary-item"><div class="label">高风险偏差</div><div class="value" id="deviation-high-risk">3</div></div></div><div class="dual-panel"><div class="side-card"><h3>箱号级偏差明细</h3><div class="data-table-wrap" style="margin:0;"><table class="data-table"><thead><tr><th>序号</th><th>箱号</th><th>运单号</th><th>货名</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差等级</th><th>原因说明</th></tr></thead><tbody id="deviation-table-body"></tbody></table></div></div><div class="side-card"><h3>偏差说明与处置建议</h3><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 建议甲板</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 建议二层以上</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 建议船底</span></div><div class="preview-note">预警逻辑：系统按货名档案给出建议位置，再与理货回传的实装区域、实装贝位做箱号级比对。</div><ul class="note-list" id="deviation-note-list"></ul></div></div></div>
+
+<div id="tab-export-preview" class="main-content"><div class="query-bar"><label>导出模板：</label><select style="width:140px"><option selected>出口清单（箱号级）</option><option>偏差预警清单</option></select><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>颜色标识：</label><select style="width:100px"><option selected>开启</option><option>关闭</option></select><button class="btn btn-query" onclick="renderSelectedVoyage()">刷新示意</button><button class="btn btn-primary">导出Excel</button></div><div class="preview-note">出口清单导出按“一箱一行”输出，建议位置保留颜色标识；发生建议/实装偏差的箱号整行浅红底色，方便现场复核。</div><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 橙色单元格</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 蓝色单元格</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 灰色单元格</span><span class="legend-chip" style="background:#FFE2E2;">整行浅红：偏差箱</span></div><div class="side-card" style="padding:0;"><h3 style="margin:8px 8px 0 8px;">导出预览（前10行）</h3><div class="data-table-wrap" style="margin-top:8px;"><table class="data-table"><thead><tr><th>序号</th><th>航次</th><th>箱号</th><th>运单号</th><th>货名</th><th>客户</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差状态</th></tr></thead><tbody id="export-table-body"></tbody></table></div></div></div>
+
+<div class="modal-overlay" id="editModal"><div class="modal"><div class="modal-header"><span>编辑货名配载信息</span><span class="modal-close" onclick="closeModal('editModal')">×</span></div><div class="modal-body"><div class="form-row"><label>货名</label><input type="text" value="液袋货"></div><div class="form-row"><label>货类大类</label><select><option>化工品类</option><option>粮食类</option><option>钢材类</option><option>建材类</option></select></div><div class="form-row"><label>水湿风险</label><select><option selected>高风险</option><option>中等风险</option><option>一般风险</option></select></div><div class="form-row"><label>货值等级</label><select><option selected>高货值</option><option>中等货值</option><option>普通货值</option></select></div><div class="form-row"><label>配载位置</label><select><option selected>甲板</option><option>二层以上</option><option>船底</option></select><span class="hint">系统依据此字段给出配载建议</span></div><div class="form-row"><label>是否特殊货</label><select><option selected>液袋</option><option>否</option><option>液氮柜</option><option>危险品</option></select></div><div class="form-row"><label>备注说明</label><input type="text" value="必须甲板，禁止入舱"></div></div><div class="modal-footer"><button class="btn btn-success">保存</button><button class="btn btn-gray" onclick="closeModal('editModal')">取消</button></div></div></div>
+<div class="modal-overlay" id="importModal"><div class="modal" style="width:520px"><div class="modal-header"><span>Excel批量导入货名配载信息</span><span class="modal-close" onclick="closeModal('importModal')">×</span></div><div class="modal-body"><div style="font-size:12px;color:#555;margin-bottom:8px;">请按模板格式准备Excel文件，包含字段：货名、货类大类、水湿风险等级、货值等级、配载建议位置、备注说明</div><div class="import-area">点击选择 Excel 文件</div><div style="background:#E8F0FA;border:1px solid #B0C4DE;border-radius:3px;padding:8px;font-size:11px;margin-top:8px;"><strong>导入规则：</strong><br>· 货名已存在时，以导入数据覆盖原记录<br>· 货名不存在时，自动新建记录<br>· 配载建议位置仅接受：甲板 / 二层以上 / 船底</div></div><div class="modal-footer"><button class="btn btn-primary">开始导入</button><button class="btn btn-gray" onclick="closeModal('importModal')">取消</button></div></div></div>
+
+</div>
+<div class="status-bar">
+  <div class="status-meta">
+    <span>版本：EAS V3.2</span>
+    <span>时间：2026-04-28 18:12</span>
+  </div>
+  <div class="status-user">
+    <span>用户名：geliming</span>
+    <span>姓名：葛礼明</span>
+    <div class="status-icons"><span>🔔</span><span>⚙</span><span>→</span></div>
+  </div>
+</div>
+</div>
+
+<script>
+const PAGE_TYPE_LABELS = { home: '首页', module: '一级页面', subpage: '辅助页面' };
+function getPageLevel(pageType) {
+  return pageType === 'home' ? 0 : (pageType === 'module' ? 1 : 2);
+}
+function getPageTypeLabel(pageType) {
+  return PAGE_TYPE_LABELS[pageType] || '页面';
+}
+function getParentPage(page, pageDefinitions) {
+  return page && page.parentId ? pageDefinitions.find(item => item.id === page.parentId) || null : null;
+}
+// 新增功能时优先按下面模板补一条，再补对应的页面内容区。
+// 一级页模板：
+// {
+//   id: 'new-module',
+//   label: '新功能名称',
+//   shortLabel: '新功能简称',
+//   pageType: 'module',
+//   parentId: null,
+//   closable: true,
+//   showInAppCenter: true,
+//   defaultVisible: false,
+//   modifiedAt: '2026-04-28 10:20',
+//   appCard: { iconClass: 'blue', iconText: '新', desc: '应用中心入口说明' },
+//   search: { keywords: ['正式名称', '简称', '常用别名'] }
+// }
+// 辅助页模板：
+// {
+//   id: 'new-subpage',
+//   label: '新辅助页名称',
+//   shortLabel: '新辅助页',
+//   pageType: 'subpage',
+//   parentId: '所属一级页id',
+//   closable: true,
+//   showInAppCenter: false,
+//   defaultVisible: false,
+//   search: { keywords: ['正式名称', '简称', '业务别名'] }
+// }
+const PAGE_DEFINITIONS = [
+  { id: 'home', label: '应用中心', shortLabel: '应用中心', pageType: 'home', parentId: null, closable: false, showInAppCenter: false, defaultVisible: true, search: { keywords: ['首页', '应用中心', '系统首页', '主页'] } },
+
+  { id: 'module-main', label: '一级业务示例', shortLabel: '一级业务示例', pageType: 'module', parentId: null, closable: true, showInAppCenter: true, defaultVisible: false, sortPinLast: true, modifiedAt: '2026-04-01 09:00', appCard: { iconClass: 'blue', iconText: '业', desc: '通用一级页面骨架示意' }, search: { keywords: ['一级业务', '业务示例', '示例页面'] } },
+  { id: 'cold-chain-dashboard', label: '冷柜管理数字化', shortLabel: '冷柜管理', pageType: 'module', parentId: null, closable: true, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-18 16:30', appCard: { iconClass: 'green', iconText: '冷', desc: '岸上端冷柜管理总览入口' }, search: { keywords: ['冷柜', '冷链', '冷柜管理', '冷柜管理数字化'] } },
+  { id: 'stowage-query', label: '船舶配载建议查询', shortLabel: '配载建议查询', pageType: 'module', parentId: null, closable: true, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-24 14:40', appCard: { iconClass: 'orange', iconText: '配', desc: '箱号级建议与偏差总览' }, search: { keywords: ['配载', '配载建议', '建议查询', '船舶配载', '查询'] } },
+  { id: 'module-archive', label: '辅助页示例', shortLabel: '辅助页示例', pageType: 'subpage', parentId: 'module-main', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['辅助页', '辅助页示例'] } },
+  { id: 'module-report', label: '报表示例', shortLabel: '报表示例', pageType: 'subpage', parentId: 'module-main', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['报表', '报表示例'] } },
+  { id: 'cold-chain-records', label: '综合记录', shortLabel: '综合记录', pageType: 'subpage', parentId: 'cold-chain-dashboard', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['综合记录', '记录', '冷柜记录'] } },
+  { id: 'cold-chain-voyage', label: '航次详情', shortLabel: '航次详情', pageType: 'subpage', parentId: 'cold-chain-dashboard', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['航次', '航次详情', '详情'] } },
+  { id: 'cold-chain-repair', label: '补录修正', shortLabel: '补录修正', pageType: 'subpage', parentId: 'cold-chain-dashboard', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['补录', '修正', '补录修正'] } },
+  { id: 'cargo-archive', label: '货名档案维护', shortLabel: '货名档案维护', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['货名', '档案', '货名档案', '档案维护'] } },
+  { id: 'stowage-deviation', label: '配载偏差预警', shortLabel: '配载偏差预警', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['偏差', '预警', '偏差预警', '配载偏差'] } },
+  { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['出口清单', '导出', '导出示意', '清单导出'] } }
+];
+const TAB_REGISTRY = PAGE_DEFINITIONS.map(({ search, pageType, parentId, ...tabMeta }) => ({
+  ...tabMeta,
+  pageType,
+  parentId,
+  level: getPageLevel(pageType)
+}));
+const SEARCH_INDEX = PAGE_DEFINITIONS.filter(item => item.search).map(item => {
+  const parent = getParentPage(item, PAGE_DEFINITIONS);
+  return {
+    tabId: item.id,
+    label: item.label,
+    type: getPageTypeLabel(item.pageType),
+    moduleLabel: parent ? parent.label : item.label,
+    keywords: item.search.keywords || []
+  };
+});
+
+const TAB_REGISTRY_MAP = Object.fromEntries(TAB_REGISTRY.map(item => [item.id, item]));
+
+const DEFAULT_OPEN_MODE = 'latest-modified';
+let searchResults = [];
+let searchActiveIndex = -1;
+let searchBlurTimer = null;
+function normalizeSearchText(text) {
+  return String(text || '').trim().toLowerCase();
+}
+function getSearchMatches(keyword) {
+  const normalized = normalizeSearchText(keyword);
+  if (!normalized) return [];
+  return SEARCH_INDEX.map(item => {
+    const pool = [item.label].concat(item.keywords || []);
+    const matchedKeyword = pool.find(entry => normalizeSearchText(entry).includes(normalized));
+    if (!matchedKeyword) return null;
+    return Object.assign({}, item, { matchedKeyword });
+  }).filter(Boolean);
+}
+function renderSearchDropdown(items) {
+  const dropdown = document.getElementById('functionSearchDropdown');
+  if (!dropdown) return;
+  if (!items.length) {
+    dropdown.innerHTML = '<div class="search-empty">未找到相关功能，请换个关键词试试</div>';
+    dropdown.classList.add('show');
+    return;
+  }
+  dropdown.innerHTML = items.map((item, index) => '<div class="search-result-item' + (index === searchActiveIndex ? ' active' : '') + '" data-index="' + index + '"><div class="search-result-title">' + escapeHtml(item.label) + '</div><div class="search-result-meta"><span class="search-result-type">' + escapeHtml(item.type) + '</span><span>所属：' + escapeHtml(item.moduleLabel) + '</span><span>匹配：' + escapeHtml(item.matchedKeyword) + '</span></div></div>').join('');
+
+  dropdown.classList.add('show');
+  dropdown.querySelectorAll('.search-result-item').forEach(node => {
+    node.onmousedown = function(event) {
+      event.preventDefault();
+      const index = Number(this.getAttribute('data-index'));
+      openSearchResult(index);
+    };
+  });
+}
+function hideSearchDropdown() {
+  const dropdown = document.getElementById('functionSearchDropdown');
+  if (!dropdown) return;
+  dropdown.classList.remove('show');
+}
+function openSearchResult(index) {
+  const item = searchResults[index];
+  if (!item) return;
+  const input = document.getElementById('functionSearchInput');
+  if (input) input.value = item.label;
+  hideSearchDropdown();
+  goTab(item.tabId);
+}
+function updateSearchResults(keyword) {
+  searchResults = getSearchMatches(keyword);
+  searchActiveIndex = searchResults.length ? 0 : -1;
+  if (!normalizeSearchText(keyword)) {
+    hideSearchDropdown();
+    return;
+  }
+  renderSearchDropdown(searchResults);
+}
+function moveSearchActive(step) {
+  if (!searchResults.length) return;
+  searchActiveIndex = (searchActiveIndex + step + searchResults.length) % searchResults.length;
+  renderSearchDropdown(searchResults);
+}
+function bindFunctionSearch() {
+  const input = document.getElementById('functionSearchInput');
+  const dropdown = document.getElementById('functionSearchDropdown');
+  if (!input || !dropdown) return;
+  input.addEventListener('input', function() {
+    updateSearchResults(this.value);
+  });
+  input.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      moveSearchActive(1);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      moveSearchActive(-1);
+    } else if (event.key === 'Enter') {
+      if (searchResults.length) {
+        event.preventDefault();
+        openSearchResult(searchActiveIndex >= 0 ? searchActiveIndex : 0);
+      }
+    } else if (event.key === 'Escape') {
+      hideSearchDropdown();
+    }
+  });
+  input.addEventListener('focus', function() {
+    if (searchBlurTimer) clearTimeout(searchBlurTimer);
+    if (normalizeSearchText(this.value)) renderSearchDropdown(searchResults.length ? searchResults : getSearchMatches(this.value));
+  });
+  input.addEventListener('blur', function() {
+    searchBlurTimer = setTimeout(() => hideSearchDropdown(), 180);
+  });
+  dropdown.addEventListener('mousedown', function(event) {
+    event.preventDefault();
+  });
+}
+function parseModifiedTime(value) {
+  return value ? new Date(value.replace(' ', 'T')).getTime() : 0;
+}
+function getModifiedTimestamp(item) {
+  return item && item.modifiedAt ? parseModifiedTime(item.modifiedAt) : 0;
+}
+function getLatestModifiedTab() {
+  return TAB_REGISTRY
+    .filter(item => item.pageType === 'module' && !!item.modifiedAt)
+    .sort((a, b) => getModifiedTimestamp(b) - getModifiedTimestamp(a))[0] || null;
+}
+function getInitialVisibleTabs() {
+  const visibleTabs = new Set(TAB_REGISTRY.filter(item => item.defaultVisible).map(item => item.id));
+
+  if (DEFAULT_OPEN_MODE === 'latest-modified') {
+    const latestTab = getLatestModifiedTab();
+    if (latestTab) visibleTabs.add(latestTab.id);
+  }
+  return visibleTabs;
+}
+function getInitialActiveTab() {
+  if (DEFAULT_OPEN_MODE === 'latest-modified') {
+    const latestTab = getLatestModifiedTab();
+    if (latestTab) return latestTab.id;
+  }
+  return 'home';
+}
+const INITIAL_VISIBLE_TABS = getInitialVisibleTabs();
+const INITIAL_ACTIVE_TAB = getInitialActiveTab();
+const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
+  '<button class="tab-action-btn" title="切换到左边标签" onclick="prevTab()">◁</button>' +
+  '<button class="tab-action-btn" title="切换到右边标签" onclick="nextTab()">▷</button>' +
+  '<button class="tab-action-btn" id="tabListToggleBtn" title="标签列表" onclick="toggleTabList(); return false;">☰</button>' +
+  '<button class="tab-action-btn" title="关闭当前标签" onclick="closeCurrentTab()">✕</button>' +
+'</div>';
+const TAB_LIST_PANEL_MARKUP = '<div class="tab-list-panel" id="tabListPanel">' +
+  '<div class="tab-list-body" id="tabListBody"></div>' +
+'</div><div class="tab-list-backdrop" id="tabListBackdrop" onclick="hideTabList()"></div>';
+
+
+
+function escapeHtml(text) {
+  return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function renderShellFrame() {
+  const tabBar = document.getElementById('mainTabBar');
+  const tabItemsHtml = TAB_REGISTRY.map(item => '<div class="tab' + (INITIAL_VISIBLE_TABS.has(item.id) ? '' : ' hidden') + (item.id === INITIAL_ACTIVE_TAB ? ' active' : '') + '" data-tab="' + item.id + '" data-closable="' + (item.closable ? 'true' : 'false') + '"><span class="tab-label">' + escapeHtml(item.label) + '</span><span class="tab-close">×</span></div>').join('');
+
+  tabBar.innerHTML = '<div class="tab-scroll">' + tabItemsHtml + '</div>' + TAB_ACTION_MARKUP;
+  const existingTabListPanel = document.getElementById('tabListPanel');
+  const existingTabListBackdrop = document.getElementById('tabListBackdrop');
+  if (existingTabListPanel) existingTabListPanel.remove();
+  if (existingTabListBackdrop) existingTabListBackdrop.remove();
+  document.body.insertAdjacentHTML('beforeend', TAB_LIST_PANEL_MARKUP);
+  const homeAppGrid = document.getElementById('homeAppGrid');
+  const appCenterTabs = TAB_REGISTRY.filter(item => item.pageType === 'module' && item.showInAppCenter).sort((a, b) => {
+    if (!!a.sortPinLast !== !!b.sortPinLast) return a.sortPinLast ? 1 : -1;
+    return getModifiedTimestamp(b) - getModifiedTimestamp(a);
+  });
+  homeAppGrid.innerHTML = appCenterTabs.map(item => '<div class="app-card" onclick="goTab(\'' + item.id + '\')"><div class="app-icon ' + item.appCard.iconClass + '">' + item.appCard.iconText + '</div><div class="app-name">' + escapeHtml(item.shortLabel || item.label) + '</div><div class="app-desc">' + escapeHtml(item.appCard.desc) + '</div></div>').join('');
+
+  bindTabEvents();
+  bindFunctionSearch();
+  renderTabListPanel();
+}
+
+
+let hasBoundTabListKeydown = false;
+function bindTabEvents() {
+
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.onclick = function(event) {
+      if (event.target.classList.contains('tab-close')) {
+        event.stopPropagation();
+        if (this.getAttribute('data-closable') !== 'false') closeTabById(this.getAttribute('data-tab'));
+        return;
+      }
+      switchTab(this.getAttribute('data-tab'));
+    };
+    tab.ondblclick = function() {
+      if (this.getAttribute('data-closable') !== 'false') closeTabById(this.getAttribute('data-tab'));
+    };
+  });
+  const tabListPanel = document.getElementById('tabListPanel');
+  if (tabListPanel) {
+    tabListPanel.onclick = function(event) {
+      event.stopPropagation();
+    };
+  }
+  if (!hasBoundTabListKeydown) {
+    document.addEventListener('keydown', handleTabListKeydown);
+    hasBoundTabListKeydown = true;
+  }
+}
+
+
+
+
+function setTabVisibility(tab, visible) {
+  const el = document.querySelector('.tab[data-tab="' + tab + '"]');
+  if (el) el.classList.toggle('hidden', !visible);
+}
+function isTabListPanelOpen() {
+  const panel = document.getElementById('tabListPanel');
+  return !!(panel && panel.classList.contains('show'));
+}
+function handleTabListKeydown(event) {
+  if (event.key === 'Escape' && isTabListPanelOpen()) {
+    hideTabList();
+  }
+}
+function positionTabListPanel() {
+  const panel = document.getElementById('tabListPanel');
+  const toggleBtn = document.getElementById('tabListToggleBtn');
+  if (!panel || !toggleBtn) return;
+  const btnRect = toggleBtn.getBoundingClientRect();
+  const panelWidth = panel.offsetWidth || 280;
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+  const left = Math.max(8, Math.min(btnRect.right - panelWidth, viewportWidth - panelWidth - 8));
+  panel.style.top = (btnRect.bottom + 6) + 'px';
+  panel.style.left = left + 'px';
+  panel.style.right = 'auto';
+}
+function setTabListPanelVisible(visible) {
+  const panel = document.getElementById('tabListPanel');
+  const backdrop = document.getElementById('tabListBackdrop');
+  const toggleBtn = document.getElementById('tabListToggleBtn');
+  if (panel) {
+    panel.classList.toggle('show', !!visible);
+    if (visible) positionTabListPanel();
+  }
+  if (backdrop) backdrop.classList.toggle('show', !!visible);
+  if (toggleBtn) toggleBtn.classList.toggle('active', !!visible);
+}
+
+function hideTabList() {
+  setTabListPanelVisible(false);
+}
+
+
+function renderTabListPanel() {
+  const panelBody = document.getElementById('tabListBody');
+  if (!panelBody) return;
+  const visibleTabs = getVisibleTabs();
+  if (!visibleTabs.length) {
+    panelBody.innerHTML = '<div class="tab-list-empty">当前没有可用标签</div>';
+    return;
+  }
+  panelBody.innerHTML = visibleTabs.map(tab => {
+    const tabId = tab.getAttribute('data-tab');
+    const tabMeta = TAB_REGISTRY_MAP[tabId] || {};
+    const tabName = tab.querySelector('.tab-label') ? tab.querySelector('.tab-label').textContent.trim() : tabId;
+    const closable = tab.getAttribute('data-closable') !== 'false';
+    const isActive = tab.classList.contains('active');
+    return '<div class="tab-list-item' + (isActive ? ' active' : '') + '" data-tab="' + tabId + '">' +
+      '<div class="tab-list-item-row" onclick="openTabFromList(\'' + tabId + '\')">' +
+      '<div class="tab-list-item-name">' + escapeHtml(tabName) + '</div>' +
+      '</div>' +
+      (closable ? '<div class="tab-list-actions"><button class="tab-list-close-tab" title="关闭标签" onclick="event.stopPropagation(); closeTabFromList(\'' + tabId + '\')">✕</button></div>' : '') +
+    '</div>';
+  }).join('');
+}
+function openTabFromList(tabId) {
+  switchTab(tabId);
+  hideTabList();
+}
+function closeTabFromList(tabId) {
+  closeTabById(tabId);
+  hideTabList();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.main-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.toolbar-bar').forEach(t => t.style.display = 'none');
+  setTabVisibility(tab, true);
+  const tabEl = document.querySelector('.tab[data-tab="' + tab + '"]');
+  if (tabEl) tabEl.classList.add('active');
+  const contentEl = document.getElementById('tab-' + tab);
+  if (contentEl) contentEl.classList.add('active');
+  const toolbarEl = document.getElementById('toolbar-' + tab);
+  if (toolbarEl) toolbarEl.style.display = 'flex';
+  renderTabListPanel();
+}
+function goTab(tab) { switchTab(tab); }
+function getVisibleTabs() { return Array.from(document.querySelectorAll('.tab')).filter(t => !t.classList.contains('hidden')); }
+function closeTabById(tabId) {
+  const tabMeta = TAB_REGISTRY_MAP[tabId];
+  if (!tabMeta || tabMeta.closable === false) return;
+  const activeTab = document.querySelector('.tab.active');
+  const tabs = getVisibleTabs();
+  const current = document.querySelector('.tab[data-tab="' + tabId + '"]');
+  const idx = tabs.indexOf(current);
+  setTabVisibility(tabId, false);
+  if (current) current.classList.remove('active');
+  if (activeTab && activeTab.getAttribute('data-tab') === tabId) {
+    const target = idx > 0 ? tabs[idx - 1] : tabs[idx + 1];
+    if (target && target.getAttribute('data-tab') !== tabId) switchTab(target.getAttribute('data-tab')); else switchTab('home');
+  } else {
+    renderTabListPanel();
+  }
+}
+function closeCurrentTab() { const activeTab = document.querySelector('.tab.active'); if (activeTab) closeTabById(activeTab.getAttribute('data-tab')); }
+function prevTab() { const tabs = getVisibleTabs(); const idx = tabs.findIndex(t => t.classList.contains('active')); if (idx > 0) switchTab(tabs[idx - 1].getAttribute('data-tab')); }
+function nextTab() { const tabs = getVisibleTabs(); const idx = tabs.findIndex(t => t.classList.contains('active')); if (idx < tabs.length - 1) switchTab(tabs[idx + 1].getAttribute('data-tab')); }
+function toggleTabList() {
+  const shouldShow = !isTabListPanelOpen();
+  renderTabListPanel();
+  setTabListPanelVisible(shouldShow);
+}
+
+
+
+function showEditModal() { document.getElementById('editModal').classList.add('show'); }
+function showImportModal() { document.getElementById('importModal').classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// 窗口控制函数（由顶部标题栏按钮调用）
+window.__winMinimize = function() { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); };
+window.__winMaximize = function() { if (document.documentElement.requestFullscreen) { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else if (document.exitFullscreen) document.exitFullscreen(); } };
+window.__winClose = function() { window.close(); };
+const voyageData = {
+  rj2612: { ship: '仁建上海', voyage: '2612N', route: '桂平 → 太仓', totalBoxes: 82, totalTeu: 136, deckBoxes: 12, deckTeu: 20, upperBoxes: 46, upperTeu: 76, bottomBoxes: 24, bottomTeu: 40, deviationBoxes: 5, deckNote: '液袋货×6 · 特殊设备×4 · 危险品×2', upperNote: '大米×16 · 面粉×10 · 瓷砖×8 · 调味品×12', bottomNote: '卷钢×12 · 带钢×8 · 型钢×4', deviationNotes: ['大米、面粉等高水湿风险货物落在船底时，需优先预警并追溯堆场分区执行。','液袋与特殊设备已按建议装甲板，本航次偏差集中在二层以上与船底错位。','建议把偏差箱同步到出口清单，便于现场复核与后续责任界定。'], rows: [ {boxNo:'ANTU200001', orderNo:'ARRBGDR280', cargo:'大米', boxType:'40HQ', suggest:'二层以上', actual:'船底', bay:'05B-12', customer:'客商一体', note:'高水湿风险', deviation:true, severity:'严重偏差', reason:'理货实装落船底'}, {boxNo:'ANTU200005', orderNo:'ARRBGDR285', cargo:'面粉', boxType:'40HQ', suggest:'二层以上', actual:'船底', bay:'05B-13', customer:'客商一体', note:'高水湿风险', deviation:true, severity:'严重偏差', reason:'现场调整未回写'}, {boxNo:'ANTU200018', orderNo:'ARRBGDR301', cargo:'瓷砖', boxType:'20GP', suggest:'二层以上', actual:'二层以上', bay:'02U-08', customer:'市场客户', note:'正常', deviation:false, severity:'-', reason:'—'}, {boxNo:'ANTU200035', orderNo:'ARRBGDR260', cargo:'液袋货', boxType:'20TK', suggest:'甲板', actual:'甲板', bay:'D01-03', customer:'海南洋浦航', note:'液袋', deviation:false, severity:'-', reason:'—'}, {boxNo:'ANTU200056', orderNo:'ARRBGDR318', cargo:'卷钢', boxType:'20GP', suggest:'船底', actual:'二层以上', bay:'02U-20', customer:'市场客户', note:'重货转移', deviation:true, severity:'一般偏差', reason:'现场平衡调整'}, {boxNo:'ANTU200073', orderNo:'ARRBGDR340', cargo:'碳酸钙粉', boxType:'40HQ', suggest:'二层以上', actual:'船底', bay:'04B-06', customer:'市场客户', note:'受潮风险', deviation:true, severity:'严重偏差', reason:'码头分区混堆'}, {boxNo:'ANTU200080', orderNo:'ARRBGDR350', cargo:'大件设备', boxType:'40FR', suggest:'甲板', actual:'二层以上', bay:'02U-01', customer:'项目客户', note:'超限件', deviation:true, severity:'一般偏差', reason:'甲板资源冲突'} ] },
+  rj2611: { ship: '仁建上海', voyage: '2611N', route: '太仓 → 南沙', totalBoxes: 64, totalTeu: 108, deckBoxes: 10, deckTeu: 18, upperBoxes: 34, upperTeu: 56, bottomBoxes: 20, bottomTeu: 34, deviationBoxes: 0, deckNote: '液袋货×4 · 危险品×2 · 设备×4', upperNote: '建材×18 · 粮食×16', bottomNote: '钢材×20', deviationNotes: ['当前航次未发现建议/实装偏差。','可继续关注理货回传及时性，避免后续补录造成假性偏差。','出口清单可直接按建议位置导出，无需额外高亮。'], rows: [ {boxNo:'ANTU190011', orderNo:'ARRBGDR120', cargo:'液袋货', boxType:'20TK', suggest:'甲板', actual:'甲板', bay:'D02-08', customer:'海南洋浦航', note:'液袋', deviation:false, severity:'-', reason:'—'}, {boxNo:'ANTU190019', orderNo:'ARRBGDR126', cargo:'瓷砖', boxType:'40HQ', suggest:'二层以上', actual:'二层以上', bay:'03U-16', customer:'市场客户', note:'正常', deviation:false, severity:'-', reason:'—'}, {boxNo:'ANTU190028', orderNo:'ARRBGDR133', cargo:'卷钢', boxType:'20GP', suggest:'船底', actual:'船底', bay:'B02-11', customer:'市场客户', note:'正常', deviation:false, severity:'-', reason:'—'} ] }
+};
+let selectedVoyageId = 'rj2612';
+function posBadgeClass(pos) { return pos === '甲板' ? 'pos-deck' : (pos === '二层以上' ? 'pos-upper' : 'pos-bottom'); }
+function rateText(deviation, total) { return total ? ((deviation / total) * 100).toFixed(1) + '%' : '0.0%'; }
+function renderSelectedVoyage() {
+  const data = voyageData[selectedVoyageId]; if (!data) return;
+  const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  setText('stat-total-boxes', data.totalBoxes); setText('stat-total-teu', data.totalTeu); setText('stat-deck-count', data.deckBoxes); setText('stat-upper-count', data.upperBoxes); setText('stat-bottom-count', data.bottomBoxes); setText('stat-deviation-count', data.deviationBoxes);
+  setText('ship-deck-text', data.deckBoxes + '箱 · ' + data.deckTeu + 'TEU'); setText('ship-upper-text', data.upperBoxes + '箱 · ' + data.upperTeu + 'TEU'); setText('ship-bottom-text', data.bottomBoxes + '箱 · ' + data.bottomTeu + 'TEU');
+  setText('bar-deck-teu', data.deckTeu + 'TEU'); setText('bar-upper-teu', data.upperTeu + 'TEU'); setText('bar-bottom-teu', data.bottomTeu + 'TEU'); setText('bar-deck-note', data.deckNote); setText('bar-upper-note', data.upperNote); setText('bar-bottom-note', data.bottomNote);
+  const deckBar = document.getElementById('bar-deck'); if (deckBar) { deckBar.style.width = ((data.deckBoxes / data.totalBoxes) * 100).toFixed(1) + '%'; deckBar.textContent = data.deckBoxes + '箱'; }
+  const upperBar = document.getElementById('bar-upper'); if (upperBar) { upperBar.style.width = ((data.upperBoxes / data.totalBoxes) * 100).toFixed(1) + '%'; upperBar.textContent = data.upperBoxes + '箱'; }
+  const bottomBar = document.getElementById('bar-bottom'); if (bottomBar) { bottomBar.style.width = ((data.bottomBoxes / data.totalBoxes) * 100).toFixed(1) + '%'; bottomBar.textContent = data.bottomBoxes + '箱'; }
+  const toolbarInfo = document.querySelector('#toolbar-stowage-query .toolbar-info'); if (toolbarInfo) toolbarInfo.textContent = '船名：' + data.ship + ' | 航次：' + data.voyage + ' | 航线：' + data.route + ' | 箱数：' + data.totalBoxes + ' | 偏差箱：' + data.deviationBoxes;
+  setText('deviation-voyage-title', data.ship + ' / ' + data.voyage); setText('deviation-total-boxes', data.totalBoxes); setText('deviation-boxes', data.deviationBoxes); setText('deviation-rate', rateText(data.deviationBoxes, data.totalBoxes)); setText('deviation-high-risk', data.rows.filter(r => r.deviation && r.severity === '严重偏差').length);
+  const stowageBody = document.getElementById('stowage-table-body'); const deviationBody = document.getElementById('deviation-table-body'); const exportBody = document.getElementById('export-table-body'); const noteList = document.getElementById('deviation-note-list');
+  if (stowageBody) stowageBody.innerHTML = data.rows.map((r, i) => '<tr' + (r.deviation ? ' class="alert-row"' : '') + '><td style="text-align:center">' + (i + 1) + '</td><td>' + r.boxNo + '</td><td>' + r.orderNo + '</td><td>' + r.cargo + '</td><td>' + r.boxType + '</td><td><span class="badge ' + posBadgeClass(r.suggest) + '">' + r.suggest + '</span></td><td><span class="badge ' + posBadgeClass(r.actual) + '">' + r.actual + '</span></td><td>' + r.bay + '</td><td>' + (r.deviation ? '<span class="alert-icon">!</span><span style="color:#CC2020;font-weight:bold">偏差</span>' : '<span style="color:#448844;font-weight:bold">✓ 符合</span>') + '</td><td>' + r.customer + '</td><td>' + r.note + '</td></tr>').join('');
+  if (deviationBody) deviationBody.innerHTML = data.rows.filter(r => r.deviation).map((r, i) => '<tr class="alert-row"><td style="text-align:center">' + (i + 1) + '</td><td>' + r.boxNo + '</td><td>' + r.orderNo + '</td><td>' + r.cargo + '</td><td><span class="badge ' + posBadgeClass(r.suggest) + '">' + r.suggest + '</span></td><td><span class="badge ' + posBadgeClass(r.actual) + '">' + r.actual + '</span></td><td>' + r.bay + '</td><td>' + r.severity + '</td><td>' + r.reason + '</td></tr>').join('') || '<tr><td colspan="9" style="text-align:center;color:#888;">当前航次暂无偏差</td></tr>';
+  if (exportBody) exportBody.innerHTML = data.rows.map((r, i) => '<tr' + (r.deviation ? ' class="red-highlight"' : '') + '><td style="text-align:center">' + (i + 1) + '</td><td>' + data.voyage + '</td><td>' + r.boxNo + '</td><td>' + r.orderNo + '</td><td>' + r.cargo + '</td><td>' + r.customer + '</td><td><span class="badge ' + posBadgeClass(r.suggest) + '">' + r.suggest + '</span></td><td>' + r.actual + '</td><td>' + r.bay + '</td><td>' + (r.deviation ? '偏差' : '正常') + '</td></tr>').join('');
+  if (noteList) noteList.innerHTML = data.deviationNotes.map(t => '<li>' + t + '</li>').join('');
+}
+function selectVoyage(row, voyageId) { document.querySelectorAll('.voyage-row').forEach(r => r.classList.remove('active')); row.classList.add('active'); selectedVoyageId = voyageId; renderSelectedVoyage(); }
+renderShellFrame();
+switchTab(INITIAL_ACTIVE_TAB);
+renderSelectedVoyage();
+
+</script>
 </body>
+<script>
+/* ===== 全局表格增强：右键菜单（事件委托，一次绑定全部行） ===== */
+(function() {
+  var activeCtxTable = null, activeCtxRow = null, ctxMenu = null;
+
+  function initCtxMenu() {
+    if (ctxMenu) return;
+    ctxMenu = document.createElement('div');
+    ctxMenu.className = 'ctx-menu';
+    ctxMenu.id = 'globalCtxMenu';
+    document.body.appendChild(ctxMenu);
+    document.addEventListener('click', function(e) {
+      if (!ctxMenu.contains(e.target)) hideCtxMenu();
+    });
+    document.addEventListener('contextmenu', function(e) {
+      if (!e.target.closest('.ctx-menu')) hideCtxMenu();
+    });
+  }
+
+  function showCtxMenu(x, y, table, row) {
+    if (!ctxMenu) initCtxMenu();
+    activeCtxTable = table;
+    activeCtxRow = row;
+    ctxMenu.innerHTML = [
+      '<div class="ctx-menu-item" onclick="window.__ctxCopyRow()">复制当前行</div>',
+      '<div class="ctx-menu-sep"></div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxExportTable()">导出Excel</div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxExportPage()">导出整页</div>',
+      '<div class="ctx-menu-sep"></div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxSelectAll()">全选</div>',
+    ].join('');
+    var menuH = 110;
+    var vw = window.innerWidth || document.documentElement.clientWidth || 0;
+    var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+    ctxMenu.style.left = (x + 180 > vw ? x - 180 : x) + 'px';
+    ctxMenu.style.top = (y + menuH > vh ? y - menuH : y) + 'px';
+    ctxMenu.classList.add('show');
+  }
+
+  function hideCtxMenu() {
+    if (ctxMenu) ctxMenu.classList.remove('show');
+    activeCtxTable = null; activeCtxRow = null;
+  }
+
+  window.__ctxCopyRow = function() {
+    if (!activeCtxRow) return;
+    var cells = activeCtxRow.querySelectorAll('td');
+    var text = Array.from(cells).map(function(td) { return td.textContent.trim(); }).join('\t');
+    if (navigator.clipboard) navigator.clipboard.writeText(text);
+    hideCtxMenu();
+  };
+
+  window.__ctxExportTable = function() {
+    if (!activeCtxTable) return;
+    var table = activeCtxTable;
+    var rows = [];
+    rows.push(Array.from(table.querySelectorAll('th')).map(function(h) { return '"' + h.textContent.trim().replace(/"/g,'""') + '"'; }).join(','));
+    table.querySelectorAll('tbody tr').forEach(function(tr) {
+      rows.push(Array.from(tr.querySelectorAll('td')).map(function(td) { return '"' + td.textContent.trim().replace(/"/g,'""') + '"'; }).join(','));
+    });
+    downloadCsv('\ufeff' + rows.join('\n'), 'table-export.csv');
+    hideCtxMenu();
+  };
+
+  window.__ctxExportPage = function() {
+    window.__ctxExportTable();
+  };
+
+  window.__ctxSelectAll = function() {
+    if (!activeCtxTable) return;
+    activeCtxTable.querySelectorAll('tbody tr').forEach(function(r) { r.classList.add('selected'); });
+    hideCtxMenu();
+  };
+
+  function downloadCsv(content, filename) {
+    var blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // 事件委托：绑定到 document，row 上的右键自动冒泡上来
+  function bindDelegation() {
+    initCtxMenu();
+    document.addEventListener('contextmenu', function(e) {
+      var row = e.target.closest('tr[data-row-ctx]');
+      if (!row) return;
+      var table = row.closest('table');
+      if (!table) return;
+      e.preventDefault();
+      showCtxMenu(e.clientX, e.clientY, table, row);
+    });
+  }
+
+  // MutationObserver：监听 tbody 的 innerHTML 变化，自动给新增行加 data-row-ctx
+  function bindObserver() {
+    document.querySelectorAll('table tbody').forEach(function(tbody) {
+      if (tbody.dataset.ctxObserverBound) return;
+      tbody.dataset.ctxObserverBound = 'true';
+      var observer = new MutationObserver(function() {
+        tbody.querySelectorAll('tr:not([data-row-ctx])').forEach(function(row) {
+          row.setAttribute('data-row-ctx', 'true');
+        });
+      });
+      observer.observe(tbody, { childList: true });
+      // 首次运行：已有行也要补标记
+      tbody.querySelectorAll('tr:not([data-row-ctx])').forEach(function(row) {
+        row.setAttribute('data-row-ctx', 'true');
+      });
+    });
+  }
+
+  var _origST = window.switchTab;
+  window.switchTab = function(tab) {
+    if (_origST) _origST(tab);
+    setTimeout(function() { bindDelegation(); bindObserver(); }, 60);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { bindDelegation(); bindObserver(); });
+  } else { bindDelegation(); bindObserver(); }
+})();
+
+/* ===== 全局表格增强：列排序（MutationObserver 兼容动态行） ===== */
+(function() {
+  function bindSort() {
+    document.querySelectorAll('.data-table').forEach(function(table) {
+      if (table.dataset.sortBound) return;
+      table.dataset.sortBound = 'true';
+      table.querySelectorAll('th').forEach(function(th, ci) {
+        th.classList.add('sortable');
+        th.addEventListener('click', function(e) {
+          if (e.target.closest('.col-resize-handle')) return;
+          var tbody = table.querySelector('tbody');
+          if (!tbody) return;
+          var rows = Array.from(tbody.querySelectorAll('tr'));
+          var isAsc = th.classList.contains('sort-asc');
+          table.querySelectorAll('th').forEach(function(h) { h.classList.remove('sort-asc','sort-desc'); });
+          th.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+          rows.sort(function(a, b) {
+            var ta = a.querySelectorAll('td')[ci].textContent.trim();
+            var tb = b.querySelectorAll('td')[ci].textContent.trim();
+            var na = parseFloat(ta.replace(/[^\d.-]/g,'')), nb = parseFloat(tb.replace(/[^\d.-]/g,''));
+            var cmp = (!isNaN(na) && !isNaN(nb)) ? na - nb : ta.localeCompare(tb, 'zh-CN');
+            return isAsc ? -cmp : cmp;
+          });
+          rows.forEach(function(r) { tbody.appendChild(r); });
+        });
+      });
+    });
+  }
+  var _origST2 = window.switchTab;
+  window.switchTab = function(tab) { if (_origST2) _origST2(tab); setTimeout(bindSort, 80); };
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bindSort); } else { bindSort(); }
+})();
+
+/* ===== 全局表格增强：列拖拽重排 ===== */
+(function() {
+  function bindColDrag() {
+    document.querySelectorAll('.data-table').forEach(function(table) {
+      if (table.dataset.colDragBound) return;
+      table.dataset.colDragBound = 'true';
+      var thead = table.querySelector('thead');
+      if (!thead) return;
+      var ths = Array.from(thead.querySelectorAll('th'));
+      var dragIdx = null, dragTh = null;
+
+      ths.forEach(function(th) {
+        th.classList.add('draggable');
+        th.addEventListener('mousedown', function(e) {
+          if (e.target.closest('.col-resize-handle')) return;
+          dragIdx = ths.indexOf(th); dragTh = th;
+          th.classList.add('dragging');
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+          e.preventDefault();
+        });
+      });
+
+      function onMove(e) {
+        if (dragIdx === null) return;
+        ths.forEach(function(h, i) {
+          if (i !== dragIdx) {
+            var r = h.getBoundingClientRect();
+            h.classList.toggle('drag-over', e.clientX >= r.left && e.clientX <= r.right);
+          }
+        });
+      }
+
+      function onUp(e) {
+        if (dragIdx !== null) {
+          dragTh.classList.remove('dragging');
+          var cur = null;
+          ths.forEach(function(h, i) {
+            h.classList.remove('drag-over');
+            if (i !== dragIdx) {
+              var r = h.getBoundingClientRect();
+              if (e.clientX >= r.left && e.clientX <= r.right) cur = i;
+            }
+          });
+          if (cur !== null && cur !== dragIdx) {
+            var allRows = table.querySelectorAll('tr');
+            allRows.forEach(function(row) {
+              var cells = Array.from(row.children);
+              if (cells.length <= Math.max(dragIdx, cur)) return;
+              var ref = cells[cur];
+              row.insertBefore(cells[dragIdx], dragIdx < cur ? ref.nextSibling : ref);
+            });
+          }
+          dragIdx = null; dragTh = null;
+        }
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+    });
+  }
+  var _origST3 = window.switchTab;
+  window.switchTab = function(tab) { if (_origST3) _origST3(tab); setTimeout(bindColDrag, 60); };
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bindColDrag); } else { bindColDrag(); }
+})();
+
+/* ===== 全局表格增强：列宽拖拽 ===== */
+(function() {
+  function bindColResize() {
+    document.querySelectorAll('.data-table').forEach(function(table) {
+      if (table.dataset.colResizeBound) return;
+      table.dataset.colResizeBound = 'true';
+      table.querySelectorAll('th').forEach(function(th) {
+        var handle = document.createElement('div');
+        handle.className = 'col-resize-handle';
+        th.appendChild(handle);
+        var startX = 0, startW = 0;
+        handle.addEventListener('mousedown', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          startX = e.clientX; startW = th.offsetWidth;
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+        });
+        function onMove(e) { th.style.width = Math.max(30, startW + (e.clientX - startX)) + 'px'; }
+        function onUp() { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
+      });
+    });
+  }
+  var _origST4 = window.switchTab;
+  window.switchTab = function(tab) { if (_origST4) _origST4(tab); setTimeout(bindColResize, 60); };
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bindColResize); } else { bindColResize(); }
+})();
+</script>
 </html>

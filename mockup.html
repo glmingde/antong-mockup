@@ -11,7 +11,7 @@
 html, body { height: 100%; }
 body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif; font-size: 12px; background: #F1F5F7; color: #333; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 .shell-main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-.content-stage { flex: 1; min-height: 0; overflow: hidden; }
+.content-stage { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .sys-header { background: #F3F3F3; }
 .sys-title-bar { display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #F3F3F3; color: #000; font-size: 13px; }
 .sys-logo { width: 16px; height: 16px; display: inline-block; object-fit: contain; flex: 0 0 16px; }
@@ -21,7 +21,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .sys-menu-links { display: flex; }
 .sys-menu-links a { color: #E4ECF3; text-decoration: none; padding: 3px 10px; border-radius: 2px; }
 .sys-menu-links a:hover { background: #5A94C2; }
-.sys-menu-search { position: relative; display: flex; align-items: center; gap: 4px; margin-right: 30px; }
+.sys-menu-search { position: relative; display: flex; align-items: center; gap: 4px; }
 .sys-menu-search input { width: 220px; height: 22px; padding: 2px 6px; border: 1px solid #8CC4EE; border-radius: 2px; background: #DAF0FF; color: #333; font-size: 11px; font-family: inherit; }
 .search-dropdown { position: absolute; top: 26px; left: 0; width: 320px; max-height: 280px; overflow-y: auto; background: #FFF; border: 1px solid #7AA8CF; box-shadow: 0 4px 12px rgba(0,0,0,0.16); z-index: 30; display: none; }
 .search-dropdown.show { display: block; }
@@ -50,31 +50,35 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .tab-action-btn:hover, .tab-action-btn.active { background: rgba(255,255,255,0.68); }
 .tab-list-backdrop { position: fixed; inset: 0; z-index: 34; display: none; }
 .tab-list-backdrop.show { display: block; }
-.tab-list-panel { position: fixed; top: 0; left: 0; width: 280px; max-height: 320px; background: #FFF; border: 1px solid #7AA8CF; box-shadow: 0 6px 18px rgba(0,0,0,0.16); z-index: 35; display: none; }
+.tab-list-panel { position: fixed; top: 0; left: 0; width: 280px; max-height: 320px; background: #DEEDF8; border: 1px solid #7AA8CF; box-shadow: 2px 2px 6px rgba(36,103,160,0.25); z-index: 35; display: none; font-family: "Microsoft YaHei", "微软雅黑", SimSun, sans-serif; }
 .tab-list-panel.show { display: block; }
-.tab-list-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-weight: bold; border-bottom: 1px solid #B9CEE2; }
+.tab-list-header { display: flex; align-items: center; justify-content: space-between; padding: 5px 10px; background: linear-gradient(to bottom, #C8DCF0, #B5D0E8); color: #1A4A80; font-size: 12px; font-weight: bold; border-bottom: 1px solid #7AA8CF; }
 .tab-list-header-text { display: flex; align-items: center; gap: 6px; }
 .tab-list-count { font-size: 11px; color: #56738F; font-weight: normal; }
-.tab-list-close-btn { width: 20px; height: 20px; border: none; background: transparent; color: #2A4A6A; border-radius: 2px; cursor: pointer; }
-.tab-list-close-btn:hover { background: rgba(255,255,255,0.7); }
+.tab-list-close-btn { width: 18px; height: 18px; border: none; background: transparent; color: #2A4A6A; border-radius: 2px; cursor: pointer; font-size: 12px; }
+.tab-list-close-btn:hover { background: rgba(0,0,0,0.08); }
 .tab-list-body { max-height: 276px; overflow-y: auto; }
 .tab-list-empty { padding: 14px 12px; text-align: center; color: #888; }
-.tab-list-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid #E6EEF5; background: #FFF; }
-.tab-list-item:last-child { border-bottom: none; }
-.tab-list-item.active { background: #EAF4FF; }
-.tab-list-main { flex: 1; min-width: 0; cursor: pointer; }
-.tab-list-main:hover .tab-list-name { color: #1A5EA8; }
-.tab-list-name { color: #2A4A6A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tab-list-meta { margin-top: 2px; font-size: 11px; color: #7A8796; }
-.tab-list-actions { display: flex; align-items: center; gap: 4px; }
-.tab-list-icon-btn { width: 22px; height: 22px; border: 1px solid #B7CBE0; border-radius: 2px; background: #F7FBFF; color: #2A4A6A; cursor: pointer; font-size: 12px; font-family: inherit; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
-.tab-list-icon-btn:hover { border-color: #7AA8CF; background: #EAF4FF; }
-.tab-list-icon-btn-danger { color: #B24343; }
+.tab-list-item { position: relative; padding: 3px 8px 3px 26px; font-size: 12px; color: #000; cursor: default; white-space: nowrap; line-height: 18px; background-color: #DEEDF8; background-image: linear-gradient(to right, #B5D0E8 0%, #9EC0DC 22px, transparent 22px); background-repeat: no-repeat; }
+.tab-list-item::after { content: '✓'; position: absolute; left: 4px; top: 50%; transform: translateY(-50%); font-size: 12px; color: transparent; }
+.tab-list-item.active::after { color: #2467A0; }
+.tab-list-item:hover { background-color: #3E7BAE; background-image: linear-gradient(to right, #5A94C2 0%, #5A94C2 22px, transparent 22px); color: #FFF; }
+.tab-list-item:hover::after { color: #FFF; }
+.tab-list-item.active:hover::after { color: #FFF; }
+.tab-list-item-row { padding: 2px 0; }
+.tab-list-item-name { font-size: 12px; color: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab-list-item-meta { font-size: 10px; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab-list-item:hover .tab-list-item-meta { color: rgba(255,255,255,0.8); }
+.tab-list-actions { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; gap: 2px; }
+.tab-list-close-tab { width: 16px; height: 16px; border: none; background: rgba(0,0,0,0.1); color: inherit; border-radius: 2px; cursor: pointer; font-size: 10px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; opacity: 0; }
+.tab-list-item:hover .tab-list-close-tab { opacity: 1; background: rgba(0,0,0,0.15); }
+.tab-list-close-tab:hover { background: rgba(0,0,0,0.25) !important; }
 
 
 
-.main-content { display: none; height: 100%; min-height: 0; padding: 8px; overflow-y: auto; overflow-x: hidden; }
-.main-content.active { display: block; }
+.main-content { display: none; flex: 1; min-height: 0; padding: 8px; overflow: hidden; }
+.main-content.active { display: flex; flex-direction: column; overflow: hidden; }
+.main-content.active > * { flex-shrink: 0; }
 .query-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; }
 .query-bar label { color: #555; white-space: nowrap; }
 .query-bar input, .query-bar select { height: 22px; padding: 2px 4px; border: 1px solid #C0C0C0; font-size: 12px; font-family: inherit; }
@@ -88,7 +92,8 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .btn-gray { background: #888; color: #FFF; border-color: #777; }
 .action-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
 .action-bar .total-info { margin-left: auto; color: #555; }
-.data-table-wrap { background: #FFF; border: 1px solid #C0C0C0; overflow: auto; }
+.data-table-wrap { background: #FFF; border: 1px solid #1F629B; overflow: auto; flex: 1; min-height: 0; }
+.side-card .data-table-wrap { border: none; }
 .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #FFF; }
 .data-table th { position: sticky; top: 0; z-index: 1; padding: 4px 6px; border: 1px solid #D8DCE0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; text-align: center; font-weight: bold; white-space: nowrap; }
 .data-table td { padding: 3px 6px; border: 1px solid #D8DCE0; white-space: nowrap; }
@@ -127,6 +132,10 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .status-meta { display: flex; align-items: center; gap: 14px; justify-content: flex-start; min-width: 0; }
 .status-user { display: flex; align-items: center; gap: 10px; color: #FFF; }
 .status-icons { display: flex; align-items: center; gap: 8px; color: #FFF; }
+.window-controls { display: flex; align-items: center; gap: 0; margin-left: auto; }
+.window-btn { width: 28px; height: 20px; border: none; background: transparent; color: #444; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; font-family: 'Segoe UI Symbol', Arial, sans-serif; border-radius: 2px; }
+.window-btn:hover { background: rgba(0,0,0,0.1); color: #000; }
+.window-btn.close:hover { background: #E81123; color: #FFF; }
 .badge-danger { background: #FFD0D0; color: #C00; border: 1px solid #F08080; }
 .badge-warning { background: #FFF0CC; color: #A06000; border: 1px solid #E0C060; }
 .badge-normal { background: #E8F0E8; color: #448844; border: 1px solid #88BB88; }
@@ -177,19 +186,23 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .alert-icon { background: #CC2020; }
 .export-bar { display: flex; gap: 6px; align-items: center; padding: 6px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); flex-shrink: 0; margin-bottom: 6px; }
 .export-bar .export-info { font-size: 12px; color: #2A4A6A; margin-left: auto; }
-.query-layout { display: flex; gap: 6px; flex: 1; min-height: 0; }
-.query-layout-left { width: 340px; min-width: 340px; flex-shrink: 0; display: flex; flex-direction: column; }
+.query-layout { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
+.query-layout-left { width: 340px; min-width: 340px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
 .query-layout-right { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-.voyage-list-panel { border: 1px solid #1F629B; background: white; display: flex; flex-direction: column; flex: 1; }
+.voyage-list-panel { border: 1px solid #1F629B; background: white; display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 .voyage-list-header { display: flex; align-items: center; justify-content: space-between; padding: 5px 10px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 12px; font-weight: bold; border-bottom: 1px solid #1F629B; }
-.voyage-list-body { flex: 1; overflow-y: auto; border-top: 1px solid #C0C0C0; }
-.voyage-row { display: grid; grid-template-columns: 72px 52px 1fr 42px; align-items: center; padding: 5px 8px; font-size: 11px; border-bottom: 1px solid #D8DCE0; cursor: pointer; gap: 4px; }
-.voyage-row:hover { background: #DDEEFF; }
-.voyage-row.active { background: #B8D4F0; }
+.voyage-list-body { flex: 1; min-height: 0; overflow-y: auto; border-top: 1px solid #C0C0C0; }
+.voyage-table { width: 100%; border-collapse: collapse; table-layout: fixed; background: #FFF; }
+.voyage-table th { position: sticky; top: 0; z-index: 1; padding: 4px 6px; background: #F0F5FA; color: #1A4A80; text-align: center; font-size: 11px; font-weight: bold; border-bottom: 1px solid #D8DCE0; white-space: nowrap; }
+.voyage-table td { padding: 4px 6px; font-size: 11px; border-bottom: 1px solid #E8ECF0; }
+.voyage-table tr { cursor: pointer; }
+.voyage-table tbody tr:hover td { background: #DDEEFF; }
+.voyage-table tr.active td { background: #B8D4F0; }
 .voyage-ship { font-weight: bold; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .voyage-code { color: #1F629B; font-weight: bold; }
 .voyage-route { color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .voyage-count-warn { color: #CC2020; font-weight: bold; }
+.voyage-count-ok { color: #2A7A2A; }
 .summary-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px; flex-shrink: 0; }
 .summary-item { background: #FFF; border: 1px solid #C0C0C0; padding: 8px 10px; border-radius: 3px; }
 .summary-item .label { color: #666; font-size: 11px; margin-bottom: 4px; }
@@ -201,33 +214,36 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .blue-highlight { background: #E7F1FF !important; }
 .gray-highlight { background: #F0F0F0 !important; }
 
-/* ===== 全局表格增强：右键菜单 ===== */
+/* ===== 全局表格增强：右键菜单（金蝶/Win 经典紧凑风格） ===== */
 .ctx-menu {
   position: fixed;
   z-index: 9999;
-  min-width: 160px;
-  background: #FFF;
+  min-width: 130px;
+  background: #DEEDF8;
   border: 1px solid #7AA8CF;
-  border-radius: 3px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-  padding: 4px 0;
+  box-shadow: 2px 2px 6px rgba(36,103,160,0.25);
+  padding: 1px 0;
   display: none;
+  font-family: "Microsoft YaHei", "微软雅黑", SimSun, sans-serif;
 }
 .ctx-menu.show { display: block; }
 .ctx-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
+  position: relative;
+  padding: 3px 8px 3px 24px;
   font-size: 12px;
-  color: #2A4A6A;
-  cursor: pointer;
+  color: #000;
+  cursor: default;
   white-space: nowrap;
+  line-height: 18px;
+  background-color: #DEEDF8;
+  background-image: linear-gradient(to right, #B5D0E8 0%, #9EC0DC 22px, transparent 22px);
+  background-repeat: no-repeat;
 }
-.ctx-menu-item:hover { background: #EAF4FF; }
-.ctx-menu-item.disabled { color: #AAA; pointer-events: none; }
-.ctx-menu-sep { height: 1px; background: #E0E8F0; margin: 4px 0; }
-.ctx-menu-icon { width: 16px; text-align: center; flex-shrink: 0; font-size: 11px; }
+.ctx-menu-item:hover { background-color: #3E7BAE; background-image: linear-gradient(to right, #5A94C2 0%, #5A94C2 22px, transparent 22px); color: #FFF; }
+.ctx-menu-item.disabled { color: #808080; cursor: default; pointer-events: none; }
+.ctx-menu-sep { display: none; }
+.ctx-menu-icon { display: none; }
+.ctx-menu { background: #DEEDF8; border-collapse: collapse; }
 
 /* ===== 全局表格增强：列排序 ===== */
 .data-table th.sortable { cursor: pointer; user-select: none; }
@@ -242,7 +258,6 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .data-table th.drag-over { background: #C8DCF0 !important; border-left: 2px solid #2467A0; }
 .data-table { border-collapse: collapse; table-layout: fixed; }
 .data-table th, .data-table td { border: 1px solid #C0C0C0; }
-.data-table-wrap { overflow-x: auto; overflow-y: auto; max-height: 420px; border: 1px solid #1F629B; background: #FFF; }
 
 /* ===== 全局表格增强：列宽拖拽手柄 ===== */
 .col-resize-handle {
@@ -253,7 +268,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
   z-index: 2;
 }
 .col-resize-handle:hover { background: rgba(36,103,160,0.3); }
-.data-table th { position: relative; overflow: visible; }
+.data-table th { overflow: visible; }
 .data-table th .col-resize-handle { display: none; }
 .data-table th:hover .col-resize-handle { display: block; }
 
@@ -265,10 +280,12 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 <div class="sys-header">
   <div class="sys-title-bar">
     <img class="sys-logo" src="./favicon.ico" alt="RJT">
-
-
-
     <span>安通综合物流系统 - RJT</span>
+    <div class="window-controls" style="margin-left: auto;">
+      <button class="window-btn minimize" title="最小化" onclick="window.__winMinimize()">─</button>
+      <button class="window-btn maximize" title="最大化" onclick="window.__winMaximize()">☐</button>
+      <button class="window-btn close" title="关闭" onclick="window.__winClose()">✕</button>
+    </div>
   </div>
   <div class="sys-menu-bar">
     <div class="sys-menu-links">
@@ -623,29 +640,28 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 
 <div id="tab-stowage-query" class="main-content">
   <div class="query-bar"><label>日期范围：</label><select style="width:80px"><option>近7天</option><option selected>近15天</option><option>近30天</option></select><label>船名：</label><select style="width:100px"><option>全部船舶</option><option selected>仁建上海</option><option>海南洋浦航</option><option>中建上海</option></select><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>出发港：</label><select style="width:80px"><option>全部</option><option selected>桂平</option><option>太仓</option><option>南沙</option></select><label>目的港：</label><select style="width:80px"><option>全部</option><option>韩雨</option><option selected>太仓</option></select><label>偏差：</label><select style="width:70px"><option value="">全部</option><option>有偏差</option><option>正常</option></select><button class="btn btn-query">查询</button><button class="btn btn-query">重置</button></div>
-  <div class="query-layout"><div class="query-layout-left"><div class="voyage-list-panel"><div class="voyage-list-header"><span>航次列表（24） · 偏差<strong style="color:#CC2020">4</strong>个</span></div><div class="voyage-list-body"><div class="voyage-row active" onclick="selectVoyage(this, 'rj2612')"><div class="voyage-ship">仁建上海</div><div class="voyage-code">2612N</div><div class="voyage-route">桂平→太仓</div><div class="voyage-warn"><span class="voyage-count-warn">2</span></div></div><div class="voyage-row" onclick="selectVoyage(this, 'rj2611')"><div class="voyage-ship">仁建上海</div><div class="voyage-code">2611N</div><div class="voyage-route">太仓→南沙</div><div class="voyage-warn">0</div></div><div class="voyage-row" onclick="selectVoyage(this, 'hn2609')"><div class="voyage-ship">海南洋浦航</div><div class="voyage-code">2609S</div><div class="voyage-route">桂平→韩雨</div><div class="voyage-warn"><span class="voyage-count-warn">1</span></div></div><div class="voyage-row" onclick="selectVoyage(this, 'zj2608')"><div class="voyage-ship">中建上海</div><div class="voyage-code">2608N</div><div class="voyage-route">南沙→太仓</div><div class="voyage-warn">0</div></div><div class="voyage-row" onclick="selectVoyage(this, 'rj2607')"><div class="voyage-ship">仁建上海</div><div class="voyage-code">2607N</div><div class="voyage-route">桂平→太仓</div><div class="voyage-warn"><span class="voyage-count-warn">3</span></div></div></div></div></div><div class="query-layout-right"><div class="stat-cards"><div class="stat-card total"><div class="stat-label">总箱数</div><div class="stat-value" id="stat-total-boxes" style="color:#2A5EA8">82</div><div style="font-size:11px;color:#888;margin-top:2px">折合 <span id="stat-total-teu">136</span> TEU</div></div><div class="stat-card deck"><div class="stat-label"><span class="badge pos-deck" style="font-size:10px">甲板</span></div><div class="stat-value" id="stat-deck-count">12</div></div><div class="stat-card upper"><div class="stat-label"><span class="badge pos-upper" style="font-size:10px">二层以上</span></div><div class="stat-value" id="stat-upper-count">46</div></div><div class="stat-card bottom"><div class="stat-label"><span class="badge pos-bottom" style="font-size:10px">船底</span></div><div class="stat-value" id="stat-bottom-count">24</div></div><div class="stat-card" style="border-color:#F0B7B7;"><div class="stat-label">偏差箱数</div><div class="stat-value" id="stat-deviation-count" style="color:#CC2020">5</div></div></div><div class="chart-row"><div class="chart-box"><div class="chart-title">本航次船体配载示意</div><svg viewBox="0 0 200 160" class="ship-diagram" xmlns="http://www.w3.org/2000/svg"><path d="M10 40 L10 140 L30 155 L170 155 L190 140 L190 40 Z" fill="#E8F0FA" stroke="#4A86C8" stroke-width="2"/><rect x="10" y="40" width="180" height="35" fill="#FFE0CC" stroke="#CC6030" stroke-width="1.5"/><text x="100" y="63" text-anchor="middle" font-size="12" fill="#CC4400" font-weight="bold">甲板</text><text x="100" y="75" text-anchor="middle" font-size="10" fill="#CC4400" id="ship-deck-text">12箱 · 20TEU</text><rect x="10" y="75" width="180" height="40" fill="#D4E8FF" stroke="#2A7FD4" stroke-width="1.5"/><text x="100" y="99" text-anchor="middle" font-size="12" fill="#1A5EA8" font-weight="bold">舱内二层</text><text x="100" y="110" text-anchor="middle" font-size="10" fill="#1A5EA8" id="ship-upper-text">46箱 · 76TEU</text><path d="M10 115 L10 140 L30 154 L170 154 L190 140 L190 115 Z" fill="#DDD" stroke="#666" stroke-width="1.5"/><text x="100" y="137" text-anchor="middle" font-size="12" fill="#444" font-weight="bold">舱底</text><text x="100" y="149" text-anchor="middle" font-size="10" fill="#444" id="ship-bottom-text">24箱 · 40TEU</text></svg></div><div class="chart-box"><div class="chart-title">各区域箱量分布</div><div class="bar-row"><span class="bar-label"><span class="badge pos-deck" style="font-size:10px">甲板</span></span><div class="bar-track"><div class="bar-fill deck" id="bar-deck" style="width:14.6%">12箱</div></div><span class="bar-count" id="bar-deck-teu">20TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-deck-note">液袋货×6 · 特殊设备×4 · 危险品×2</div><div class="bar-row" style="margin-top:8px"><span class="bar-label"><span class="badge pos-upper" style="font-size:10px">二层以上</span></span><div class="bar-track"><div class="bar-fill upper" id="bar-upper" style="width:56.1%">46箱</div></div><span class="bar-count" id="bar-upper-teu">76TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-upper-note">大米×16 · 面粉×10 · 瓷砖×8 · 调味品×12</div><div class="bar-row" style="margin-top:8px"><span class="bar-label"><span class="badge pos-bottom" style="font-size:10px">船底</span></span><div class="bar-track"><div class="bar-fill bottom" id="bar-bottom" style="width:29.3%">24箱</div></div><span class="bar-count" id="bar-bottom-teu">40TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-bottom-note">卷钢×12 · 带钢×8 · 型钢×4</div></div></div><div class="export-bar"><button class="btn btn-primary" onclick="switchTab('export-preview')">↓ 导出配载清单</button><button class="btn btn-warning" onclick="switchTab('stowage-deviation')">↓ 查看偏差预警报告</button><span class="export-info">导出说明：甲板橙色 · 二层以上蓝色 · 船底灰色 · 偏差箱浅红底色</span></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>序号</th><th>箱号</th><th>运单号</th><th>货名</th><th>箱型</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差状态</th><th>客户</th><th>备注</th></tr></thead><tbody id="stowage-table-body"></tbody></table></div></div></div>
+  <div class="query-layout"><div class="query-layout-left"><div class="voyage-list-panel"><div class="voyage-list-header"><span>航次列表（24） · 偏差<strong style="color:#CC2020">4</strong>个</span></div><div class="voyage-list-body"><table class="voyage-table"><tbody><tr class="active" data-row-ctx onclick="selectVoyage(this, 'rj2612')"><td class="voyage-ship">仁建上海</td><td class="voyage-code">2612N</td><td class="voyage-route">桂平→太仓</td><td><span class="voyage-count-warn">2</span></td></tr><tr data-row-ctx onclick="selectVoyage(this, 'rj2611')"><td class="voyage-ship">仁建上海</td><td class="voyage-code">2611N</td><td class="voyage-route">太仓→南沙</td><td><span class="voyage-count-ok">0</span></td></tr><tr data-row-ctx onclick="selectVoyage(this, 'hn2609')"><td class="voyage-ship">海南洋浦航</td><td class="voyage-code">2609S</td><td class="voyage-route">桂平→韩雨</td><td><span class="voyage-count-warn">1</span></td></tr><tr data-row-ctx onclick="selectVoyage(this, 'zj2608')"><td class="voyage-ship">中建上海</td><td class="voyage-code">2608N</td><td class="voyage-route">南沙→太仓</td><td><span class="voyage-count-ok">0</span></td></tr><tr data-row-ctx onclick="selectVoyage(this, 'rj2607')"><td class="voyage-ship">仁建上海</td><td class="voyage-code">2607N</td><td class="voyage-route">桂平→太仓</td><td><span class="voyage-count-warn">3</span></td></tr></tbody></table></div></div></div><div class="query-layout-right"><div class="stat-cards"><div class="stat-card total"><div class="stat-label">总箱数</div><div class="stat-value" id="stat-total-boxes" style="color:#2A5EA8">82</div><div style="font-size:11px;color:#888;margin-top:2px">折合 <span id="stat-total-teu">136</span> TEU</div></div><div class="stat-card deck"><div class="stat-label"><span class="badge pos-deck" style="font-size:10px">甲板</span></div><div class="stat-value" id="stat-deck-count">12</div></div><div class="stat-card upper"><div class="stat-label"><span class="badge pos-upper" style="font-size:10px">二层以上</span></div><div class="stat-value" id="stat-upper-count">46</div></div><div class="stat-card bottom"><div class="stat-label"><span class="badge pos-bottom" style="font-size:10px">船底</span></div><div class="stat-value" id="stat-bottom-count">24</div></div><div class="stat-card" style="border-color:#F0B7B7;"><div class="stat-label">偏差箱数</div><div class="stat-value" id="stat-deviation-count" style="color:#CC2020">5</div></div></div><div class="chart-row"><div class="chart-box"><div class="chart-title">本航次船体配载示意</div><svg viewBox="0 0 200 160" class="ship-diagram" xmlns="http://www.w3.org/2000/svg"><path d="M10 40 L10 140 L30 155 L170 155 L190 140 L190 40 Z" fill="#E8F0FA" stroke="#4A86C8" stroke-width="2"/><rect x="10" y="40" width="180" height="35" fill="#FFE0CC" stroke="#CC6030" stroke-width="1.5"/><text x="100" y="63" text-anchor="middle" font-size="12" fill="#CC4400" font-weight="bold">甲板</text><text x="100" y="75" text-anchor="middle" font-size="10" fill="#CC4400" id="ship-deck-text">12箱 · 20TEU</text><rect x="10" y="75" width="180" height="40" fill="#D4E8FF" stroke="#2A7FD4" stroke-width="1.5"/><text x="100" y="99" text-anchor="middle" font-size="12" fill="#1A5EA8" font-weight="bold">舱内二层</text><text x="100" y="110" text-anchor="middle" font-size="10" fill="#1A5EA8" id="ship-upper-text">46箱 · 76TEU</text><path d="M10 115 L10 140 L30 154 L170 154 L190 140 L190 115 Z" fill="#DDD" stroke="#666" stroke-width="1.5"/><text x="100" y="137" text-anchor="middle" font-size="12" fill="#444" font-weight="bold">舱底</text><text x="100" y="149" text-anchor="middle" font-size="10" fill="#444" id="ship-bottom-text">24箱 · 40TEU</text></svg></div><div class="chart-box"><div class="chart-title">各区域箱量分布</div><div class="bar-row"><span class="bar-label"><span class="badge pos-deck" style="font-size:10px">甲板</span></span><div class="bar-track"><div class="bar-fill deck" id="bar-deck" style="width:14.6%">12箱</div></div><span class="bar-count" id="bar-deck-teu">20TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-deck-note">液袋货×6 · 特殊设备×4 · 危险品×2</div><div class="bar-row" style="margin-top:8px"><span class="bar-label"><span class="badge pos-upper" style="font-size:10px">二层以上</span></span><div class="bar-track"><div class="bar-fill upper" id="bar-upper" style="width:56.1%">46箱</div></div><span class="bar-count" id="bar-upper-teu">76TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-upper-note">大米×16 · 面粉×10 · 瓷砖×8 · 调味品×12</div><div class="bar-row" style="margin-top:8px"><span class="bar-label"><span class="badge pos-bottom" style="font-size:10px">船底</span></span><div class="bar-track"><div class="bar-fill bottom" id="bar-bottom" style="width:29.3%">24箱</div></div><span class="bar-count" id="bar-bottom-teu">40TEU</span></div><div class="bar-row" style="margin-top:4px;font-size:11px;color:#888;padding-left:76px" id="bar-bottom-note">卷钢×12 · 带钢×8 · 型钢×4</div></div></div><div class="export-bar"><button class="btn btn-primary" onclick="switchTab('export-preview')">↓ 导出配载清单</button><button class="btn btn-warning" onclick="switchTab('stowage-deviation')">↓ 查看偏差预警报告</button><span class="export-info">导出说明：甲板橙色 · 二层以上蓝色 · 船底灰色 · 偏差箱浅红底色</span></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>序号</th><th>箱号</th><th>运单号</th><th>货名</th><th>箱型</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差状态</th><th>客户</th><th>备注</th></tr></thead><tbody id="stowage-table-body"></tbody></table></div></div></div>
 </div>
 
-<div id="tab-stowage-deviation" class="main-content"><div class="query-bar"><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>偏差等级：</label><select style="width:90px"><option selected>全部</option><option>严重偏差</option><option>一般偏差</option></select><label>货名：</label><input type="text" placeholder="输入货名/箱号" style="width:130px"><button class="btn btn-query" onclick="renderSelectedVoyage()">查询</button><button class="btn btn-query">重置</button></div><div class="summary-strip"><div class="summary-item"><div class="label">当前航次</div><div class="value" id="deviation-voyage-title">仁建上海 / 2612N</div></div><div class="summary-item"><div class="label">总箱数</div><div class="value" id="deviation-total-boxes">82</div></div><div class="summary-item warn"><div class="label">偏差箱数</div><div class="value" id="deviation-boxes">5</div></div><div class="summary-item"><div class="label">偏差率</div><div class="value" id="deviation-rate">6.1%</div></div><div class="summary-item"><div class="label">高风险偏差</div><div class="value" id="deviation-high-risk">3</div></div></div><div class="dual-panel"><div class="side-card"><h3>箱号级偏差明细</h3><div class="data-table-wrap" style="margin:0; border:none;"><table class="data-table"><thead><tr><th>序号</th><th>箱号</th><th>运单号</th><th>货名</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差等级</th><th>原因说明</th></tr></thead><tbody id="deviation-table-body"></tbody></table></div></div><div class="side-card"><h3>偏差说明与处置建议</h3><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 建议甲板</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 建议二层以上</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 建议船底</span></div><div class="preview-note">预警逻辑：系统按货名档案给出建议位置，再与理货回传的实装区域、实装贝位做箱号级比对。</div><ul class="note-list" id="deviation-note-list"></ul></div></div></div>
+<div id="tab-stowage-deviation" class="main-content"><div class="query-bar"><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>偏差等级：</label><select style="width:90px"><option selected>全部</option><option>严重偏差</option><option>一般偏差</option></select><label>货名：</label><input type="text" placeholder="输入货名/箱号" style="width:130px"><button class="btn btn-query" onclick="renderSelectedVoyage()">查询</button><button class="btn btn-query">重置</button></div><div class="summary-strip"><div class="summary-item"><div class="label">当前航次</div><div class="value" id="deviation-voyage-title">仁建上海 / 2612N</div></div><div class="summary-item"><div class="label">总箱数</div><div class="value" id="deviation-total-boxes">82</div></div><div class="summary-item warn"><div class="label">偏差箱数</div><div class="value" id="deviation-boxes">5</div></div><div class="summary-item"><div class="label">偏差率</div><div class="value" id="deviation-rate">6.1%</div></div><div class="summary-item"><div class="label">高风险偏差</div><div class="value" id="deviation-high-risk">3</div></div></div><div class="dual-panel"><div class="side-card"><h3>箱号级偏差明细</h3><div class="data-table-wrap" style="margin:0;"><table class="data-table"><thead><tr><th>序号</th><th>箱号</th><th>运单号</th><th>货名</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差等级</th><th>原因说明</th></tr></thead><tbody id="deviation-table-body"></tbody></table></div></div><div class="side-card"><h3>偏差说明与处置建议</h3><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 建议甲板</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 建议二层以上</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 建议船底</span></div><div class="preview-note">预警逻辑：系统按货名档案给出建议位置，再与理货回传的实装区域、实装贝位做箱号级比对。</div><ul class="note-list" id="deviation-note-list"></ul></div></div></div>
 
-<div id="tab-export-preview" class="main-content"><div class="query-bar"><label>导出模板：</label><select style="width:140px"><option selected>出口清单（箱号级）</option><option>偏差预警清单</option></select><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>颜色标识：</label><select style="width:100px"><option selected>开启</option><option>关闭</option></select><button class="btn btn-query" onclick="renderSelectedVoyage()">刷新示意</button><button class="btn btn-primary">导出Excel</button></div><div class="preview-note">出口清单导出按“一箱一行”输出，建议位置保留颜色标识；发生建议/实装偏差的箱号整行浅红底色，方便现场复核。</div><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 橙色单元格</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 蓝色单元格</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 灰色单元格</span><span class="legend-chip" style="background:#FFE2E2;">整行浅红：偏差箱</span></div><div class="side-card" style="padding:0;"><h3 style="margin:8px 8px 0 8px;">导出预览（前10行）</h3><div class="data-table-wrap" style="border:none; margin-top:8px;"><table class="data-table"><thead><tr><th>序号</th><th>航次</th><th>箱号</th><th>运单号</th><th>货名</th><th>客户</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差状态</th></tr></thead><tbody id="export-table-body"></tbody></table></div></div></div>
+<div id="tab-export-preview" class="main-content"><div class="query-bar"><label>导出模板：</label><select style="width:140px"><option selected>出口清单（箱号级）</option><option>偏差预警清单</option></select><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>颜色标识：</label><select style="width:100px"><option selected>开启</option><option>关闭</option></select><button class="btn btn-query" onclick="renderSelectedVoyage()">刷新示意</button><button class="btn btn-primary">导出Excel</button></div><div class="preview-note">出口清单导出按“一箱一行”输出，建议位置保留颜色标识；发生建议/实装偏差的箱号整行浅红底色，方便现场复核。</div><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 橙色单元格</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 蓝色单元格</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 灰色单元格</span><span class="legend-chip" style="background:#FFE2E2;">整行浅红：偏差箱</span></div><div class="side-card" style="padding:0;"><h3 style="margin:8px 8px 0 8px;">导出预览（前10行）</h3><div class="data-table-wrap" style="margin-top:8px;"><table class="data-table"><thead><tr><th>序号</th><th>航次</th><th>箱号</th><th>运单号</th><th>货名</th><th>客户</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差状态</th></tr></thead><tbody id="export-table-body"></tbody></table></div></div></div>
 
 <div class="modal-overlay" id="editModal"><div class="modal"><div class="modal-header"><span>编辑货名配载信息</span><span class="modal-close" onclick="closeModal('editModal')">×</span></div><div class="modal-body"><div class="form-row"><label>货名</label><input type="text" value="液袋货"></div><div class="form-row"><label>货类大类</label><select><option>化工品类</option><option>粮食类</option><option>钢材类</option><option>建材类</option></select></div><div class="form-row"><label>水湿风险</label><select><option selected>高风险</option><option>中等风险</option><option>一般风险</option></select></div><div class="form-row"><label>货值等级</label><select><option selected>高货值</option><option>中等货值</option><option>普通货值</option></select></div><div class="form-row"><label>配载位置</label><select><option selected>甲板</option><option>二层以上</option><option>船底</option></select><span class="hint">系统依据此字段给出配载建议</span></div><div class="form-row"><label>是否特殊货</label><select><option selected>液袋</option><option>否</option><option>液氮柜</option><option>危险品</option></select></div><div class="form-row"><label>备注说明</label><input type="text" value="必须甲板，禁止入舱"></div></div><div class="modal-footer"><button class="btn btn-success">保存</button><button class="btn btn-gray" onclick="closeModal('editModal')">取消</button></div></div></div>
 <div class="modal-overlay" id="importModal"><div class="modal" style="width:520px"><div class="modal-header"><span>Excel批量导入货名配载信息</span><span class="modal-close" onclick="closeModal('importModal')">×</span></div><div class="modal-body"><div style="font-size:12px;color:#555;margin-bottom:8px;">请按模板格式准备Excel文件，包含字段：货名、货类大类、水湿风险等级、货值等级、配载建议位置、备注说明</div><div class="import-area">点击选择 Excel 文件</div><div style="background:#E8F0FA;border:1px solid #B0C4DE;border-radius:3px;padding:8px;font-size:11px;margin-top:8px;"><strong>导入规则：</strong><br>· 货名已存在时，以导入数据覆盖原记录<br>· 货名不存在时，自动新建记录<br>· 配载建议位置仅接受：甲板 / 二层以上 / 船底</div></div><div class="modal-footer"><button class="btn btn-primary">开始导入</button><button class="btn btn-gray" onclick="closeModal('importModal')">取消</button></div></div></div>
 
 </div>
-</div>
-
 <div class="status-bar">
   <div class="status-meta">
     <span>版本：EAS V3.2</span>
-    <span>时间：2026-04-24 14:44</span>
+    <span>时间：2026-04-28 18:12</span>
   </div>
   <div class="status-user">
     <span>用户名：geliming</span>
     <span>姓名：葛礼明</span>
     <div class="status-icons"><span>🔔</span><span>⚙</span><span>→</span></div>
   </div>
+</div>
 </div>
 
 <script>
@@ -853,7 +869,6 @@ const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
   '<button class="tab-action-btn" title="关闭当前标签" onclick="closeCurrentTab()">✕</button>' +
 '</div>';
 const TAB_LIST_PANEL_MARKUP = '<div class="tab-list-panel" id="tabListPanel">' +
-  '<div class="tab-list-header"><div class="tab-list-header-text"><span>已开标签</span><span class="tab-list-count" id="tabListCount"></span></div><button class="tab-list-close-btn" title="收起" onclick="hideTabList()">✕</button></div>' +
   '<div class="tab-list-body" id="tabListBody"></div>' +
 '</div><div class="tab-list-backdrop" id="tabListBackdrop" onclick="hideTabList()"></div>';
 
@@ -961,10 +976,8 @@ function hideTabList() {
 
 function renderTabListPanel() {
   const panelBody = document.getElementById('tabListBody');
-  const countEl = document.getElementById('tabListCount');
-  if (!panelBody || !countEl) return;
+  if (!panelBody) return;
   const visibleTabs = getVisibleTabs();
-  countEl.textContent = '共 ' + visibleTabs.length + ' 项';
   if (!visibleTabs.length) {
     panelBody.innerHTML = '<div class="tab-list-empty">当前没有可用标签</div>';
     return;
@@ -974,14 +987,12 @@ function renderTabListPanel() {
     const tabMeta = TAB_REGISTRY_MAP[tabId] || {};
     const tabName = tab.querySelector('.tab-label') ? tab.querySelector('.tab-label').textContent.trim() : tabId;
     const closable = tab.getAttribute('data-closable') !== 'false';
-    return '<div class="tab-list-item' + (tab.classList.contains('active') ? ' active' : '') + '" data-tab="' + tabId + '">' +
-      '<div class="tab-list-main" onclick="openTabFromList(\'' + tabId + '\')">' +
-      '<div class="tab-list-name">' + escapeHtml(tabName) + '</div>' +
-      '<div class="tab-list-meta">' + escapeHtml(getPageTypeLabel(tabMeta.pageType)) + (tabMeta.parentId ? ' · 所属：' + escapeHtml((TAB_REGISTRY_MAP[tabMeta.parentId] || {}).label || '') : '') + '</div>' +
+    const isActive = tab.classList.contains('active');
+    return '<div class="tab-list-item' + (isActive ? ' active' : '') + '" data-tab="' + tabId + '">' +
+      '<div class="tab-list-item-row" onclick="openTabFromList(\'' + tabId + '\')">' +
+      '<div class="tab-list-item-name">' + escapeHtml(tabName) + '</div>' +
       '</div>' +
-      '<div class="tab-list-actions">' +
-      (closable ? '<button class="tab-list-icon-btn tab-list-icon-btn-danger" title="关闭标签" onclick="closeTabFromList(\'' + tabId + '\')">✕</button>' : '') +
-      '</div>' +
+      (closable ? '<div class="tab-list-actions"><button class="tab-list-close-tab" title="关闭标签" onclick="event.stopPropagation(); closeTabFromList(\'' + tabId + '\')">✕</button></div>' : '') +
     '</div>';
   }).join('');
 }
@@ -1039,6 +1050,11 @@ function toggleTabList() {
 function showEditModal() { document.getElementById('editModal').classList.add('show'); }
 function showImportModal() { document.getElementById('importModal').classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// 窗口控制函数（由顶部标题栏按钮调用）
+window.__winMinimize = function() { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); };
+window.__winMaximize = function() { if (document.documentElement.requestFullscreen) { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else if (document.exitFullscreen) document.exitFullscreen(); } };
+window.__winClose = function() { window.close(); };
 const voyageData = {
   rj2612: { ship: '仁建上海', voyage: '2612N', route: '桂平 → 太仓', totalBoxes: 82, totalTeu: 136, deckBoxes: 12, deckTeu: 20, upperBoxes: 46, upperTeu: 76, bottomBoxes: 24, bottomTeu: 40, deviationBoxes: 5, deckNote: '液袋货×6 · 特殊设备×4 · 危险品×2', upperNote: '大米×16 · 面粉×10 · 瓷砖×8 · 调味品×12', bottomNote: '卷钢×12 · 带钢×8 · 型钢×4', deviationNotes: ['大米、面粉等高水湿风险货物落在船底时，需优先预警并追溯堆场分区执行。','液袋与特殊设备已按建议装甲板，本航次偏差集中在二层以上与船底错位。','建议把偏差箱同步到出口清单，便于现场复核与后续责任界定。'], rows: [ {boxNo:'ANTU200001', orderNo:'ARRBGDR280', cargo:'大米', boxType:'40HQ', suggest:'二层以上', actual:'船底', bay:'05B-12', customer:'客商一体', note:'高水湿风险', deviation:true, severity:'严重偏差', reason:'理货实装落船底'}, {boxNo:'ANTU200005', orderNo:'ARRBGDR285', cargo:'面粉', boxType:'40HQ', suggest:'二层以上', actual:'船底', bay:'05B-13', customer:'客商一体', note:'高水湿风险', deviation:true, severity:'严重偏差', reason:'现场调整未回写'}, {boxNo:'ANTU200018', orderNo:'ARRBGDR301', cargo:'瓷砖', boxType:'20GP', suggest:'二层以上', actual:'二层以上', bay:'02U-08', customer:'市场客户', note:'正常', deviation:false, severity:'-', reason:'—'}, {boxNo:'ANTU200035', orderNo:'ARRBGDR260', cargo:'液袋货', boxType:'20TK', suggest:'甲板', actual:'甲板', bay:'D01-03', customer:'海南洋浦航', note:'液袋', deviation:false, severity:'-', reason:'—'}, {boxNo:'ANTU200056', orderNo:'ARRBGDR318', cargo:'卷钢', boxType:'20GP', suggest:'船底', actual:'二层以上', bay:'02U-20', customer:'市场客户', note:'重货转移', deviation:true, severity:'一般偏差', reason:'现场平衡调整'}, {boxNo:'ANTU200073', orderNo:'ARRBGDR340', cargo:'碳酸钙粉', boxType:'40HQ', suggest:'二层以上', actual:'船底', bay:'04B-06', customer:'市场客户', note:'受潮风险', deviation:true, severity:'严重偏差', reason:'码头分区混堆'}, {boxNo:'ANTU200080', orderNo:'ARRBGDR350', cargo:'大件设备', boxType:'40FR', suggest:'甲板', actual:'二层以上', bay:'02U-01', customer:'项目客户', note:'超限件', deviation:true, severity:'一般偏差', reason:'甲板资源冲突'} ] },
   rj2611: { ship: '仁建上海', voyage: '2611N', route: '太仓 → 南沙', totalBoxes: 64, totalTeu: 108, deckBoxes: 10, deckTeu: 18, upperBoxes: 34, upperTeu: 56, bottomBoxes: 20, bottomTeu: 34, deviationBoxes: 0, deckNote: '液袋货×4 · 危险品×2 · 设备×4', upperNote: '建材×18 · 粮食×16', bottomNote: '钢材×20', deviationNotes: ['当前航次未发现建议/实装偏差。','可继续关注理货回传及时性，避免后续补录造成假性偏差。','出口清单可直接按建议位置导出，无需额外高亮。'], rows: [ {boxNo:'ANTU190011', orderNo:'ARRBGDR120', cargo:'液袋货', boxType:'20TK', suggest:'甲板', actual:'甲板', bay:'D02-08', customer:'海南洋浦航', note:'液袋', deviation:false, severity:'-', reason:'—'}, {boxNo:'ANTU190019', orderNo:'ARRBGDR126', cargo:'瓷砖', boxType:'40HQ', suggest:'二层以上', actual:'二层以上', bay:'03U-16', customer:'市场客户', note:'正常', deviation:false, severity:'-', reason:'—'}, {boxNo:'ANTU190028', orderNo:'ARRBGDR133', cargo:'卷钢', boxType:'20GP', suggest:'船底', actual:'船底', bay:'B02-11', customer:'市场客户', note:'正常', deviation:false, severity:'-', reason:'—'} ] }
@@ -1094,14 +1110,14 @@ renderSelectedVoyage();
     activeCtxTable = table;
     activeCtxRow = row;
     ctxMenu.innerHTML = [
-      '<div class="ctx-menu-item" onclick="window.__ctxCopyRow()"><span class="ctx-menu-icon">📋</span>复制当前行</div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxCopyRow()">复制当前行</div>',
       '<div class="ctx-menu-sep"></div>',
-      '<div class="ctx-menu-item" onclick="window.__ctxExportTable()"><span class="ctx-menu-icon">📤</span>导出当前表格（CSV）</div>',
-      '<div class="ctx-menu-item" onclick="window.__ctxExportPage()"><span class="ctx-menu-icon">📄</span>导出整页表格</div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxExportTable()">导出Excel</div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxExportPage()">导出整页</div>',
       '<div class="ctx-menu-sep"></div>',
-      '<div class="ctx-menu-item" onclick="window.__ctxSelectAll()"><span class="ctx-menu-icon">☑</span>全选所有行</div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxSelectAll()">全选</div>',
     ].join('');
-    var menuH = 160;
+    var menuH = 110;
     var vw = window.innerWidth || document.documentElement.clientWidth || 0;
     var vh = window.innerHeight || document.documentElement.clientHeight || 0;
     ctxMenu.style.left = (x + 180 > vw ? x - 180 : x) + 'px';
@@ -1159,7 +1175,7 @@ renderSelectedVoyage();
     document.addEventListener('contextmenu', function(e) {
       var row = e.target.closest('tr[data-row-ctx]');
       if (!row) return;
-      var table = row.closest('.data-table');
+      var table = row.closest('table');
       if (!table) return;
       e.preventDefault();
       showCtxMenu(e.clientX, e.clientY, table, row);
@@ -1168,7 +1184,7 @@ renderSelectedVoyage();
 
   // MutationObserver：监听 tbody 的 innerHTML 变化，自动给新增行加 data-row-ctx
   function bindObserver() {
-    document.querySelectorAll('.data-table tbody').forEach(function(tbody) {
+    document.querySelectorAll('table tbody').forEach(function(tbody) {
       if (tbody.dataset.ctxObserverBound) return;
       tbody.dataset.ctxObserverBound = 'true';
       var observer = new MutationObserver(function() {
