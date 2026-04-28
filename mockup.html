@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>安通综合物流系统 - RJT</title>
+
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
@@ -12,7 +14,9 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .content-stage { flex: 1; min-height: 0; overflow: hidden; }
 .sys-header { background: #F3F3F3; }
 .sys-title-bar { display: flex; align-items: center; gap: 6px; padding: 4px 8px; background: #F3F3F3; color: #000; font-size: 13px; }
-.sys-logo { width: 16px; height: 16px; border-radius: 3px; background: linear-gradient(135deg, #2467A0, #5A94C2); display: inline-block; }
+.sys-logo { width: 16px; height: 16px; display: inline-block; object-fit: contain; flex: 0 0 16px; }
+
+
 .sys-menu-bar { display: flex; align-items: center; justify-content: space-between; padding: 2px 6px; font-size: 12px; background: #1F629B; border-bottom: 1px solid #366A98; }
 .sys-menu-links { display: flex; }
 .sys-menu-links a { color: #E4ECF3; text-decoration: none; padding: 3px 10px; border-radius: 2px; }
@@ -166,7 +170,10 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 <body>
 <div class="sys-header">
   <div class="sys-title-bar">
-    <span class="sys-logo"></span>
+    <img class="sys-logo" src="./favicon.ico" alt="RJT">
+
+
+
     <span>安通综合物流系统 - RJT</span>
   </div>
   <div class="sys-menu-bar">
