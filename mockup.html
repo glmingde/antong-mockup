@@ -51,7 +51,6 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .tab-list-backdrop { position: fixed; inset: 0; z-index: 34; display: none; }
 .tab-list-backdrop.show { display: block; }
 .tab-list-panel { position: fixed; top: 0; left: 0; width: 280px; max-height: 320px; background: #FFF; border: 1px solid #7AA8CF; box-shadow: 0 6px 18px rgba(0,0,0,0.16); z-index: 35; display: none; }
-.tab-list-panel::before { content: ''; position: absolute; top: -8px; right: var(--tab-list-arrow-right, 18px); width: 12px; height: 12px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-top: 1px solid #7AA8CF; border-left: 1px solid #7AA8CF; transform: rotate(45deg); }
 .tab-list-panel.show { display: block; }
 .tab-list-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-weight: bold; border-bottom: 1px solid #B9CEE2; }
 .tab-list-header-text { display: flex; align-items: center; gap: 6px; }
@@ -880,11 +879,9 @@ function positionTabListPanel() {
   const panelWidth = panel.offsetWidth || 280;
   const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
   const left = Math.max(8, Math.min(btnRect.right - panelWidth, viewportWidth - panelWidth - 8));
-  const arrowRight = Math.max(18, Math.min(panelWidth - 24, btnRect.right - left - (btnRect.width / 2) - 6));
   panel.style.top = (btnRect.bottom + 6) + 'px';
   panel.style.left = left + 'px';
   panel.style.right = 'auto';
-  panel.style.setProperty('--tab-list-arrow-right', arrowRight + 'px');
 }
 function setTabListPanelVisible(visible) {
   const panel = document.getElementById('tabListPanel');
@@ -897,7 +894,6 @@ function setTabListPanelVisible(visible) {
   if (backdrop) backdrop.classList.toggle('show', !!visible);
   if (toggleBtn) toggleBtn.classList.toggle('active', !!visible);
 }
-
 
 function hideTabList() {
   setTabListPanelVisible(false);
