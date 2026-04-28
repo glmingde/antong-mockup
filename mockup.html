@@ -200,6 +200,65 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .red-highlight td, tr.red-highlight td { background: #FFE2E2 !important; }
 .blue-highlight { background: #E7F1FF !important; }
 .gray-highlight { background: #F0F0F0 !important; }
+
+/* ===== 全局表格增强：右键菜单 ===== */
+.ctx-menu {
+  position: fixed;
+  z-index: 9999;
+  min-width: 160px;
+  background: #FFF;
+  border: 1px solid #7AA8CF;
+  border-radius: 3px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  padding: 4px 0;
+  display: none;
+}
+.ctx-menu.show { display: block; }
+.ctx-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  color: #2A4A6A;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ctx-menu-item:hover { background: #EAF4FF; }
+.ctx-menu-item.disabled { color: #AAA; pointer-events: none; }
+.ctx-menu-sep { height: 1px; background: #E0E8F0; margin: 4px 0; }
+.ctx-menu-icon { width: 16px; text-align: center; flex-shrink: 0; font-size: 11px; }
+
+/* ===== 全局表格增强：列排序 ===== */
+.data-table th.sortable { cursor: pointer; user-select: none; }
+.data-table th.sort-asc::after { content: ' ▲'; font-size: 9px; color: #2467A0; }
+.data-table th.sort-desc::after { content: ' ▼'; font-size: 9px; color: #2467A0; }
+.data-table th.sort-asc.sort-desc::after { content: ''; }
+.data-table th:not(.sort-asc):not(.sort-desc):hover { background: #C0D8F0; }
+
+/* ===== 全局表格增强：列拖拽重排 ===== */
+.data-table th.draggable { cursor: col-resize; }
+.data-table th.dragging { opacity: 0.4; }
+.data-table th.drag-over { background: #C8DCF0 !important; border-left: 2px solid #2467A0; }
+.data-table { border-collapse: collapse; table-layout: fixed; }
+.data-table th, .data-table td { border: 1px solid #C0C0C0; }
+.data-table-wrap { overflow-x: auto; overflow-y: auto; max-height: 420px; border: 1px solid #1F629B; background: #FFF; }
+
+/* ===== 全局表格增强：列宽拖拽手柄 ===== */
+.col-resize-handle {
+  position: absolute;
+  right: -3px; top: 0; bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 2;
+}
+.col-resize-handle:hover { background: rgba(36,103,160,0.3); }
+.data-table th { position: relative; overflow: visible; }
+.data-table th .col-resize-handle { display: none; }
+.data-table th:hover .col-resize-handle { display: block; }
+
+/* ===== 全局表格增强：行悬停提示 ===== */
+.data-table tr[data-row-ctx] { cursor: context-menu; }
 </style>
 </head>
 <body>
@@ -1011,4 +1070,235 @@ renderSelectedVoyage();
 
 </script>
 </body>
+<script>
+/* ===== 全局表格增强：右键菜单 ===== */
+(function() {
+  var activeCtxTable = null, activeCtxRow = null, ctxMenu = null;
+
+  function initCtxMenu() {
+    if (ctxMenu) return;
+    ctxMenu = document.createElement('div');
+    ctxMenu.className = 'ctx-menu';
+    ctxMenu.id = 'globalCtxMenu';
+    document.body.appendChild(ctxMenu);
+    document.addEventListener('click', function(e) {
+      if (!ctxMenu.contains(e.target)) hideCtxMenu();
+    });
+    document.addEventListener('contextmenu', function(e) {
+      if (!e.target.closest('.ctx-menu')) hideCtxMenu();
+    });
+  }
+
+  function showCtxMenu(x, y, table, row) {
+    if (!ctxMenu) initCtxMenu();
+    activeCtxTable = table;
+    activeCtxRow = row;
+    ctxMenu.innerHTML = [
+      '<div class="ctx-menu-item" onclick="window.__ctxCopyRow()"><span class="ctx-menu-icon">📋</span>复制当前行</div>',
+      '<div class="ctx-menu-sep"></div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxExportTable()"><span class="ctx-menu-icon">📤</span>导出当前表格（CSV）</div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxExportPage()"><span class="ctx-menu-icon">📄</span>导出整页表格</div>',
+      '<div class="ctx-menu-sep"></div>',
+      '<div class="ctx-menu-item" onclick="window.__ctxSelectAll()"><span class="ctx-menu-icon">☑</span>全选所有行</div>',
+    ].join('');
+    var menuH = 160;
+    var vw = window.innerWidth || document.documentElement.clientWidth || 0;
+    var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+    ctxMenu.style.left = (x + 180 > vw ? x - 180 : x) + 'px';
+    ctxMenu.style.top = (y + menuH > vh ? y - menuH : y) + 'px';
+    ctxMenu.classList.add('show');
+  }
+
+  function hideCtxMenu() {
+    if (ctxMenu) ctxMenu.classList.remove('show');
+    activeCtxTable = null; activeCtxRow = null;
+  }
+
+  window.__ctxCopyRow = function() {
+    if (!activeCtxRow) return;
+    var cells = activeCtxRow.querySelectorAll('td');
+    var text = Array.from(cells).map(function(td) { return td.textContent.trim(); }).join('\t');
+    if (navigator.clipboard) navigator.clipboard.writeText(text);
+    hideCtxMenu();
+  };
+
+  window.__ctxExportTable = function() {
+    if (!activeCtxTable) return;
+    var table = activeCtxTable;
+    var rows = [];
+    rows.push(Array.from(table.querySelectorAll('th')).map(function(h) { return '"' + h.textContent.trim().replace(/"/g,'""') + '"'; }).join(','));
+    table.querySelectorAll('tbody tr').forEach(function(tr) {
+      rows.push(Array.from(tr.querySelectorAll('td')).map(function(td) { return '"' + td.textContent.trim().replace(/"/g,'""') + '"'; }).join(','));
+    });
+    downloadCsv('\ufeff' + rows.join('\n'), 'table-export.csv');
+    hideCtxMenu();
+  };
+
+  window.__ctxExportPage = function() {
+    window.__ctxExportTable();
+  };
+
+  window.__ctxSelectAll = function() {
+    if (!activeCtxTable) return;
+    activeCtxTable.querySelectorAll('tbody tr').forEach(function(r) { r.classList.add('selected'); });
+    hideCtxMenu();
+  };
+
+  function downloadCsv(content, filename) {
+    var blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function bindAllCtx() {
+    initCtxMenu();
+    document.querySelectorAll('.data-table tbody tr').forEach(function(row) {
+      row.setAttribute('data-row-ctx', 'true');
+      row.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        showCtxMenu(e.clientX, e.clientY, row.closest('.data-table'), row);
+      });
+    });
+  }
+
+  // 标签切换后重新绑定
+  var _origST = window.switchTab;
+  window.switchTab = function(tab) {
+    if (_origST) _origST(tab);
+    setTimeout(bindAllCtx, 50);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindAllCtx);
+  } else { bindAllCtx(); }
+})();
+
+/* ===== 全局表格增强：列排序 ===== */
+(function() {
+  function bindSort() {
+    document.querySelectorAll('.data-table').forEach(function(table) {
+      table.querySelectorAll('th').forEach(function(th, ci) {
+        if (th.dataset.sortBound) return;
+        th.dataset.sortBound = 'true';
+        th.classList.add('sortable');
+        th.addEventListener('click', function(e) {
+          if (e.target.closest('.col-resize-handle')) return;
+          var tbody = table.querySelector('tbody');
+          if (!tbody) return;
+          var rows = Array.from(tbody.querySelectorAll('tr'));
+          var isAsc = th.classList.contains('sort-asc');
+          table.querySelectorAll('th').forEach(function(h) { h.classList.remove('sort-asc','sort-desc'); });
+          th.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+          rows.sort(function(a, b) {
+            var ta = a.querySelectorAll('td')[ci].textContent.trim();
+            var tb = b.querySelectorAll('td')[ci].textContent.trim();
+            var na = parseFloat(ta.replace(/[^\d.-]/g,'')), nb = parseFloat(tb.replace(/[^\d.-]/g,''));
+            var cmp = (!isNaN(na) && !isNaN(nb)) ? na - nb : ta.localeCompare(tb, 'zh-CN');
+            return isAsc ? -cmp : cmp;
+          });
+          rows.forEach(function(r) { tbody.appendChild(r); });
+        });
+      });
+    });
+  }
+  var _origST2 = window.switchTab;
+  window.switchTab = function(tab) { if (_origST2) _origST2(tab); setTimeout(bindSort, 60); };
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bindSort); } else { bindSort(); }
+})();
+
+/* ===== 全局表格增强：列拖拽重排 ===== */
+(function() {
+  function bindColDrag() {
+    document.querySelectorAll('.data-table').forEach(function(table) {
+      if (table.dataset.colDragBound) return;
+      table.dataset.colDragBound = 'true';
+      var thead = table.querySelector('thead');
+      if (!thead) return;
+      var ths = Array.from(thead.querySelectorAll('th'));
+      var dragIdx = null, dragTh = null;
+
+      ths.forEach(function(th) {
+        th.classList.add('draggable');
+        th.addEventListener('mousedown', function(e) {
+          if (e.target.closest('.col-resize-handle')) return;
+          dragIdx = ths.indexOf(th); dragTh = th;
+          th.classList.add('dragging');
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+          e.preventDefault();
+        });
+      });
+
+      function onMove(e) {
+        if (dragIdx === null) return;
+        ths.forEach(function(h, i) {
+          if (i !== dragIdx) {
+            var r = h.getBoundingClientRect();
+            h.classList.toggle('drag-over', e.clientX >= r.left && e.clientX <= r.right);
+          }
+        });
+      }
+
+      function onUp(e) {
+        if (dragIdx !== null) {
+          dragTh.classList.remove('dragging');
+          var cur = null;
+          ths.forEach(function(h, i) {
+            h.classList.remove('drag-over');
+            if (i !== dragIdx) {
+              var r = h.getBoundingClientRect();
+              if (e.clientX >= r.left && e.clientX <= r.right) cur = i;
+            }
+          });
+          if (cur !== null && cur !== dragIdx) {
+            var allRows = table.querySelectorAll('tr');
+            allRows.forEach(function(row) {
+              var cells = Array.from(row.children);
+              if (cells.length <= Math.max(dragIdx, cur)) return;
+              var ref = cells[cur];
+              row.insertBefore(cells[dragIdx], dragIdx < cur ? ref.nextSibling : ref);
+            });
+          }
+          dragIdx = null; dragTh = null;
+        }
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+    });
+  }
+  var _origST3 = window.switchTab;
+  window.switchTab = function(tab) { if (_origST3) _origST3(tab); setTimeout(bindColDrag, 60); };
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bindColDrag); } else { bindColDrag(); }
+})();
+
+/* ===== 全局表格增强：列宽拖拽 ===== */
+(function() {
+  function bindColResize() {
+    document.querySelectorAll('.data-table').forEach(function(table) {
+      if (table.dataset.colResizeBound) return;
+      table.dataset.colResizeBound = 'true';
+      table.querySelectorAll('th').forEach(function(th) {
+        var handle = document.createElement('div');
+        handle.className = 'col-resize-handle';
+        th.appendChild(handle);
+        var startX = 0, startW = 0;
+        handle.addEventListener('mousedown', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          startX = e.clientX; startW = th.offsetWidth;
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+        });
+        function onMove(e) { th.style.width = Math.max(30, startW + (e.clientX - startX)) + 'px'; }
+        function onUp() { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
+      });
+    });
+  }
+  var _origST4 = window.switchTab;
+  window.switchTab = function(tab) { if (_origST4) _origST4(tab); setTimeout(bindColResize, 60); };
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bindColResize); } else { bindColResize(); }
+})();
+</script>
 </html>
