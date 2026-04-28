@@ -38,7 +38,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .toolbar-btn { height: 22px; padding: 2px 8px; border: none; border-radius: 2px; background: transparent; color: #E4ECF3; cursor: pointer; font-size: 12px; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; }
 .toolbar-btn:hover { background: rgba(255,255,255,0.15); }
 .toolbar-info { margin-left: auto; color: #E4ECF3; font-size: 11px; }
-.tab-bar { display: flex; gap: 2px; padding: 4px 4px 0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-bottom: 2px solid #2467A0; flex-wrap: nowrap; flex: 0 0 auto; min-width: 0; overflow: hidden; }
+.tab-bar { position: relative; display: flex; gap: 2px; padding: 4px 4px 0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); border-bottom: 2px solid #2467A0; flex-wrap: nowrap; flex: 0 0 auto; min-width: 0; overflow: hidden; }
 .tab-scroll { flex: 1; min-width: 0; display: flex; gap: 2px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
 .tab { padding: 4px 12px; background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.6); border-bottom: none; border-radius: 3px 3px 0 0; color: #2A4A6A; cursor: pointer; font-size: 12px; }
 .tab.active { background: #FFF; color: #2467A0; font-weight: bold; border-color: #2467A0; border-bottom: 2px solid #FFF; margin-bottom: -2px; position: relative; z-index: 1; }
@@ -47,7 +47,31 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .tab[data-closable="false"] .tab-close { display: none; }
 .tab-bar-actions { display: flex; gap: 1px; margin-left: auto; padding: 2px 0; border-left: 1px solid rgba(255,255,255,0.5); }
 .tab-action-btn { width: 22px; height: 20px; border: none; background: transparent; color: #2A4A6A; border-radius: 2px; cursor: pointer; }
-.tab-action-btn:hover { background: rgba(255,255,255,0.5); }
+.tab-action-btn:hover, .tab-action-btn.active { background: rgba(255,255,255,0.68); }
+.tab-list-backdrop { position: fixed; inset: 0; z-index: 34; display: none; }
+.tab-list-backdrop.show { display: block; }
+.tab-list-panel { position: absolute; top: calc(100% + 6px); right: 4px; width: 280px; max-height: 320px; background: #FFF; border: 1px solid #7AA8CF; box-shadow: 0 6px 18px rgba(0,0,0,0.16); z-index: 35; display: none; }
+.tab-list-panel.show { display: block; }
+.tab-list-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-weight: bold; border-bottom: 1px solid #B9CEE2; }
+.tab-list-header-text { display: flex; align-items: center; gap: 6px; }
+.tab-list-count { font-size: 11px; color: #56738F; font-weight: normal; }
+.tab-list-close-btn { width: 20px; height: 20px; border: none; background: transparent; color: #2A4A6A; border-radius: 2px; cursor: pointer; }
+.tab-list-close-btn:hover { background: rgba(255,255,255,0.7); }
+.tab-list-body { max-height: 276px; overflow-y: auto; }
+.tab-list-empty { padding: 14px 12px; text-align: center; color: #888; }
+.tab-list-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid #E6EEF5; background: #FFF; }
+.tab-list-item:last-child { border-bottom: none; }
+.tab-list-item.active { background: #EAF4FF; }
+.tab-list-main { flex: 1; min-width: 0; cursor: pointer; }
+.tab-list-main:hover .tab-list-name { color: #1A5EA8; }
+.tab-list-name { color: #2A4A6A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tab-list-meta { margin-top: 2px; font-size: 11px; color: #7A8796; }
+.tab-list-actions { display: flex; align-items: center; gap: 4px; }
+.tab-list-btn { min-width: 42px; height: 22px; padding: 0 8px; border: 1px solid #B7CBE0; border-radius: 2px; background: #F7FBFF; color: #2A4A6A; cursor: pointer; font-size: 11px; font-family: inherit; }
+.tab-list-btn:hover { border-color: #7AA8CF; background: #EAF4FF; }
+.tab-list-btn-danger { color: #B24343; }
+
+
 .main-content { display: none; height: 100%; min-height: 0; padding: 8px; overflow-y: auto; overflow-x: hidden; }
 .main-content.active { display: block; }
 .query-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; }
@@ -765,10 +789,15 @@ const INITIAL_ACTIVE_TAB = getInitialActiveTab();
 const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
   '<button class="tab-action-btn" title="切换到左边标签" onclick="prevTab()">◁</button>' +
   '<button class="tab-action-btn" title="切换到右边标签" onclick="nextTab()">▷</button>' +
-
-  '<button class="tab-action-btn" title="标签列表" onclick="toggleTabList()">☰</button>' +
+  '<button class="tab-action-btn" id="tabListToggleBtn" title="标签列表" onclick="toggleTabList()">☰</button>' +
   '<button class="tab-action-btn" title="关闭当前标签" onclick="closeCurrentTab()">✕</button>' +
 '</div>';
+const TAB_LIST_PANEL_MARKUP = '<div class="tab-list-backdrop" id="tabListBackdrop" onclick="hideTabList()"></div><div class="tab-list-panel" id="tabListPanel">' +
+  '<div class="tab-list-header"><div class="tab-list-header-text"><span>已开标签</span><span class="tab-list-count" id="tabListCount"></span></div><button class="tab-list-close-btn" title="收起" onclick="hideTabList()">✕</button></div>' +
+  '<div class="tab-list-body" id="tabListBody"></div>' +
+'</div>';
+
+
 function escapeHtml(text) {
   return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
@@ -776,7 +805,7 @@ function renderShellFrame() {
   const tabBar = document.getElementById('mainTabBar');
   const tabItemsHtml = TAB_REGISTRY.map(item => '<div class="tab' + (INITIAL_VISIBLE_TABS.has(item.id) ? '' : ' hidden') + (item.id === INITIAL_ACTIVE_TAB ? ' active' : '') + '" data-tab="' + item.id + '" data-closable="' + (item.closable ? 'true' : 'false') + '"><span class="tab-label">' + escapeHtml(item.label) + '</span><span class="tab-close">×</span></div>').join('');
 
-  tabBar.innerHTML = '<div class="tab-scroll">' + tabItemsHtml + '</div>' + TAB_ACTION_MARKUP;
+  tabBar.innerHTML = '<div class="tab-scroll">' + tabItemsHtml + '</div>' + TAB_ACTION_MARKUP + TAB_LIST_PANEL_MARKUP;
   const homeAppGrid = document.getElementById('homeAppGrid');
   const appCenterTabs = TAB_REGISTRY.filter(item => item.pageType === 'module' && item.showInAppCenter).sort((a, b) => {
     if (!!a.sortPinLast !== !!b.sortPinLast) return a.sortPinLast ? 1 : -1;
@@ -786,7 +815,9 @@ function renderShellFrame() {
 
   bindTabEvents();
   bindFunctionSearch();
+  renderTabListPanel();
 }
+
 function bindTabEvents() {
 
 
@@ -808,6 +839,53 @@ function setTabVisibility(tab, visible) {
   const el = document.querySelector('.tab[data-tab="' + tab + '"]');
   if (el) el.classList.toggle('hidden', !visible);
 }
+function setTabListPanelVisible(visible) {
+  const panel = document.getElementById('tabListPanel');
+  const backdrop = document.getElementById('tabListBackdrop');
+  const toggleBtn = document.getElementById('tabListToggleBtn');
+  if (panel) panel.classList.toggle('show', !!visible);
+  if (backdrop) backdrop.classList.toggle('show', !!visible);
+  if (toggleBtn) toggleBtn.classList.toggle('active', !!visible);
+}
+function hideTabList() {
+  setTabListPanelVisible(false);
+}
+function renderTabListPanel() {
+  const panelBody = document.getElementById('tabListBody');
+  const countEl = document.getElementById('tabListCount');
+  if (!panelBody || !countEl) return;
+  const visibleTabs = getVisibleTabs();
+  countEl.textContent = '共 ' + visibleTabs.length + ' 项';
+  if (!visibleTabs.length) {
+    panelBody.innerHTML = '<div class="tab-list-empty">当前没有可用标签</div>';
+    return;
+  }
+  panelBody.innerHTML = visibleTabs.map(tab => {
+    const tabId = tab.getAttribute('data-tab');
+    const tabMeta = TAB_REGISTRY_MAP[tabId] || {};
+    const tabName = tab.querySelector('.tab-label') ? tab.querySelector('.tab-label').textContent.trim() : tabId;
+    const closable = tab.getAttribute('data-closable') !== 'false';
+    return '<div class="tab-list-item' + (tab.classList.contains('active') ? ' active' : '') + '" data-tab="' + tabId + '">' +
+      '<div class="tab-list-main" onclick="openTabFromList(\'' + tabId + '\')">' +
+      '<div class="tab-list-name">' + escapeHtml(tabName) + '</div>' +
+      '<div class="tab-list-meta">' + escapeHtml(getPageTypeLabel(tabMeta.pageType)) + (tabMeta.parentId ? ' · 所属：' + escapeHtml((TAB_REGISTRY_MAP[tabMeta.parentId] || {}).label || '') : '') + '</div>' +
+      '</div>' +
+      '<div class="tab-list-actions">' +
+      '<button class="tab-list-btn" onclick="openTabFromList(\'' + tabId + '\')">打开</button>' +
+      (closable ? '<button class="tab-list-btn tab-list-btn-danger" onclick="closeTabFromList(\'' + tabId + '\')">关闭</button>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+function openTabFromList(tabId) {
+  switchTab(tabId);
+  hideTabList();
+}
+function closeTabFromList(tabId) {
+  closeTabById(tabId);
+  hideTabList();
+}
+
 function switchTab(tab) {
   document.querySelectorAll('.main-content').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -819,6 +897,7 @@ function switchTab(tab) {
   if (contentEl) contentEl.classList.add('active');
   const toolbarEl = document.getElementById('toolbar-' + tab);
   if (toolbarEl) toolbarEl.style.display = 'flex';
+  renderTabListPanel();
 }
 function goTab(tab) { switchTab(tab); }
 function getVisibleTabs() { return Array.from(document.querySelectorAll('.tab')).filter(t => !t.classList.contains('hidden')); }
@@ -834,12 +913,20 @@ function closeTabById(tabId) {
   if (activeTab && activeTab.getAttribute('data-tab') === tabId) {
     const target = idx > 0 ? tabs[idx - 1] : tabs[idx + 1];
     if (target && target.getAttribute('data-tab') !== tabId) switchTab(target.getAttribute('data-tab')); else switchTab('home');
+  } else {
+    renderTabListPanel();
   }
 }
 function closeCurrentTab() { const activeTab = document.querySelector('.tab.active'); if (activeTab) closeTabById(activeTab.getAttribute('data-tab')); }
 function prevTab() { const tabs = getVisibleTabs(); const idx = tabs.findIndex(t => t.classList.contains('active')); if (idx > 0) switchTab(tabs[idx - 1].getAttribute('data-tab')); }
 function nextTab() { const tabs = getVisibleTabs(); const idx = tabs.findIndex(t => t.classList.contains('active')); if (idx < tabs.length - 1) switchTab(tabs[idx + 1].getAttribute('data-tab')); }
-function toggleTabList() { const list = getVisibleTabs().map(t => (t.classList.contains('active') ? '● ' : '  ') + t.querySelector('.tab-label').textContent.trim()).join('\n'); alert('当前标签列表：\n\n' + list); }
+function toggleTabList() {
+  const panel = document.getElementById('tabListPanel');
+  const shouldShow = !(panel && panel.classList.contains('show'));
+  renderTabListPanel();
+  setTabListPanelVisible(shouldShow);
+}
+
 function showEditModal() { document.getElementById('editModal').classList.add('show'); }
 function showImportModal() { document.getElementById('importModal').classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
