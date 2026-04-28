@@ -566,26 +566,37 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 
 <script>
 const PAGE_DEFINITIONS = [
-  { id: 'home', label: '应用中心', shortLabel: '应用中心', closable: false, level: 0, showInAppCenter: false, defaultVisible: true, search: { type: '首页', keywords: ['首页', '应用中心', '系统首页', '主页'] } },
-  { id: 'module-main', label: '一级业务示例', shortLabel: '一级业务示例', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, sortPinLast: true, modifiedAt: '2026-04-01 09:00', appCard: { iconClass: 'blue', iconText: '业', desc: '通用一级页面骨架示意' }, search: { type: '一级页面', keywords: ['一级业务', '业务示例', '示例页面'] } },
-  { id: 'cold-chain-dashboard', label: '冷柜管理数字化', shortLabel: '冷柜管理', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-18 16:30', appCard: { iconClass: 'green', iconText: '冷', desc: '岸上端冷柜管理总览入口' }, search: { type: '一级页面', keywords: ['冷柜', '冷链', '冷柜管理', '冷柜管理数字化'] } },
-  { id: 'stowage-query', label: '船舶配载建议查询', shortLabel: '配载建议查询', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-24 14:40', appCard: { iconClass: 'orange', iconText: '配', desc: '箱号级建议与偏差总览' }, search: { type: '一级页面', keywords: ['配载', '配载建议', '建议查询', '船舶配载', '查询'] } },
-  { id: 'module-archive', label: '辅助页示例', shortLabel: '辅助页示例', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['辅助页', '辅助页示例'] } },
-  { id: 'module-report', label: '报表示例', shortLabel: '报表示例', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['报表', '报表示例'] } },
-  { id: 'cold-chain-records', label: '综合记录', shortLabel: '综合记录', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['综合记录', '记录', '冷柜记录'] } },
-  { id: 'cold-chain-voyage', label: '航次详情', shortLabel: '航次详情', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['航次', '航次详情', '详情'] } },
-  { id: 'cold-chain-repair', label: '补录修正', shortLabel: '补录修正', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['补录', '修正', '补录修正'] } },
-  { id: 'cargo-archive', label: '货名档案维护', shortLabel: '货名档案维护', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['货名', '档案', '货名档案', '档案维护'] } },
-  { id: 'stowage-deviation', label: '配载偏差预警', shortLabel: '配载偏差预警', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['偏差', '预警', '偏差预警', '配载偏差'] } },
-  { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['出口清单', '导出', '导出示意', '清单导出'] } }
+  { id: 'home', label: '应用中心', shortLabel: '应用中心', pageType: 'home', parentId: null, closable: false, showInAppCenter: false, defaultVisible: true, search: { keywords: ['首页', '应用中心', '系统首页', '主页'] } },
+  { id: 'module-main', label: '一级业务示例', shortLabel: '一级业务示例', pageType: 'module', parentId: null, closable: true, showInAppCenter: true, defaultVisible: false, sortPinLast: true, modifiedAt: '2026-04-01 09:00', appCard: { iconClass: 'blue', iconText: '业', desc: '通用一级页面骨架示意' }, search: { keywords: ['一级业务', '业务示例', '示例页面'] } },
+  { id: 'cold-chain-dashboard', label: '冷柜管理数字化', shortLabel: '冷柜管理', pageType: 'module', parentId: null, closable: true, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-18 16:30', appCard: { iconClass: 'green', iconText: '冷', desc: '岸上端冷柜管理总览入口' }, search: { keywords: ['冷柜', '冷链', '冷柜管理', '冷柜管理数字化'] } },
+  { id: 'stowage-query', label: '船舶配载建议查询', shortLabel: '配载建议查询', pageType: 'module', parentId: null, closable: true, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-24 14:40', appCard: { iconClass: 'orange', iconText: '配', desc: '箱号级建议与偏差总览' }, search: { keywords: ['配载', '配载建议', '建议查询', '船舶配载', '查询'] } },
+  { id: 'module-archive', label: '辅助页示例', shortLabel: '辅助页示例', pageType: 'subpage', parentId: 'module-main', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['辅助页', '辅助页示例'] } },
+  { id: 'module-report', label: '报表示例', shortLabel: '报表示例', pageType: 'subpage', parentId: 'module-main', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['报表', '报表示例'] } },
+  { id: 'cold-chain-records', label: '综合记录', shortLabel: '综合记录', pageType: 'subpage', parentId: 'cold-chain-dashboard', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['综合记录', '记录', '冷柜记录'] } },
+  { id: 'cold-chain-voyage', label: '航次详情', shortLabel: '航次详情', pageType: 'subpage', parentId: 'cold-chain-dashboard', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['航次', '航次详情', '详情'] } },
+  { id: 'cold-chain-repair', label: '补录修正', shortLabel: '补录修正', pageType: 'subpage', parentId: 'cold-chain-dashboard', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['补录', '修正', '补录修正'] } },
+  { id: 'cargo-archive', label: '货名档案维护', shortLabel: '货名档案维护', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['货名', '档案', '货名档案', '档案维护'] } },
+  { id: 'stowage-deviation', label: '配载偏差预警', shortLabel: '配载偏差预警', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['偏差', '预警', '偏差预警', '配载偏差'] } },
+  { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['出口清单', '导出', '导出示意', '清单导出'] } }
 ];
-const TAB_REGISTRY = PAGE_DEFINITIONS.map(({ search, ...tabMeta }) => tabMeta);
-const SEARCH_INDEX = PAGE_DEFINITIONS.filter(item => item.search).map(item => ({
-  tabId: item.id,
-  label: item.label,
-  type: item.search.type,
-  keywords: item.search.keywords || []
+const PAGE_TYPE_LABELS = { home: '首页', module: '一级页面', subpage: '辅助页面' };
+const TAB_REGISTRY = PAGE_DEFINITIONS.map(({ search, pageType, parentId, ...tabMeta }) => ({
+  ...tabMeta,
+  pageType,
+  parentId,
+  level: pageType === 'home' ? 0 : (pageType === 'module' ? 1 : 2)
 }));
+const SEARCH_INDEX = PAGE_DEFINITIONS.filter(item => item.search).map(item => {
+  const parent = item.parentId ? PAGE_DEFINITIONS.find(page => page.id === item.parentId) : null;
+  return {
+    tabId: item.id,
+    label: item.label,
+    type: PAGE_TYPE_LABELS[item.pageType] || '页面',
+    moduleLabel: parent ? parent.label : item.label,
+    keywords: item.search.keywords || []
+  };
+});
+
 const TAB_REGISTRY_MAP = Object.fromEntries(TAB_REGISTRY.map(item => [item.id, item]));
 const DEFAULT_OPEN_MODE = 'latest-modified';
 let searchResults = [];
@@ -612,7 +623,8 @@ function renderSearchDropdown(items) {
     dropdown.classList.add('show');
     return;
   }
-  dropdown.innerHTML = items.map((item, index) => '<div class="search-result-item' + (index === searchActiveIndex ? ' active' : '') + '" data-index="' + index + '"><div class="search-result-title">' + escapeHtml(item.label) + '</div><div class="search-result-meta"><span class="search-result-type">' + escapeHtml(item.type) + '</span><span>匹配：' + escapeHtml(item.matchedKeyword) + '</span></div></div>').join('');
+  dropdown.innerHTML = items.map((item, index) => '<div class="search-result-item' + (index === searchActiveIndex ? ' active' : '') + '" data-index="' + index + '"><div class="search-result-title">' + escapeHtml(item.label) + '</div><div class="search-result-meta"><span class="search-result-type">' + escapeHtml(item.type) + '</span><span>所属：' + escapeHtml(item.moduleLabel) + '</span><span>匹配：' + escapeHtml(item.matchedKeyword) + '</span></div></div>').join('');
+
   dropdown.classList.add('show');
   dropdown.querySelectorAll('.search-result-item').forEach(node => {
     node.onmousedown = function(event) {
@@ -688,7 +700,7 @@ function parseModifiedTime(value) {
 }
 function getLatestModifiedTab() {
   return TAB_REGISTRY
-    .filter(item => item.id !== 'home' && !!item.modifiedAt)
+    .filter(item => item.pageType === 'module' && !!item.modifiedAt)
     .sort((a, b) => parseModifiedTime(b.modifiedAt) - parseModifiedTime(a.modifiedAt))[0] || null;
 }
 function getInitialVisibleTabs() {
@@ -724,7 +736,7 @@ function renderShellFrame() {
 
   tabBar.innerHTML = '<div class="tab-scroll">' + tabItemsHtml + '</div>' + TAB_ACTION_MARKUP;
   const homeAppGrid = document.getElementById('homeAppGrid');
-  const appCenterTabs = TAB_REGISTRY.filter(item => item.showInAppCenter).sort((a, b) => {
+  const appCenterTabs = TAB_REGISTRY.filter(item => item.pageType === 'module' && item.showInAppCenter).sort((a, b) => {
     if (!!a.sortPinLast !== !!b.sortPinLast) return a.sortPinLast ? 1 : -1;
     const timeA = a.modifiedAt ? new Date(a.modifiedAt.replace(' ', 'T')).getTime() : 0;
     const timeB = b.modifiedAt ? new Date(b.modifiedAt.replace(' ', 'T')).getTime() : 0;
@@ -735,6 +747,7 @@ function renderShellFrame() {
   bindFunctionSearch();
 }
 function bindTabEvents() {
+
 
   document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = function(event) {
