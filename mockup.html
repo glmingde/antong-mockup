@@ -565,34 +565,29 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 </div>
 
 <script>
-const TAB_REGISTRY = [
-  { id: 'home', label: '应用中心', shortLabel: '应用中心', closable: false, level: 0, showInAppCenter: false, defaultVisible: true },
-  { id: 'module-main', label: '一级业务示例', shortLabel: '一级业务示例', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, sortPinLast: true, modifiedAt: '2026-04-01 09:00', appCard: { iconClass: 'blue', iconText: '业', desc: '通用一级页面骨架示意' } },
-  { id: 'cold-chain-dashboard', label: '冷柜管理数字化', shortLabel: '冷柜管理', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-18 16:30', appCard: { iconClass: 'green', iconText: '冷', desc: '岸上端冷柜管理总览入口' } },
-  { id: 'stowage-query', label: '船舶配载建议查询', shortLabel: '配载建议查询', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-24 14:40', appCard: { iconClass: 'orange', iconText: '配', desc: '箱号级建议与偏差总览' } },
-  { id: 'module-archive', label: '辅助页示例', shortLabel: '辅助页示例', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
-  { id: 'module-report', label: '报表示例', shortLabel: '报表示例', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
-  { id: 'cold-chain-records', label: '综合记录', shortLabel: '综合记录', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
-  { id: 'cold-chain-voyage', label: '航次详情', shortLabel: '航次详情', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
-  { id: 'cold-chain-repair', label: '补录修正', shortLabel: '补录修正', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
-  { id: 'cargo-archive', label: '货名档案维护', shortLabel: '货名档案维护', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
-  { id: 'stowage-deviation', label: '配载偏差预警', shortLabel: '配载偏差预警', closable: true, level: 2, showInAppCenter: false, defaultVisible: false },
-  { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', closable: true, level: 2, showInAppCenter: false, defaultVisible: false }
+const PAGE_DEFINITIONS = [
+  { id: 'home', label: '应用中心', shortLabel: '应用中心', closable: false, level: 0, showInAppCenter: false, defaultVisible: true, search: { type: '首页', keywords: ['首页', '应用中心', '系统首页', '主页'] } },
+  { id: 'module-main', label: '一级业务示例', shortLabel: '一级业务示例', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, sortPinLast: true, modifiedAt: '2026-04-01 09:00', appCard: { iconClass: 'blue', iconText: '业', desc: '通用一级页面骨架示意' }, search: { type: '一级页面', keywords: ['一级业务', '业务示例', '示例页面'] } },
+  { id: 'cold-chain-dashboard', label: '冷柜管理数字化', shortLabel: '冷柜管理', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-18 16:30', appCard: { iconClass: 'green', iconText: '冷', desc: '岸上端冷柜管理总览入口' }, search: { type: '一级页面', keywords: ['冷柜', '冷链', '冷柜管理', '冷柜管理数字化'] } },
+  { id: 'stowage-query', label: '船舶配载建议查询', shortLabel: '配载建议查询', closable: true, level: 1, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-04-24 14:40', appCard: { iconClass: 'orange', iconText: '配', desc: '箱号级建议与偏差总览' }, search: { type: '一级页面', keywords: ['配载', '配载建议', '建议查询', '船舶配载', '查询'] } },
+  { id: 'module-archive', label: '辅助页示例', shortLabel: '辅助页示例', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['辅助页', '辅助页示例'] } },
+  { id: 'module-report', label: '报表示例', shortLabel: '报表示例', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['报表', '报表示例'] } },
+  { id: 'cold-chain-records', label: '综合记录', shortLabel: '综合记录', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['综合记录', '记录', '冷柜记录'] } },
+  { id: 'cold-chain-voyage', label: '航次详情', shortLabel: '航次详情', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['航次', '航次详情', '详情'] } },
+  { id: 'cold-chain-repair', label: '补录修正', shortLabel: '补录修正', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['补录', '修正', '补录修正'] } },
+  { id: 'cargo-archive', label: '货名档案维护', shortLabel: '货名档案维护', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['货名', '档案', '货名档案', '档案维护'] } },
+  { id: 'stowage-deviation', label: '配载偏差预警', shortLabel: '配载偏差预警', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['偏差', '预警', '偏差预警', '配载偏差'] } },
+  { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', closable: true, level: 2, showInAppCenter: false, defaultVisible: false, search: { type: '辅助页面', keywords: ['出口清单', '导出', '导出示意', '清单导出'] } }
 ];
-const SEARCH_INDEX = [
-  { tabId: 'home', label: '应用中心', type: '首页', keywords: ['首页', '应用中心', '系统首页', '主页'] },
-  { tabId: 'module-main', label: '一级业务示例', type: '一级页面', keywords: ['一级业务', '业务示例', '示例页面'] },
-  { tabId: 'cold-chain-dashboard', label: '冷柜管理数字化', type: '一级页面', keywords: ['冷柜', '冷链', '冷柜管理', '冷柜管理数字化'] },
-  { tabId: 'cold-chain-records', label: '综合记录', type: '辅助页面', keywords: ['综合记录', '记录', '冷柜记录'] },
-  { tabId: 'cold-chain-voyage', label: '航次详情', type: '辅助页面', keywords: ['航次', '航次详情', '详情'] },
-  { tabId: 'cold-chain-repair', label: '补录修正', type: '辅助页面', keywords: ['补录', '修正', '补录修正'] },
-  { tabId: 'stowage-query', label: '船舶配载建议查询', type: '一级页面', keywords: ['配载', '配载建议', '建议查询', '船舶配载', '查询'] },
-  { tabId: 'cargo-archive', label: '货名档案维护', type: '辅助页面', keywords: ['货名', '档案', '货名档案', '档案维护'] },
-  { tabId: 'stowage-deviation', label: '配载偏差预警', type: '辅助页面', keywords: ['偏差', '预警', '偏差预警', '配载偏差'] },
-  { tabId: 'export-preview', label: '出口清单导出示意', type: '辅助页面', keywords: ['出口清单', '导出', '导出示意', '清单导出'] },
-  { tabId: 'module-archive', label: '辅助页示例', type: '辅助页面', keywords: ['辅助页', '辅助页示例'] },
-  { tabId: 'module-report', label: '报表示例', type: '辅助页面', keywords: ['报表', '报表示例'] }
-];
+const TAB_REGISTRY = PAGE_DEFINITIONS.map(({ search, ...tabMeta }) => tabMeta);
+const SEARCH_INDEX = PAGE_DEFINITIONS.filter(item => item.search).map(item => ({
+  tabId: item.id,
+  label: item.label,
+  type: item.search.type,
+  keywords: item.search.keywords || []
+}));
+const TAB_REGISTRY_MAP = Object.fromEntries(TAB_REGISTRY.map(item => [item.id, item]));
+const DEFAULT_OPEN_MODE = 'latest-modified';
 let searchResults = [];
 let searchActiveIndex = -1;
 let searchBlurTimer = null;
@@ -688,8 +683,7 @@ function bindFunctionSearch() {
     event.preventDefault();
   });
 }
-const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
-
+function parseModifiedTime(value) {
   return value ? new Date(value.replace(' ', 'T')).getTime() : 0;
 }
 function getLatestModifiedTab() {
@@ -715,9 +709,9 @@ function getInitialActiveTab() {
 const INITIAL_VISIBLE_TABS = getInitialVisibleTabs();
 const INITIAL_ACTIVE_TAB = getInitialActiveTab();
 const TAB_ACTION_MARKUP = '<div class="tab-bar-actions">' +
-
   '<button class="tab-action-btn" title="切换到左边标签" onclick="prevTab()">◁</button>' +
   '<button class="tab-action-btn" title="切换到右边标签" onclick="nextTab()">▷</button>' +
+
   '<button class="tab-action-btn" title="标签列表" onclick="toggleTabList()">☰</button>' +
   '<button class="tab-action-btn" title="关闭当前标签" onclick="closeCurrentTab()">✕</button>' +
 '</div>';
