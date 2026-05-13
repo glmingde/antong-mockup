@@ -274,6 +274,34 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 
 /* ===== 全局表格增强：行悬停提示 ===== */
 .data-table tr[data-row-ctx] { cursor: context-menu; }
+
+/* ===== 回场数据模块专用样式 ===== */
+.return-data-query-bar { display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; flex-shrink: 0; }
+.return-query-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.return-query-row label { color: #555; white-space: nowrap; }
+.return-query-row input, .return-query-row select { height: 22px; padding: 2px 4px; border: 1px solid #C0C0C0; font-size: 12px; font-family: inherit; }
+.return-query-row input[type="text"] { width: 110px; }
+.return-query-row select { width: 95px; }
+.return-query-row .btn-query { margin-left: 2px; }
+
+.return-data-layout { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
+.route-list-panel { width: 180px; min-width: 180px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #1F629B; background: white; }
+.route-list-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 12px; font-weight: bold; border-bottom: 1px solid #1F629B; flex-shrink: 0; }
+.route-list-body { flex: 1; min-height: 0; overflow-y: auto; }
+.route-item { padding: 3px 8px; font-size: 11px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-bottom: 1px solid #EEE; color: #333; }
+.route-item:hover { background: #DDEEFF; }
+.route-item.active { background: #B8D4F0; color: #1A4A80; font-weight: bold; }
+.route-item.all-route { background: linear-gradient(to bottom, #E8F4FC, #DCE8F4); font-weight: bold; color: #1A4A80; }
+
+.return-data-right { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.bottom-tables-area { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; margin-top: 6px; }
+.bottom-table-card { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background: #FFF; border: 1px solid #C0C0C0; }
+.bottom-table-header { padding: 4px 8px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 11px; font-weight: bold; border-bottom: 1px solid #D8DCE0; flex-shrink: 0; }
+.bottom-table-wrap { flex: 1; min-height: 0; overflow: auto; }
+.bottom-table-wrap table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
+.bottom-table-wrap th { position: sticky; top: 0; z-index: 1; padding: 3px 4px; border: 1px solid #D8DCE0; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; text-align: center; font-weight: bold; white-space: nowrap; font-size: 10px; }
+.bottom-table-wrap td { padding: 2px 4px; border: 1px solid #D8DCE0; white-space: nowrap; font-size: 10px; }
+.bottom-table-wrap tr:hover td { background: #DDEEFF; }
 </style>
 </head>
 <body>
@@ -386,6 +414,34 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
   <button class="toolbar-btn" onclick="switchTab('stowage-query')">返回查询</button>
   <button class="toolbar-btn" onclick="switchTab('stowage-deviation')">偏差预警</button>
   <span class="toolbar-info">导出口径：一箱一行，偏差箱按浅红底色高亮</span>
+</div>
+<div class="toolbar-bar" id="toolbar-return-data">
+  <button class="toolbar-btn">查询</button>
+  <button class="toolbar-btn" onclick="switchTab('return-data-pending')">看板待驳数据</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('flow-config')">流向配置</button>
+  <button class="toolbar-btn">导出</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn">刷新</button>
+  <span class="toolbar-info">回场数据统计 · 订舱时间:2026-4-13 ~ 2026-5-13 | 片区:华南片区 | 口岸:本港</span>
+</div>
+<div class="toolbar-bar" id="toolbar-return-data-pending">
+  <button class="toolbar-btn" onclick="switchTab('return-data')">返回回场数据</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn">导出Excel</button>
+  <button class="toolbar-btn">打印</button>
+  <span class="toolbar-info">回场数据看板待驳数据 · 按港口/航线维度汇总</span>
+</div>
+<div class="toolbar-bar" id="toolbar-flow-config">
+  <button class="toolbar-btn">新增流向</button>
+  <button class="toolbar-btn">编辑</button>
+  <button class="toolbar-btn">删除</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn">导入</button>
+  <button class="toolbar-btn">导出</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn" onclick="switchTab('return-data')">返回回场数据</button>
+  <span class="toolbar-info">流向配置维护 · 管理干线流向与目的港映射</span>
 </div>
 
 <div class="shell-main">
@@ -645,7 +701,317 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 
 <div id="tab-stowage-deviation" class="main-content"><div class="query-bar"><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>偏差等级：</label><select style="width:90px"><option selected>全部</option><option>严重偏差</option><option>一般偏差</option></select><label>货名：</label><input type="text" placeholder="输入货名/箱号" style="width:130px"><button class="btn btn-query" onclick="renderSelectedVoyage()">查询</button><button class="btn btn-query">重置</button></div><div class="summary-strip"><div class="summary-item"><div class="label">当前航次</div><div class="value" id="deviation-voyage-title">仁建上海 / 2612N</div></div><div class="summary-item"><div class="label">总箱数</div><div class="value" id="deviation-total-boxes">82</div></div><div class="summary-item warn"><div class="label">偏差箱数</div><div class="value" id="deviation-boxes">5</div></div><div class="summary-item"><div class="label">偏差率</div><div class="value" id="deviation-rate">6.1%</div></div><div class="summary-item"><div class="label">高风险偏差</div><div class="value" id="deviation-high-risk">3</div></div></div><div class="dual-panel"><div class="side-card"><h3>箱号级偏差明细</h3><div class="data-table-wrap" style="margin:0;"><table class="data-table"><thead><tr><th>序号</th><th>箱号</th><th>运单号</th><th>货名</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差等级</th><th>原因说明</th></tr></thead><tbody id="deviation-table-body"></tbody></table></div></div><div class="side-card"><h3>偏差说明与处置建议</h3><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 建议甲板</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 建议二层以上</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 建议船底</span></div><div class="preview-note">预警逻辑：系统按货名档案给出建议位置，再与理货回传的实装区域、实装贝位做箱号级比对。</div><ul class="note-list" id="deviation-note-list"></ul></div></div></div>
 
-<div id="tab-export-preview" class="main-content"><div class="query-bar"><label>导出模板：</label><select style="width:140px"><option selected>出口清单（箱号级）</option><option>偏差预警清单</option></select><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>颜色标识：</label><select style="width:100px"><option selected>开启</option><option>关闭</option></select><button class="btn btn-query" onclick="renderSelectedVoyage()">刷新示意</button><button class="btn btn-primary">导出Excel</button></div><div class="preview-note">出口清单导出按“一箱一行”输出，建议位置保留颜色标识；发生建议/实装偏差的箱号整行浅红底色，方便现场复核。</div><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 橙色单元格</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 蓝色单元格</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 灰色单元格</span><span class="legend-chip" style="background:#FFE2E2;">整行浅红：偏差箱</span></div><div class="side-card" style="padding:0;"><h3 style="margin:8px 8px 0 8px;">导出预览（前10行）</h3><div class="data-table-wrap" style="margin-top:8px;"><table class="data-table"><thead><tr><th>序号</th><th>航次</th><th>箱号</th><th>运单号</th><th>货名</th><th>客户</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差状态</th></tr></thead><tbody id="export-table-body"></tbody></table></div></div></div>
+<div id="tab-export-preview" class="main-content"><div class="query-bar"><label>导出模板：</label><select style="width:140px"><option selected>出口清单（箱号级）</option><option>偏差预警清单</option></select><label>航次：</label><input type="text" value="2612N" style="width:70px"><label>颜色标识：</label><select style="width:100px"><option selected>开启</option><option>关闭</option></select><button class="btn btn-query" onclick="renderSelectedVoyage()">刷新示意</button><button class="btn btn-primary">导出Excel</button></div><div class="preview-note">出口清单导出按"一箱一行"输出，建议位置保留颜色标识；发生建议/实装偏差的箱号整行浅红底色，方便现场复核。</div><div class="legend-row"><span class="legend-chip"><span class="badge pos-deck">甲板</span> 橙色单元格</span><span class="legend-chip"><span class="badge pos-upper">二层以上</span> 蓝色单元格</span><span class="legend-chip"><span class="badge pos-bottom">船底</span> 灰色单元格</span><span class="legend-chip" style="background:#FFE2E2;">整行浅红：偏差箱</span></div><div class="side-card" style="padding:0;"><h3 style="margin:8px 8px 0 8px;">导出预览（前10行）</h3><div class="data-table-wrap" style="margin-top:8px;"><table class="data-table"><thead><tr><th>序号</th><th>航次</th><th>箱号</th><th>运单号</th><th>货名</th><th>客户</th><th>建议位置</th><th>实装区域</th><th>实装贝位</th><th>偏差状态</th></tr></thead><tbody id="export-table-body"></tbody></table></div></div></div>
+
+<!-- ========== 回场数据主界面（一级入口） ========== -->
+<div id="tab-return-data" class="main-content">
+  <!-- 查询条件栏（两行） -->
+  <div class="return-data-query-bar">
+    <div class="return-query-row">
+      <label>订舱时间:</label>
+      <input type="text" value="2026-4-13" style="width:90px">
+      <label>到:</label>
+      <input type="text" value="2026-5-13" style="width:90px">
+      <label>干线预计到港时间:</label>
+      <input type="text" value="" style="width:110px">
+      <label>到:</label>
+      <input type="text" value="" style="width:110px">
+      <label>干线预离港时间:</label>
+      <input type="text" value="2026-5-3" style="width:90px">
+      <label>到:</label>
+      <input type="text" value="2026-5-23" style="width:90px">
+      <label>片区:</label>
+      <select style="width:95px"><option selected>华南片区</option><option>华东片区</option><option>华北片区</option></select>
+      <label>口岸:</label>
+      <select style="width:80px"><option selected>本港</option><option>出口</option></select>
+      <label>重空重箱:</label>
+      <select style="width:80px"><option selected>重空重箱</option><option>重箱</option><option>空箱</option></select>
+      <label>包含共舱:</label>
+      <input type="checkbox" checked>
+    </div>
+    <div class="return-query-row">
+      <label>干线装货港:</label>
+      <input type="text" style="width:120px">
+      <label>干线卸货港:</label>
+      <input type="text" style="width:120px">
+      <label>目的港:</label>
+      <input type="text" style="width:120px">
+      <label>干线船名:</label>
+      <input type="text" style="width:100px">
+      <label>干线航次:</label>
+      <input type="text" style="width:85px">
+      <label>周转配送等级:</label>
+      <select style="width:75px"><option>全部</option><option>一级</option><option>二级</option></select>
+      <label>压年:</label>
+      <select style="width:65px"><option>全部</option><option>是</option><option>否</option></select>
+      <label>性质:</label>
+      <select style="width:70px"><option>全部</option><option>本港</option><option>出口</option></select>
+      <label>本港:</label>
+      <input type="checkbox" checked>
+      <label>出口中转:</label>
+      <input type="checkbox">
+      <label>锁定:</label>
+      <input type="checkbox">
+      <button class="btn btn-query">查询</button>
+    </div>
+  </div>
+
+  <!-- 主布局：左侧路径列表 + 右侧数据区 -->
+  <div class="return-data-layout">
+    <!-- 左侧干线路径列表 -->
+    <div class="route-list-panel">
+      <div class="route-list-header">
+        <span>干线路径</span>
+        <span style="font-weight:normal;font-size:10px;color:#666;">17条</span>
+      </div>
+      <div class="route-list-body">
+        <div class="route-item all-route active" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active');">全部</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active');">东莞港二期/刘五店日照</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active');">东莞港二期/刘五店营口</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active');">东莞港二期/山东潍坊</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active');">东莞港二期/温州天津</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active');">东莞港三期/宁波</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">黄埔老港</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">黄埔老港/上海</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">惠州</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">惠州/黄埔老港/上海</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">南沙四期/罗泾</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">南沙四期/钦州</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">南沙四期/日照</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">南沙四期/天津</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">南沙四期/阳江/钦州/洋浦</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">南沙一期/营口</div>
+        <div class="route-item" onclick="document.querySelectorAll('.route-item').forEach(function(r){r.classList.remove('active')});this.classList.add('active();">南沙一期/海口</div>
+      </div>
+    </div>
+
+    <!-- 右侧数据区 -->
+    <div class="return-data-right">
+      <!-- 主数据表格 -->
+      <div class="data-table-wrap" style="flex:1;min-height:0;">
+        <table class="data-table" style="table-layout:auto;min-width:1400px;">
+          <thead>
+            <tr>
+              <th style="width:32px;"></th>
+              <th style="width:60px;">片区</th>
+              <th style="width:90px;">区域</th>
+              <th style="width:55px;">口岸</th>
+              <th style="width:40px;">性质</th>
+              <th style="width:50px;">是否压年</th>
+              <th style="width:65px;">订舱进度</th>
+              <th style="width:65px;">回场进度</th>
+              <th style="width:45px;">合计</th>
+              <th style="width:40px;">40</th>
+              <th style="width:35px;">20</th>
+              <th colspan="3" style="text-align:center;">干线装货港</th>
+              <th colspan="3" style="text-align:center;">干线卸货港</th>
+              <th style="width:45px;">20</th>
+              <th style="width:35px;">40</th>
+              <th colspan="4" style="text-align:center;">驳船船名/航次</th>
+              <th colspan="3" style="text-align:center;">航线 驳船卸货港 预计到港</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="text-align:center">1</td><td>华南片区</td><td>三水区网点</td><td>南港</td><td>本港</td><td>否</td><td></td><td></td><td>40</td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>10</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">2</td><td>华南片区</td><td>三水区网点</td><td>四会南江</td><td>本港</td><td>否</td><td>8.83%</td><td>6.17%</td><td>800</td><td>800</td><td></td><td>东莞港二期</td><td>刘五店</td><td>4</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">3</td><td>华南片区</td><td>三水区网点</td><td>四会永泰</td><td>本港</td><td>否</td><td></td><td></td><td></td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>37</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">4</td><td>华南片区</td><td>东莞区网点</td><td>东莞港二期</td><td>本港</td><td>否</td><td>15.00%</td><td>13.17%</td><td>600</td><td>600</td><td></td><td>东莞港二期</td><td>刘五店</td><td>87</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">5</td><td>华南片区</td><td>东莞区网点</td><td>石龙</td><td>本港</td><td>否</td><td></td><td></td><td></td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>2</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">6</td><td>华南片区</td><td>中山区网点</td><td>中山</td><td>本港</td><td>否</td><td>0.83%</td><td>0.50%</td><td>600</td><td>600</td><td></td><td>东莞港二期</td><td>刘五店</td><td>0</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">7</td><td>华南片区</td><td>中山区网点</td><td>中山小榄</td><td>本港</td><td>否</td><td></td><td></td><td></td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>3</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">8</td><td>华南片区</td><td>佛山区网点</td><td>南利</td><td>本港</td><td>否</td><td>1.83%</td><td>1.00%</td><td>600</td><td>600</td><td></td><td>东莞港二期</td><td>刘五店</td><td>1</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">9</td><td>华南片区</td><td>佛山区网点</td><td>南庄</td><td>本港</td><td>否</td><td></td><td></td><td></td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>7</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">10</td><td>华南片区</td><td>佛山区网点</td><td>顺德新港</td><td>本港</td><td>否</td><td></td><td></td><td></td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>3</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">11</td><td>华南片区</td><td>广州区网点</td><td>南沙四期</td><td>本港</td><td>否</td><td>3.83%</td><td>2.17%</td><td>600</td><td>600</td><td></td><td>东莞港二期</td><td>刘五店</td><td>2</td><td>4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">12</td><td>华南片区</td><td>广州区网点</td><td>黄埔老港</td><td>本港</td><td>否</td><td></td><td></td><td></td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>3</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">13</td><td>华南片区</td><td>梧州大区</td><td>云浮</td><td>本港</td><td>否</td><td rowspan="5">56.89%</td><td rowspan="5">32.89%</td><td rowspan="5">900</td><td rowspan="5">900</td><td></td><td>东莞港二期</td><td>刘五店</td><td>19</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">14</td><td>华南片区</td><td>梧州大区</td><td>云浮都杨</td><td>本港</td><td>否</td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>246</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">15</td><td>华南片区</td><td>梧州大区</td><td>梧州</td><td>本港</td><td>否</td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>62</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">16</td><td>华南片区</td><td>梧州大区</td><td>梧州大利口</td><td>本港</td><td>否</td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>113</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">17</td><td>华南片区</td><td>梧州大区</td><td>赤水</td><td>本港</td><td>否</td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>67</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">18</td><td>华南片区</td><td>江珠大区</td><td>台山公益</td><td>本港</td><td>否</td><td></td><td></td><td></td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>9</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td style="text-align:center">19</td><td>华南片区</td><td>江珠大区</td><td>金达</td><td>未港</td><td>未</td><td></td><td></td><td></td><td></td><td></td><td>东莞港二期</td><td>刘五店</td><td>37</td><td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>7570</td><td></td><td></td></tr>
+            <tr style="background:#FFFDE8;font-weight:bold;"><td colspan="5" style="text-align:right;padding-right:12px;">合计</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>7570</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 底部双表格区 -->
+      <div class="bottom-tables-area">
+        <div class="bottom-table-card">
+          <div class="bottom-table-header">港口 / 海船舶名/航次 / 预报</div>
+          <div class="bottom-table-wrap">
+            <table>
+              <thead><tr><th style="width:28px"></th><th style="width:50px">港口</th><th style="width:75px">海船舶名</th><th style="width:55px">航次</th><th style="width:50px">预报</th></tr></thead>
+              <tbody>
+                <tr><td style="text-align:center">1</td><td>南沙一期</td><td>未转船数据</td><td></td><td></td></tr>
+                <tr><td style="text-align:center">2</td><td>南沙四期</td><td>汉华恒信/140S</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">3</td><td>南沙四期</td><td>中宏68/260SS</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">4</td><td>南沙四期</td><td>国海源/2604N</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">5</td><td>南沙四期</td><td>信官海/2608N</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">6</td><td>南沙四期</td><td>奥通88/2608N</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">7</td><td>东莞港二期</td><td>海丝1/2610N</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">8</td><td>南沙四期</td><td>仁建宁波/2614N</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">9</td><td>黄埔老港</td><td>锦钰泰安/2610N</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">10</td><td>南沙一期</td><td>创隆广星/181S</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">11</td><td>南沙一期</td><td>汉华恒信/141S</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">12</td><td>南沙四期</td><td>华信仁和/2624S</td><td>2026-</td><td></td></tr>
+                <tr><td style="text-align:center">13</td><td>南沙四期</td><td>...</td><td>2026-</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="bottom-table-card">
+          <div class="bottom-table-header">运单号 / 箱号 / 产品类型 / 业务类型 / 客户分级 / 订舱时间 / 当前船名 / 航次</div>
+          <div class="bottom-table-wrap">
+            <table>
+              <thead><tr><th style="width:24px"></th><th style="width:90px">运单号</th><th style="width:105px">箱号</th><th style="width:58px">产品类型</th><th style="width:58px">业务类型</th><th style="width:55px">客户分级</th><th style="width:72px">客户二级类型</th><th style="width:72px">客户一级类型</th><th style="width:72px">订舱时间</th><th style="width:62px">代理</th><th style="width:62px">海船舶名</th><th style="width:48px">海船航次</th><th style="width:52px">一程船名</th><th style="width:48px">一程航次</th><th style="width:52px">当前船名</th><th style="width:48px">当前航次</th><th style="width:56px">上一程船</th></tr></thead>
+              <tbody>
+                <tr><td style="text-align:center">1</td><td>AWBZELG2...</td><td>ATHU1489900</td><td>普通业务</td><td></td><td>钻石卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-06</td><td>深圳前海骏...</td><td>海丝1</td><td>2610N</td><td>粤云浮货65</td><td>260509</td><td>粤云浮货65</td><td>260509</td><td></td></tr>
+                <tr><td style="text-align:center">2</td><td>AWBVZUWV...</td><td>ATHU1519150</td><td>普通业务</td><td></td><td>钻石卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-06</td><td>深圳前海骏...</td><td>海丝1</td><td>2610N</td><td>粤云浮货65</td><td>260509</td><td>粤云浮货65</td><td>260509</td><td></td></tr>
+                <tr><td style="text-align:center">3</td><td>AWBZELG2...</td><td>ATHU6349781</td><td>普通业务</td><td></td><td>钻石卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-08</td><td>海南洋浦航...</td><td>海丝1</td><td>2610N</td><td>藤县 海顺2688</td><td>260512</td><td>藤县海顺2688</td><td>260512</td><td></td></tr>
+                <tr><td style="text-align:center">4</td><td>AWBVZUVW...</td><td>ATHU1323718</td><td>普通业务</td><td></td><td>白金卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-10</td><td>广州市环洋...</td><td>海丝1</td><td>2610N</td><td>藤县 海顺2688</td><td>260512</td><td>藤县海顺2688</td><td>260512</td><td></td></tr>
+                <tr><td style="text-align:center">5</td><td>AWBZELG2...</td><td>ATHU1382178</td><td>普通业务</td><td></td><td>金卡</td><td>平台客户</td><td>市场客户</td><td>2026-05-11</td><td>中通云合科...</td><td>海丝1</td><td>2610N</td><td>藤县 海顺2688</td><td>260512</td><td>藤县海顺2688</td><td>260512</td><td></td></tr>
+                <tr><td style="text-align:center">6</td><td>AWBZELG2...</td><td>ATHU1386089</td><td>普通业务</td><td></td><td>钻石卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-12</td><td>深圳前海骏...</td><td>海丝1</td><td>2610N</td><td>藤县 海顺2688</td><td>260512</td><td>藤县海顺2688</td><td>260512</td><td></td></tr>
+                <tr><td style="text-align:center">7</td><td>ANYFXTS26...</td><td>ATHU1551784</td><td>普通业务</td><td></td><td>钻石卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-12</td><td>深圳前海骏...</td><td>海丝1</td><td>2610N</td><td>藤县 海顺2688</td><td>260512</td><td>藤县海顺2688</td><td>260512</td><td></td></tr>
+                <tr><td style="text-align:center">8</td><td>AWBVZUWV...</td><td>ATHU1048804</td><td>普通业务</td><td></td><td>钻石卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-12</td><td>深圳前海骏...</td><td>海丝1</td><td>2610N</td><td>藤县 海顺2688</td><td>260512</td><td>藤县海顺2688</td><td>260512</td><td></td></tr>
+                <tr><td style="text-align:center">9</td><td>ANYFXTS26...</td><td>ATHU1178743</td><td>普通业务</td><td></td><td>钻石卡</td><td>市场代理</td><td>市场客户</td><td>2026-05-13</td><td>佛山鑫集量...</td><td>安通石湖</td><td>2608N</td><td>船舶-南港</td><td>1501</td><td></td><td></td><td></td></tr>
+                <tr><td style="text-align:center">10</td><td>AWBZELG2...</td><td>YXLU8074270</td><td>普通业务</td><td></td><td>白金卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-10</td><td>广州市环洋...</td><td>安通石湖</td><td>2608N</td><td>船舶-南港</td><td>1501</td><td></td><td></td><td></td></tr>
+                <tr><td style="text-align:center">11</td><td>AWBVZUWV...</td><td></td><td>普通业务</td><td></td><td>钻石卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-12</td><td>深圳前海骏...</td><td>安通石湖</td><td>2608N</td><td>船舶-南港</td><td>1501</td><td></td><td></td><td></td></tr>
+                <tr><td style="text-align:center">12</td><td>ANYFXTS26...</td><td></td><td>普通业务</td><td></td><td>钻石卡</td><td>客商一体</td><td>市场客户</td><td>2026-05-12</td><td>深圳前海骏...</td><td>安通石湖</td><td>2608N</td><td>船舶-南港</td><td>1501</td><td></td><td></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 回场数据看板待驳数据（辅助页） ========== -->
+<div id="tab-return-data-pending" class="main-content">
+  <div class="query-bar">
+    <label>筛选条件：</label>
+    <select style="width:100px"><option selected>全部港口</option><option>本港</option><option>出口</option></select>
+    <button class="btn btn-query">刷新</button>
+    <button class="btn btn-query">导出</button>
+  </div>
+  <div class="data-table-wrap" style="flex:1;min-height:0;">
+    <table class="data-table" style="table-layout:auto;min-width:1150px;">
+      <thead>
+        <tr>
+          <th style="width:32px"></th>
+          <th style="width:55px">港口</th>
+          <th style="width:42px">性质</th>
+          <th style="width:52px">东北线</th>
+          <th style="width:52px">福建线</th>
+          <th style="width:52px">华北线</th>
+          <th style="width:52px">华东线</th>
+          <th style="width:42px">钦州</th>
+          <th style="width:52px">山东线</th>
+          <th style="width:52px">潍坊线</th>
+          <th style="width:52px">温州线</th>
+          <th style="width:52px">西南线</th>
+          <th style="width:52px">区间货</th>
+          <th style="width:60px">未导箱号</th>
+          <th style="width:50px">合计</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center">1</td><td>奔达</td><td>本港</td><td>4</td><td>6</td><td>18</td><td>9</td><td>9</td><td>2</td><td>8</td><td></td><td></td><td>1</td><td>57</td></tr>
+        <tr><td style="text-align:center">2</td><td>赤水</td><td>本港</td><td>1</td><td>23</td><td>40</td><td>45</td><td>15</td><td>11</td><td>1</td><td></td><td></td><td>3</td><td>139</td></tr>
+        <tr><td style="text-align:center">3</td><td>德庆</td><td>本港</td><td></td><td></td><td>7</td><td>1</td><td>4</td><td></td><td></td><td></td><td></td><td></td><td>12</td></tr>
+        <tr><td style="text-align:center">4</td><td>东古</td><td>本港</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td><td>3</td></tr>
+        <tr><td style="text-align:center">5</td><td>东莞港二期</td><td>本港</td><td>0</td><td>0</td><td>0</td><td>8</td><td>8</td><td>0</td><td>0</td><td></td><td></td><td>1</td><td>17</td></tr>
+        <tr><td style="text-align:center">6</td><td>高荷</td><td>本港</td><td>7</td><td>4</td><td>57</td><td>32</td><td>12</td><td>8</td><td></td><td></td><td></td><td>1</td><td>121</td></tr>
+        <tr><td style="text-align:center">7</td><td>高明</td><td>本港</td><td>0</td><td></td><td>4</td><td></td><td>0</td><td></td><td></td><td></td><td></td><td></td><td>4</td></tr>
+        <tr><td style="text-align:center">8</td><td>桂平新龙</td><td>本港</td><td></td><td>5</td><td></td><td>24</td><td>4</td><td></td><td></td><td></td><td></td><td>9</td><td>46</td></tr>
+        <tr><td style="text-align:center">9</td><td>贵平港</td><td>本港</td><td>2</td><td>9</td><td>2</td><td>43</td><td>18</td><td>0</td><td></td><td></td><td>0</td><td>23</td><td>126</td></tr>
+        <tr><td style="text-align:center">10</td><td>和乐</td><td>本港</td><td>6</td><td>9</td><td>27</td><td>43</td><td>4</td><td>0</td><td></td><td></td><td></td><td></td><td>27</td></tr>
+        <tr><td style="text-align:center">11</td><td>花都巴江</td><td>本港</td><td>2</td><td></td><td>6</td><td>4</td><td>6</td><td>9</td><td>9</td><td>9</td><td></td><td></td><td>10</td></tr>
+        <tr><td style="text-align:center">12</td><td>黄埔老港</td><td>本港</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>3</td><td>3</td><td></td><td>12</td><td>56</td></tr>
+        <tr><td style="text-align:center">13</td><td>惠州</td><td>本港</td><td>1</td><td>0</td><td>9</td><td>0</td><td>6</td><td>49</td><td>0</td><td></td><td></td><td>52</td><td>117</td></tr>
+        <tr><td style="text-align:center">14</td><td>江门高新</td><td>本港</td><td></td><td></td><td>1</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td>2</td></tr>
+        <tr><td style="text-align:center">15</td><td>乐平</td><td>本港</td><td>0</td><td></td><td>1</td><td></td><td>2</td><td>0</td><td>6</td><td></td><td></td><td></td><td>9</td></tr>
+        <tr><td style="text-align:center">16</td><td>龙岗港</td><td>本港</td><td>1</td><td></td><td>1</td><td>2</td><td>1</td><td>0</td><td>0</td><td></td><td></td><td>1</td><td>6</td></tr>
+        <tr><td style="text-align:center">17</td><td>龙溪</td><td>本港</td><td>2</td><td></td><td>0</td><td>6</td><td>4</td><td>2</td><td>0</td><td>0</td><td></td><td>1</td><td>15</td></tr>
+        <tr><td style="text-align:center">18</td><td>伦教</td><td>本港</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td></tr>
+        <tr><td style="text-align:center">19</td><td>南澳</td><td>本港</td><td>3</td><td>2</td><td>10</td><td>2</td><td>2</td><td>1</td><td>0</td><td></td><td></td><td></td><td>20</td></tr>
+        <tr><td style="text-align:center">20</td><td>南利</td><td>本港</td><td>2</td><td>1</td><td>12</td><td>4</td><td>6</td><td>57</td><td>0</td><td>0</td><td>1</td><td>5</td><td>83</td></tr>
+        <tr><td style="text-align:center">21</td><td>南沙四期</td><td>本港</td><td>0</td><td>5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>0</td><td></td><td>15</td><td>15</td></tr>
+        <tr><td style="text-align:center">22</td><td>南沙一期</td><td>本港</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>0</td><td></td><td></td><td>0</td></tr>
+        <tr><td style="text-align:center">23</td><td>南拓</td><td>本港</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td></td><td></td><td></td><td>1</td></tr>
+        <tr><td style="text-align:center">24</td><td>南庄</td><td>本港</td><td>1</td><td>3</td><td>11</td><td>4</td><td>8</td><td>11</td><td></td><td></td><td></td><td></td><td>38</td></tr>
+        <tr><td style="text-align:center">25</td><td>南鲲</td><td>本港</td><td>1</td><td>0</td><td>16</td><td>24</td><td>3</td><td>22</td><td></td><td></td><td></td><td></td><td>86</td></tr>
+        <tr><td style="text-align:center">26</td><td>清远</td><td>本港</td><td>6</td><td>2</td><td>15</td><td>4</td><td>0</td><td>14</td><td>0</td><td></td><td></td><td>16</td><td>57</td></tr>
+        <tr><td style="text-align:center">27</td><td>三埠</td><td>本港</td><td>6</td><td></td><td>21</td><td>7</td><td>6</td><td></td><td></td><td></td><td></td><td></td><td>40</td></tr>
+        <tr><td style="text-align:center">28</td><td>沙头</td><td>本港</td><td></td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>2</td><td></td></tr>
+        <tr><td style="text-align:center">29</td><td>蛇口</td><td>本港</td><td>3</td><td>1</td><td>13</td><td>5</td><td>3</td><td>1</td><td>5</td><td>0</td><td></td><td></td><td>28</td></tr>
+        <tr><td style="text-align:center">30</td><td>石龙</td><td>本港</td><td>8</td><td>1</td><td>23</td><td>5</td><td>1</td><td>2</td><td>3</td><td></td><td></td><td></td><td>43</td></tr>
+        <tr><td style="text-align:center">31</td><td>水口</td><td>本港</td><td>0</td><td>4</td><td>2</td><td>0</td><td>3</td><td>1</td><td>2</td><td></td><td></td><td></td><td>12</td></tr>
+        <tr><td style="text-align:center">32</td><td>顺德新港</td><td>本港</td><td>12</td><td>1</td><td>6</td><td>4</td><td>9</td><td></td><td></td><td></td><td></td><td></td><td>32</td></tr>
+        <tr><td style="text-align:center">33</td><td>四会南江</td><td>本港</td><td>1</td><td>0</td><td>4</td><td>1</td><td>3</td><td>2</td><td></td><td></td><td></td><td></td><td>11</td></tr>
+        <tr><td style="text-align:center">34</td><td>四会永泰</td><td>本港</td><td>4</td><td>19</td><td>27</td><td>9</td><td>12</td><td>1</td><td>13</td><td></td><td></td><td></td><td>85</td></tr>
+        <tr><td style="text-align:center">35</td><td>苏场港</td><td>本港</td><td>3</td><td>3</td><td>0</td><td>0</td><td>1</td><td>0</td><td></td><td></td><td></td><td></td><td>9</td></tr>
+        <tr><td style="text-align:center">36</td><td>台山公益</td><td>本港</td><td>0</td><td>0</td><td>0</td><td>1</td><td>4</td><td>1</td><td>1</td><td></td><td></td><td>2</td><td>8</td></tr>
+        <tr><td style="text-align:center">37</td><td>梧州</td><td>本港</td><td>28</td><td>21</td><td>34</td><td>77</td><td>59</td><td>5</td><td>15</td><td>0</td><td></td><td>24</td><td>263</td></tr>
+        <tr><td style="text-align:center">38</td><td>梧州大利口</td><td>本港</td><td>0</td><td>3</td><td>0</td><td>23</td><td>2</td><td>1</td><td></td><td></td><td></td><td>3</td><td>32</td></tr>
+        <tr><td style="text-align:center">39</td><td>武林</td><td>本港</td><td>0</td><td>0</td><td>1</td><td>4</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td>7</td></tr>
+        <tr><td style="text-align:center">40</td><td>新会双水</td><td>本港</td><td></td><td>8</td><td>1</td><td>16</td><td>0</td><td>0</td><td></td><td></td><td></td><td>9</td><td>9</td></tr>
+        <tr><td style="text-align:center">41</td><td>新会新港</td><td>本港</td><td>11</td><td>5</td><td>6</td><td>16</td><td>0</td><td>0</td><td></td><td></td><td></td><td>9</td><td>47</td></tr>
+        <tr><td style="text-align:center">42</td><td>新会亚太</td><td>本港</td><td></td><td></td><td>1</td><td>4</td><td></td><td>4</td><td></td><td></td><td></td><td>7</td><td>12</td></tr>
+        <tr><td style="text-align:center">43</td><td>新沙</td><td>本港</td><td></td><td></td><td></td><td>4</td><td></td><td>1</td><td></td><td></td><td></td><td>2</td><td>7</td></tr>
+        <tr style="background:#FFFDE8;font-weight:bold;"><td></td><td>合计</td><td>150</td><td>175</td><td>444</td><td>401</td><td>6</td><td>301</td><td>24</td><td>202</td><td>15</td><td>5</td><td>1904</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========== 流向配置（辅助页） ========== -->
+<div id="tab-flow-config" class="main-content">
+  <div class="action-bar" style="flex-shrink:0;margin-bottom:4px;">
+    <span class="total-info">符合条件的共计 19 条。</span>
+  </div>
+  <div class="data-table-wrap" style="flex:1;min-height:0;">
+    <table class="data-table" style="table-layout:auto;min-width:1000px;">
+      <thead>
+        <tr>
+          <th style="width:32px"></th>
+          <th style="width:60px">流向名</th>
+          <th style="width:55px">片区</th>
+          <th style="width:85px">干线装货港</th>
+          <th style="width:85px">干线卸货港</th>
+          <th style="width:120px">目的港</th>
+          <th style="width:60px">创建者</th>
+          <th style="width:95px">创建时间</th>
+          <th style="width:60px">修改人</th>
+          <th style="width:95px">最后修改时间</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center">1</td><td>山东</td><td>华东片区</td><td></td><td></td><td>烟台,日照,...</td><td>葛礼明</td><td>2026-01-20 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">2</td><td>东北线</td><td>华南片区</td><td></td><td>营口,</td><td>惠州,黄埔老...</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">3</td><td>黄埔</td><td>华南片区</td><td></td><td></td><td>惠州,黄埔老...</td><td>葛礼明</td><td>2025-11-06 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">4</td><td>广澳</td><td>华东片区</td><td></td><td></td><td>揭阳,漳州,...</td><td>葛礼明</td><td>2026-01-20 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">5</td><td>刘五店</td><td>华东片区</td><td></td><td></td><td>刘五店,泉州...</td><td>葛礼明</td><td>2026-01-20 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">6</td><td>营口</td><td>华东片区</td><td></td><td></td><td>吉林西站,扶...</td><td>葛礼明</td><td>2026-01-20 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">7</td><td>华北</td><td>华东片区</td><td></td><td></td><td>黄骅,天津,...</td><td>葛礼明</td><td>2025-11-06 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">8</td><td>大连</td><td>华东片区</td><td></td><td></td><td>锦州,大连大...</td><td>葛礼明</td><td>2025-11-06 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">9</td><td>南沙</td><td>华东片区</td><td></td><td></td><td>七斗冲站,高...</td><td>葛礼明</td><td>2025-11-06 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">10</td><td>西南</td><td>华东片区</td><td></td><td></td><td>北海,洋浦国...</td><td>葛礼明</td><td>2025-11-06 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+        <tr><td style="text-align:center">11</td><td>华北线</td><td>华南片区</td><td></td><td>天津,</td><td>湖北荆门站,...</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">12</td><td>山东线</td><td>华南片区</td><td></td><td></td><td>山东日照站,...</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">13</td><td>华东线</td><td>华南片区</td><td></td><td></td><td>上海,罗泾,...</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">14</td><td>西南线</td><td>华南片区</td><td></td><td></td><td>海口,</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">15</td><td>宁波线</td><td>华南片区</td><td></td><td></td><td>宁波,</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">16</td><td>福建线</td><td>华南片区</td><td></td><td></td><td>刘五店,</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">17</td><td>建瓯线</td><td>华南片区</td><td></td><td></td><td>山东,潍坊,</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">18</td><td>温州线</td><td>华南片区</td><td></td><td></td><td>温州,</td><td>葛礼明</td><td>2026-01-15 ...</td><td>葛礼明</td><td>2026-01-15 ...</td></tr>
+        <tr><td style="text-align:center">19</td><td>铁水</td><td>华东片区</td><td></td><td></td><td>湖北荆门站,...</td><td>葛礼明</td><td>2026-01-20 ...</td><td>葛礼明</td><td>2026-01-20 ...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 <div class="modal-overlay" id="editModal"><div class="modal"><div class="modal-header"><span>编辑货名配载信息</span><span class="modal-close" onclick="closeModal('editModal')">×</span></div><div class="modal-body"><div class="form-row"><label>货名</label><input type="text" value="液袋货"></div><div class="form-row"><label>货类大类</label><select><option>化工品类</option><option>粮食类</option><option>钢材类</option><option>建材类</option></select></div><div class="form-row"><label>水湿风险</label><select><option selected>高风险</option><option>中等风险</option><option>一般风险</option></select></div><div class="form-row"><label>货值等级</label><select><option selected>高货值</option><option>中等货值</option><option>普通货值</option></select></div><div class="form-row"><label>配载位置</label><select><option selected>甲板</option><option>二层以上</option><option>船底</option></select><span class="hint">系统依据此字段给出配载建议</span></div><div class="form-row"><label>是否特殊货</label><select><option selected>液袋</option><option>否</option><option>液氮柜</option><option>危险品</option></select></div><div class="form-row"><label>备注说明</label><input type="text" value="必须甲板，禁止入舱"></div></div><div class="modal-footer"><button class="btn btn-success">保存</button><button class="btn btn-gray" onclick="closeModal('editModal')">取消</button></div></div></div>
 <div class="modal-overlay" id="importModal"><div class="modal" style="width:520px"><div class="modal-header"><span>Excel批量导入货名配载信息</span><span class="modal-close" onclick="closeModal('importModal')">×</span></div><div class="modal-body"><div style="font-size:12px;color:#555;margin-bottom:8px;">请按模板格式准备Excel文件，包含字段：货名、货类大类、水湿风险等级、货值等级、配载建议位置、备注说明</div><div class="import-area">点击选择 Excel 文件</div><div style="background:#E8F0FA;border:1px solid #B0C4DE;border-radius:3px;padding:8px;font-size:11px;margin-top:8px;"><strong>导入规则：</strong><br>· 货名已存在时，以导入数据覆盖原记录<br>· 货名不存在时，自动新建记录<br>· 配载建议位置仅接受：甲板 / 二层以上 / 船底</div></div><div class="modal-footer"><button class="btn btn-primary">开始导入</button><button class="btn btn-gray" onclick="closeModal('importModal')">取消</button></div></div></div>
@@ -715,7 +1081,10 @@ const PAGE_DEFINITIONS = [
   { id: 'cold-chain-repair', label: '补录修正', shortLabel: '补录修正', pageType: 'subpage', parentId: 'cold-chain-dashboard', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['补录', '修正', '补录修正'] } },
   { id: 'cargo-archive', label: '货名档案维护', shortLabel: '货名档案维护', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['货名', '档案', '货名档案', '档案维护'] } },
   { id: 'stowage-deviation', label: '配载偏差预警', shortLabel: '配载偏差预警', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['偏差', '预警', '偏差预警', '配载偏差'] } },
-  { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['出口清单', '导出', '导出示意', '清单导出'] } }
+  { id: 'export-preview', label: '出口清单导出示意', shortLabel: '出口清单导出示意', pageType: 'subpage', parentId: 'stowage-query', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['出口清单', '导出', '导出示意', '清单导出'] } },
+  { id: 'return-data', label: '回场数据', shortLabel: '回场数据', pageType: 'module', parentId: null, closable: true, showInAppCenter: true, defaultVisible: false, modifiedAt: '2026-05-13 14:26', appCard: { iconClass: 'blue', iconText: '回', desc: '干线回场数据统计与看板' }, search: { keywords: ['回场数据', '回场', '待驳数据', '干线统计'] } },
+  { id: 'return-data-pending', label: '回场数据看板待驳数据', shortLabel: '看板待驳数据', pageType: 'subpage', parentId: 'return-data', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['看板待驳', '待驳数据', '港口汇总', '航线汇总'] } },
+  { id: 'flow-config', label: '流向配置', shortLabel: '流向配置', pageType: 'subpage', parentId: 'return-data', closable: true, showInAppCenter: false, defaultVisible: false, search: { keywords: ['流向配置', '流向', '流向管理', '干线流向'] } }
 ];
 const TAB_REGISTRY = PAGE_DEFINITIONS.map(({ search, pageType, parentId, ...tabMeta }) => ({
   ...tabMeta,
