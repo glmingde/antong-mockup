@@ -1127,6 +1127,181 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 <div class="modal-overlay" id="importModal"><div class="modal" style="width:520px"><div class="modal-header"><span>Excel批量导入货名配载信息</span><span class="modal-close" onclick="closeModal('importModal')">×</span></div><div class="modal-body"><div style="font-size:12px;color:#555;margin-bottom:8px;">请按模板格式准备Excel文件，包含字段：货名、货类大类、水湿风险等级、货值等级、配载建议位置、备注说明</div><div class="import-area">点击选择 Excel 文件</div><div style="background:#E8F0FA;border:1px solid #B0C4DE;border-radius:3px;padding:8px;font-size:11px;margin-top:8px;"><strong>导入规则：</strong><br>· 货名已存在时，以导入数据覆盖原记录<br>· 货名不存在时，自动新建记录<br>· 配载建议位置仅接受：甲板 / 二层以上 / 船底</div></div><div class="modal-footer"><button class="btn btn-primary">开始导入</button><button class="btn btn-gray" onclick="closeModal('importModal')">取消</button></div></div></div>
 
 </div>
+<!-- ========== 待驳看板弹窗 ========== -->
+<div id="modal-return-data-pending" class="modal-overlay">
+<div class="modal draggable resizable" style="width:98vw;height:88vh;">
+  <div class="modal-title-bar">
+    <img class="sys-logo" src="./favicon.ico" alt="RJT">
+    <span>安通综合物流系统 - 回场数据 · 待驳看板</span>
+    <div class="window-controls" style="margin-left:auto;">
+      <button class="window-btn close" title="关闭" onclick="closePendingModal()">✕</button>
+    </div>
+  </div>
+  <div class="modal-menu-bar">
+    <div class="sys-menu-links">
+      <a href="#">文件(F)</a><a href="#">查看(V)</a><a href="#">工具(T)</a><a href="#">帮助(H)</a>
+    </div>
+  </div>
+  <div class="modal-toolbar">
+    <button class="toolbar-btn" onclick="closePendingModal()">关闭</button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn">导出</button>
+    <button class="toolbar-btn">刷新</button>
+  </div>
+  <div class="barge-switch-bar">
+    <span class="switch-label">片区分已配驳船/未配驳船</span>
+    <button class="barge-switch-btn active" onclick="switchBargeMode(this,'all')">全部</button>
+    <button class="barge-switch-btn" onclick="switchBargeMode(this,'assigned')">已配驳船</button>
+    <button class="barge-switch-btn" onclick="switchBargeMode(this,'unassigned')">未配驳船</button>
+    <span class="barge-switch-info">默认显示全部 · 切换可查看已配/未配口岸待驳流向分布</span>
+  </div>
+<div class="pending-upper">
+      <table class="data-table" style="table-layout:auto;min-width:1150px;">
+      <thead>
+        <tr>
+          <th style="width:32px"></th>
+          <th style="width:55px">港口</th>
+          <th style="width:42px">性质</th>
+          <th style="width:52px">东北线</th>
+          <th style="width:52px">福建线</th>
+          <th style="width:52px">华北线</th>
+          <th style="width:52px">华东线</th>
+          <th style="width:42px">钦州</th>
+          <th style="width:52px">山东线</th>
+          <th style="width:52px">潍坊线</th>
+          <th style="width:52px">温州线</th>
+          <th style="width:52px">西南线</th>
+          <th style="width:52px">区间货</th>
+          <th style="width:60px">未导箱号</th>
+          <th style="width:50px">合计</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center">1</td><td>奔达</td><td>本港</td><td>4</td><td>6</td><td>18</td><td>9</td><td>9</td><td>2</td><td>8</td><td></td><td></td><td>1</td><td>57</td></tr>
+        <tr class="tr-expand" id="expand-row-1"><td colspan="14">
+          <div class="day-dist-inner">
+            <div class="day-row"><span class="day-label">1天内</span><div class="day-bar-track"><div class="day-bar-fill" style="width:20%;background:#2A7A2A;"></div></div><span class="day-val">1</span></div>
+            <div class="day-row"><span class="day-label">1-2天</span><div class="day-bar-track"><div class="day-bar-fill" style="width:40%;background:#E08820;"></div></div><span class="day-val">2</span></div>
+            <div class="day-row"><span class="day-label">3-7天</span><div class="day-bar-track"><div class="day-bar-fill" style="width:60%;background:#CC4400;"></div></div><span class="day-val">3</span></div>
+            <div class="day-row"><span class="day-label">7天以上</span><div class="day-bar-track"><div class="day-bar-fill" style="width:80%;background:linear-gradient(to right,#CC4420,#8B0000);"></div></div><span class="day-val" style="color:#8B0000;">4</span></div>
+          </div>
+        </td></tr>
+        <tr><td style="text-align:center">2</td><td>赤水</td><td>本港</td><td>1</td><td>23</td><td>40</td><td>45</td><td>15</td><td>11</td><td>1</td><td></td><td></td><td>3</td><td>139</td></tr>
+        <tr class="tr-expand" id="expand-row-2"><td colspan="14">
+          <div class="day-dist-inner">
+            <div class="day-row"><span class="day-label">1天内</span><div class="day-bar-track"><div class="day-bar-fill" style="width:20%;background:#2A7A2A;"></div></div><span class="day-val">1</span></div>
+            <div class="day-row"><span class="day-label">1-2天</span><div class="day-bar-track"><div class="day-bar-fill" style="width:40%;background:#E08820;"></div></div><span class="day-val">1</span></div>
+            <div class="day-row"><span class="day-label">3-7天</span><div class="day-bar-track"><div class="day-bar-fill" style="width:60%;background:#CC4400;"></div></div><span class="day-val">1</span></div>
+          </div>
+        </td></tr>
+        <tr><td style="text-align:center">3</td><td>德庆</td><td>本港</td><td></td><td></td><td>7</td><td>1</td><td>4</td><td></td><td></td><td></td><td></td><td></td><td>12</td></tr>
+        <tr><td style="text-align:center">4</td><td>东古</td><td>本港</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td><td>3</td></tr>
+        <tr><td style="text-align:center">5</td><td>东莞港二期</td><td>本港</td><td>0</td><td>0</td><td>0</td><td>8</td><td>8</td><td>0</td><td>0</td><td></td><td></td><td>1</td><td>17</td></tr>
+        <tr><td style="text-align:center">6</td><td>高荷</td><td>本港</td><td>7</td><td>4</td><td>57</td><td>32</td><td>12</td><td>8</td><td></td><td></td><td></td><td>1</td><td>121</td></tr>
+        <tr><td style="text-align:center">7</td><td>高明</td><td>本港</td><td>0</td><td></td><td>4</td><td></td><td>0</td><td></td><td></td><td></td><td></td><td></td><td>4</td></tr>
+        <tr><td style="text-align:center">8</td><td>桂平新龙</td><td>本港</td><td></td><td>5</td><td></td><td>24</td><td>4</td><td></td><td></td><td></td><td></td><td>9</td><td>46</td></tr>
+        <tr><td style="text-align:center">9</td><td>贵平港</td><td>本港</td><td>2</td><td>9</td><td>2</td><td>43</td><td>18</td><td>0</td><td></td><td></td><td>0</td><td>23</td><td>126</td></tr>
+        <tr><td style="text-align:center">10</td><td>和乐</td><td>本港</td><td>6</td><td>9</td><td>27</td><td>43</td><td>4</td><td>0</td><td></td><td></td><td></td><td></td><td>27</td></tr>
+        <tr><td style="text-align:center">11</td><td>花都巴江</td><td>本港</td><td>2</td><td></td><td>6</td><td>4</td><td>6</td><td>9</td><td>9</td><td>9</td><td></td><td></td><td>10</td></tr>
+        <tr><td style="text-align:center">12</td><td>黄埔老港</td><td>本港</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>3</td><td>3</td><td></td><td>12</td><td>56</td></tr>
+        <tr><td style="text-align:center">13</td><td>惠州</td><td>本港</td><td>1</td><td>0</td><td>9</td><td>0</td><td>6</td><td>49</td><td>0</td><td></td><td></td><td>52</td><td>117</td></tr>
+        <tr><td style="text-align:center">14</td><td>江门高新</td><td>本港</td><td></td><td></td><td>1</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td>2</td></tr>
+        <tr><td style="text-align:center">15</td><td>乐平</td><td>本港</td><td>0</td><td></td><td>1</td><td></td><td>2</td><td>0</td><td>6</td><td></td><td></td><td></td><td>9</td></tr>
+        <tr><td style="text-align:center">16</td><td>龙岗港</td><td>本港</td><td>1</td><td></td><td>1</td><td>2</td><td>1</td><td>0</td><td>0</td><td></td><td></td><td>1</td><td>6</td></tr>
+        <tr><td style="text-align:center">17</td><td>龙溪</td><td>本港</td><td>2</td><td></td><td>0</td><td>6</td><td>4</td><td>2</td><td>0</td><td>0</td><td></td><td>1</td><td>15</td></tr>
+        <tr><td style="text-align:center">18</td><td>伦教</td><td>本港</td><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td></tr>
+        <tr><td style="text-align:center">19</td><td>南澳</td><td>本港</td><td>3</td><td>2</td><td>10</td><td>2</td><td>2</td><td>1</td><td>0</td><td></td><td></td><td></td><td>20</td></tr>
+        <tr><td style="text-align:center">20</td><td>南利</td><td>本港</td><td>2</td><td>1</td><td>12</td><td>4</td><td>6</td><td>57</td><td>0</td><td>0</td><td>1</td><td>5</td><td>83</td></tr>
+        <tr><td style="text-align:center">21</td><td>南沙四期</td><td>本港</td><td>0</td><td>5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>0</td><td></td><td>15</td><td>15</td></tr>
+        <tr><td style="text-align:center">22</td><td>南沙一期</td><td>本港</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>0</td><td></td><td></td><td>0</td></tr>
+        <tr><td style="text-align:center">23</td><td>南拓</td><td>本港</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td></td><td></td><td></td><td>1</td></tr>
+        <tr><td style="text-align:center">24</td><td>南庄</td><td>本港</td><td>1</td><td>3</td><td>11</td><td>4</td><td>8</td><td>11</td><td></td><td></td><td></td><td></td><td>38</td></tr>
+        <tr><td style="text-align:center">25</td><td>南鲲</td><td>本港</td><td>1</td><td>0</td><td>16</td><td>24</td><td>3</td><td>22</td><td></td><td></td><td></td><td></td><td>86</td></tr>
+        <tr><td style="text-align:center">26</td><td>清远</td><td>本港</td><td>6</td><td>2</td><td>15</td><td>4</td><td>0</td><td>14</td><td>0</td><td></td><td></td><td>16</td><td>57</td></tr>
+        <tr><td style="text-align:center">27</td><td>三埠</td><td>本港</td><td>6</td><td></td><td>21</td><td>7</td><td>6</td><td></td><td></td><td></td><td></td><td></td><td>40</td></tr>
+        <tr><td style="text-align:center">28</td><td>沙头</td><td>本港</td><td></td><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>2</td><td></td></tr>
+        <tr><td style="text-align:center">29</td><td>蛇口</td><td>本港</td><td>3</td><td>1</td><td>13</td><td>5</td><td>3</td><td>1</td><td>5</td><td>0</td><td></td><td></td><td>28</td></tr>
+        <tr><td style="text-align:center">30</td><td>石龙</td><td>本港</td><td>8</td><td>1</td><td>23</td><td>5</td><td>1</td><td>2</td><td>3</td><td></td><td></td><td></td><td>43</td></tr>
+        <tr><td style="text-align:center">31</td><td>水口</td><td>本港</td><td>0</td><td>4</td><td>2</td><td>0</td><td>3</td><td>1</td><td>2</td><td></td><td></td><td></td><td>12</td></tr>
+        <tr><td style="text-align:center">32</td><td>顺德新港</td><td>本港</td><td>12</td><td>1</td><td>6</td><td>4</td><td>9</td><td></td><td></td><td></td><td></td><td></td><td>32</td></tr>
+        <tr><td style="text-align:center">33</td><td>四会南江</td><td>本港</td><td>1</td><td>0</td><td>4</td><td>1</td><td>3</td><td>2</td><td></td><td></td><td></td><td></td><td>11</td></tr>
+        <tr><td style="text-align:center">34</td><td>四会永泰</td><td>本港</td><td>4</td><td>19</td><td>27</td><td>9</td><td>12</td><td>1</td><td>13</td><td></td><td></td><td></td><td>85</td></tr>
+        <tr><td style="text-align:center">35</td><td>苏场港</td><td>本港</td><td>3</td><td>3</td><td>0</td><td>0</td><td>1</td><td>0</td><td></td><td></td><td></td><td></td><td>9</td></tr>
+        <tr><td style="text-align:center">36</td><td>台山公益</td><td>本港</td><td>0</td><td>0</td><td>0</td><td>1</td><td>4</td><td>1</td><td>1</td><td></td><td></td><td>2</td><td>8</td></tr>
+        <tr><td style="text-align:center">37</td><td>梧州</td><td>本港</td><td>28</td><td>21</td><td>34</td><td>77</td><td>59</td><td>5</td><td>15</td><td>0</td><td></td><td>24</td><td>263</td></tr>
+        <tr><td style="text-align:center">38</td><td>梧州大利口</td><td>本港</td><td>0</td><td>3</td><td>0</td><td>23</td><td>2</td><td>1</td><td></td><td></td><td></td><td>3</td><td>32</td></tr>
+        <tr><td style="text-align:center">39</td><td>武林</td><td>本港</td><td>0</td><td>0</td><td>1</td><td>4</td><td>2</td><td></td><td></td><td></td><td></td><td></td><td>7</td></tr>
+        <tr><td style="text-align:center">40</td><td>新会双水</td><td>本港</td><td></td><td>8</td><td>1</td><td>16</td><td>0</td><td>0</td><td></td><td></td><td></td><td>9</td><td>9</td></tr>
+        <tr><td style="text-align:center">41</td><td>新会新港</td><td>本港</td><td>11</td><td>5</td><td>6</td><td>16</td><td>0</td><td>0</td><td></td><td></td><td></td><td>9</td><td>47</td></tr>
+        <tr><td style="text-align:center">42</td><td>新会亚太</td><td>本港</td><td></td><td></td><td>1</td><td>4</td><td></td><td>4</td><td></td><td></td><td></td><td>7</td><td>12</td></tr>
+        <tr><td style="text-align:center">43</td><td>新沙</td><td>本港</td><td></td><td></td><td></td><td>4</td><td></td><td>1</td><td></td><td></td><td></td><td>2</td><td>7</td></tr>
+      <tr style="background:#FFFDE8;font-weight:bold;"><td></td><td>合计</td><td>150</td><td>175</td><td>444</td><td>401</td><td>6</td><td>301</td><td>24</td><td>202</td><td>15</td><td>5</td><td>1904</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+<!-- 下方：配明明细面板 -->
+<div class="pending-lower" id="pendingLower">
+    <div class="lower-header">
+      <span>配明明细</span>
+      <span class="lower-close" onclick="closePendingLower()">×</span>
+    </div>
+    <div class="lower-body">
+      <table class="data-table" style="table-layout:auto;min-width:1000px;font-size:11px;">
+        <thead>
+          <tr>
+            <th style="width:32px"></th>
+            <th style="width:50px">区域</th>
+            <th style="width:55px">港口</th>
+            <th style="width:70px">堆存地点</th>
+            <th style="width:95px">箱号</th>
+            <th style="width:32px">尺寸</th>
+            <th style="width:40px">箱型</th>
+            <th style="width:30px">空重</th>
+            <th style="width:70px">作业时间</th>
+            <th style="width:42px">在场天数</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody id="lowerTableBody">
+          <!-- 点击上方数值后，这里动态填充 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- 下方：配明明细面板 -->
+<div class="pending-lower" id="pendingLower">
+    <div class="lower-header">
+      <span>配明明细</span>
+      <span class="lower-close" onclick="closePendingLower()">×</span>
+    </div>
+    <div class="lower-body">
+      <table class="data-table" style="table-layout:auto;min-width:1000px;font-size:11px;">
+        <thead>
+          <tr>
+            <th style="width:32px"></th>
+            <th style="width:50px">区域</th>
+            <th style="width:55px">港口</th>
+            <th style="width:70px">堆存地点</th>
+            <th style="width:95px">箱号</th>
+            <th style="width:32px">尺寸</th>
+            <th style="width:40px">箱型</th>
+            <th style="width:30px">空重</th>
+            <th style="width:70px">作业时间</th>
+            <th style="width:42px">在场天数</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody id="lowerTableBody">
+          <!-- 点击上方数值后，这里动态填充 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+
 <div class="status-bar">
   <div class="status-meta">
     <span>版本：EAS V3.2</span>
