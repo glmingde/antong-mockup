@@ -1668,7 +1668,10 @@ function closeModal(modalId) {
   var el = document.getElementById(modalId);
   if (!el) return;
   el.classList.remove("show");
-  el.querySelectorAll(".tr-expand.show").forEach(function(r){ r.classList.remove("show"); }
+  el.querySelectorAll(".tr-expand.show").forEach(function(r){ r.classList.remove("show"); });
+  var lower = el.querySelector(".pending-lower");
+  if (lower) lower.classList.remove("show");
+}
 
 /* 待驳看板弹窗控制 */
 function openPendingModal() {
