@@ -591,7 +591,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 </div>
 <div class="toolbar-bar" id="toolbar-return-data">
   <button class="toolbar-btn">查询</button>
-  <button class="toolbar-btn" onclick="window.open('pending-board.html','pendingBoard',`width=${screen.width},height=${screen.height},left=0,top=0`)">看板待驳数据</button>
+  <button class="toolbar-btn" onclick="openPendingModal()">看板待驳数据</button>
   <div class="toolbar-sep"></div>
   <button class="toolbar-btn" onclick="switchTab('flow-config')">流向配置</button>
   <button class="toolbar-btn">导出</button>
@@ -599,6 +599,14 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
   <button class="toolbar-btn">刷新</button>
   <span class="toolbar-info">回场数据统计 · 订舱时间:2026-4-13 ~ 2026-5-13 | 片区:华南片区 | 口岸:本港</span>
 </div>
+<div class="toolbar-bar" id="toolbar-return-data-pending">
+  <button class="toolbar-btn" onclick="switchTab('return-data')">返回回场数据</button>
+  <div class="toolbar-sep"></div>
+  <button class="toolbar-btn">导出Excel</button>
+  <button class="toolbar-btn">打印</button>
+  <span class="toolbar-info">回场数据看板待驳数据 · 按港口/航线维度汇总</span>
+</div>
+
 <div class="toolbar-bar" id="toolbar-flow-config">
   <button class="toolbar-btn">新增流向</button>
   <button class="toolbar-btn">编辑</button>
@@ -1485,7 +1493,78 @@ function closeModal(modalId) {
   var el = document.getElementById(modalId);
   if (!el) return;
   el.classList.remove("show");
-  el.querySelectorAll(".tr-expand.show").forEach(function(r){ r.classList.remove("show"); });
+  el.querySelectorAll(".tr-expand.show").forEach(function(r){ r.classList.remove("show"); }
+
+/* 待驳看板弹窗控制 */
+function openPendingModal() {
+  openModal('modal-return-data-pending');
+}
+function closePendingModal() {
+  closeModal('modal-return-data-pending');
+}
+
+/* 未导箱号二级分级展开/收起（支持动态创建展开行） */
+function toggleExpand(rowId) {
+  var row = document.getElementById(rowId);
+  if (!row) {
+    var n = rowId.replace('expand-row-', '');
+    var dataRow = null;
+    var rows = document.querySelectorAll('#modal-return-data-pending tbody > tr:not(.tr-expand)');
+    for (var i = 0; i < rows.length; i++) {
+      var firstTd = rows[i].querySelector('td');
+      if (firstTd && firstTd.textContent.trim() === n) {
+        dataRow = rows[i];
+        break;
+      }
+    }
+    if (!dataRow) return;
+    row = document.createElement('tr');
+    row.className = 'tr-expand';
+    row.id = rowId;
+    row.innerHTML = '<td colspan="14"><div class="day-dist-inner">' +
+      '<div class="day-row"><span class="day-label">暂无数据</span></div>' +
+      '</div></td>';
+    dataRow.parentNode.insertBefore(row, dataRow.nextSibling);
+  }
+  row.classList.toggle('show');
+}
+
+/* 事件委托：给待驳看板表格的未导箱号列绑定展开功能 */
+(function bindPendingTableClick() {
+  var tbody = document.querySelector('#modal-return-data-pending tbody');
+  if (!tbody) return;
+  var dataRows = tbody.querySelectorAll('tr:not(.tr-expand)');
+  for (var i = 0; i < dataRows.length; i++) {
+    var tds = dataRows[i].querySelectorAll('td');
+    if (tds.length >= 2) {
+      tds[tds.length - 2].classList.add('day-clickable');
+    }
+  }
+  tbody.addEventListener('click', function(e) {
+    var td = e.target.closest('td');
+    if (!td || !td.classList.contains('day-clickable')) return;
+    var row = td.closest('tr');
+    if (!row) return;
+    var firstTd = row.querySelector('td');
+    if (!firstTd) return;
+    var seq = firstTd.textContent.trim();
+    if (!seq) return;
+    toggleExpand('expand-row-' + seq);
+  });
+})();
+
+/* 关闭下方明细面板 */
+function closePendingLower() {
+  var lower = document.getElementById('pendingLower');
+  if (lower) lower.classList.remove('show');
+}
+
+/* 配驳状态切换 */
+function switchBargeMode(btn, mode) {
+  document.querySelectorAll('.barge-switch-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+);
   var lower = el.querySelector(".pending-lower");
   if (lower) lower.classList.remove("show");
 }
