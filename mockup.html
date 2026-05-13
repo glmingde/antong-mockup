@@ -287,9 +287,9 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .return-data-layout { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
 .return-data-top-row { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
 .return-data-bottom-row { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
-.return-data-upper-area { flex: 1; min-width: 0; display: flex; gap: 6px; overflow: hidden; }
+.return-data-upper-area { flex: 1; min-width: 0; display: flex; gap: 6px; }
 .route-list-panel { width: 180px; min-width: 180px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #1F629B; background: white; }
-.route-list-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 12px; font-weight: bold; border-bottom: 1px solid #1F629B; flex-shrink: 0; }
+.route-list-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px; background: #FFF; color: #333; font-size: 12px; border-bottom: 1px solid #E0E0E0; flex-shrink: 0; }
 .route-list-body { flex: 1; min-height: 0; overflow-y: auto; }
 .route-item { padding: 3px 8px; font-size: 11px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-bottom: 1px solid #EEE; color: #333; }
 .route-item:hover { background: #DDEEFF; }
@@ -298,7 +298,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 
 .return-data-right { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .bottom-tables-area { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; margin-top: 6px; }
-.bottom-table-card { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background: #FFF; border: 1px solid #C0C0C0; }
+.bottom-table-card { flex: 1; min-width: 0; display: flex; flex-direction: column; background: #FFF; border: 1px solid #C0C0C0; }
 .bottom-table-header { padding: 4px 8px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 11px; font-weight: bold; border-bottom: 1px solid #D8DCE0; flex-shrink: 0; }
 .bottom-table-wrap { flex: 1; min-height: 0; overflow: auto; }
 .bottom-table-wrap table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
@@ -865,7 +865,7 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 
     <!-- 下半部分：左侧海船预报(180px) + 右侧运单明细 -->
     <div class="return-data-bottom-row">
-      <div class="bottom-table-card" style="width:180px;min-width:180px;flex-shrink:0;">
+      <div class="bottom-table-card" style="width:180px;min-width:180px;flex:none;">
         <div class="bottom-table-wrap">
           <table>
             <thead><tr><th style="width:24px"></th><th style="width:52px">港口</th><th style="width:90px">海船船名/航次</th><th style="width:65px">预计到港</th></tr></thead>
