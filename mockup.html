@@ -1283,20 +1283,23 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
       <span class="lower-close" onclick="closePendingLower()">×</span>
     </div>
     <div class="lower-body">
-      <table class="data-table" style="table-layout:auto;min-width:1000px;font-size:11px;">
+      <table class="data-table" style="table-layout:auto;min-width:1500px;font-size:11px;">
         <thead>
           <tr>
             <th style="width:32px"></th>
-            <th style="width:50px">区域</th>
-            <th style="width:55px">港口</th>
-            <th style="width:70px">堆存地点</th>
+            <th style="width:110px">运单号</th>
             <th style="width:95px">箱号</th>
-            <th style="width:32px">尺寸</th>
-            <th style="width:40px">箱型</th>
-            <th style="width:30px">空重</th>
-            <th style="width:70px">作业时间</th>
-            <th style="width:42px">在场天数</th>
-            <th>备注</th>
+            <th style="width:58px">产品类型</th>
+            <th style="width:55px">客户分级</th>
+            <th style="width:58px">客户二级类型</th>
+            <th style="width:58px">客户一级类型</th>
+            <th style="width:72px">订舱时间</th>
+            <th style="width:72px">进闸时间</th>
+            <th style="width:90px">代理</th>
+            <th style="width:62px">海船船名</th>
+            <th style="width:48px">海船航次</th>
+            <th style="width:75px">一程船名</th>
+            <th style="width:52px">一程航次</th>
           </tr>
         </thead>
         <tbody id="lowerTableBody">
@@ -2128,8 +2131,8 @@ renderSelectedVoyage();
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', bindColResize); } else { bindColResize(); }
 })();
 
-/* 待驳明细样例行数据 */
-var pendingDetailData = {"奔达":[{"area":"华南","port":"奔达","location":"奔达堆场A区","box":"ANTU300001","size":"40","type":"GP","weight":"重","time":"2026-05-10 14:30","stay":"3","note":"待驳"},{"area":"华南","port":"奔达","location":"奔达堆场A区","box":"ANTU300002","size":"20","type":"GP","weight":"空","time":"2026-05-11 08:15","stay":"2","note":""}],"赤水":[{"area":"华南","port":"赤水","location":"赤水堆场B区","box":"ANTU300010","size":"40","type":"HQ","weight":"重","time":"2026-05-09 10:00","stay":"4","note":"需保温"},{"area":"华南","port":"赤水","location":"赤水堆场B区","box":"ANTU300011","size":"20","type":"GP","weight":"重","time":"2026-05-12 16:00","stay":"1","note":""},{"area":"华南","port":"赤水","location":"赤水堆场C区","box":"ANTU300012","size":"40","type":"GP","weight":"空","time":"2026-05-08 09:30","stay":"5","note":"超期"}],"贵平港":[{"area":"华南","port":"贵平港","location":"贵平堆场D区","box":"ANTU300020","size":"40","type":"HQ","weight":"重","time":"2026-05-10 11:00","stay":"3","note":""},{"area":"华南","port":"贵平港","location":"贵平堆场D区","box":"ANTU300021","size":"20","type":"GP","weight":"重","time":"2026-05-13 07:00","stay":"0","note":"今日"}],"黄埔老港":[{"area":"华南","port":"黄埔老港","location":"黄埔老港堆场","box":"ANTU300030","size":"40","type":"HQ","weight":"重","time":"2026-05-08 14:00","stay":"5","note":"超期"},{"area":"华南","port":"黄埔老港","location":"黄埔老港堆场","box":"ANTU300031","size":"20","type":"GP","weight":"空","time":"2026-05-12 09:00","stay":"1","note":""}],"惠州":[{"area":"华南","port":"惠州","location":"惠州港堆场","box":"ANTU300040","size":"40","type":"GP","weight":"重","time":"2026-05-09 16:00","stay":"4","note":""},{"area":"华南","port":"惠州","location":"惠州港堆场","box":"ANTU300041","size":"40","type":"HQ","weight":"重","time":"2026-05-11 10:30","stay":"2","note":"需保温"}]};
+/* 待驳明细样例行数据（与运单明细结构一致，增加进闸时间） */
+var pendingDetailData = {"奔达":[{"waybill":"ATZUQMU260330050","box":"ATHU6294164","product":"普通业务","custLevel":"白金卡","custType2":"客商一体","custType1":"市场客户","booking":"2026-05-08","gateIn":"2026-05-10 09:30","agent":"广州市皓航运输有限公司","shipName":"汉华恒信","shipVoy":"140S","bargeName":"粤通珠江001","bargeVoy":"260510"},{"waybill":"ATZUQMU260333343","box":"ATHU6000357","product":"普通业务","custLevel":"白金卡","custType2":"客商一体","custType1":"市场客户","booking":"2026-05-09","gateIn":"2026-05-11 16:20","agent":"广州市皓航运输有限公司","shipName":"汉华恒信","shipVoy":"140S","bargeName":"粤通珠江001","bargeVoy":"260510"}],"赤水":[{"waybill":"ATZUQMU260336282","box":"XYLU8088041","product":"普通业务","custLevel":"钻石卡","custType2":"客商一体","custType1":"市场客户","booking":"2026-05-11","gateIn":"2026-05-12 08:15","agent":"广州市信德货运有限公司","shipName":"汉华恒信","shipVoy":"140S","bargeName":"桂平永顺518","bargeVoy":"260511"},{"waybill":"ALXDQMU260330054","box":"ATHU6310460","product":"普通业务","custLevel":"白金卡","custType2":"客商一体","custType1":"市场客户","booking":"2026-05-08","gateIn":"2026-05-10 14:00","agent":"广州市皓航运输有限公司","shipName":"汉华恒信","shipVoy":"140S","bargeName":"平南富越778","bargeVoy":"260510"}],"贵平港":[{"waybill":"ATZUQMU260340123","box":"XYLU8090888","product":"普通业务","custLevel":"白金卡","custType2":"客商一体","custType1":"市场客户","booking":"2026-05-12","gateIn":"2026-05-13 10:00","agent":"广州市信德货运有限公司","shipName":"国海源","shipVoy":"2604N","bargeName":"粤通珠江002","bargeVoy":"260513"}],"黄埔老港":[{"waybill":"ATZUQMU260345678","box":"ATHU6321001","product":"普通业务","custLevel":"黄金卡","custType2":"客商一体","custType1":"市场客户","booking":"2026-05-08","gateIn":"2026-05-09 11:30","agent":"广州市皓航运输有限公司","shipName":"信宜海","shipVoy":"2608N","bargeName":"平南富越699","bargeVoy":"260510"},{"waybill":"ALXDQMU260350002","box":"XYLU8100555","product":"普通业务","custLevel":"白金卡","custType2":"客商一体","custType1":"市场客户","booking":"2026-05-13","gateIn":"2026-05-13 18:45","agent":"广州市信德货运有限公司","shipName":"信宜海","shipVoy":"2608N","bargeName":"桂平永顺518","bargeVoy":"260513"}],"惠州":[{"waybill":"ATZUQMU260355010","box":"ATHU6332001","product":"普通业务","custLevel":"钻石卡","custType2":"客商一体","custType1":"市场客户","booking":"2026-05-09","gateIn":"2026-05-10 15:30","agent":"广州市皓航运输有限公司","shipName":"奥通8","shipVoy":"2608N","bargeName":"粤通珠江001","bargeVoy":"260510"}]};
 
 function showPendingDetail(port, el) {
   var lower = document.getElementById('pendingLower');
@@ -2142,10 +2145,10 @@ function showPendingDetail(port, el) {
   if (!tbody) return;
   var data = pendingDetailData[port] || [];
   if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#888;">暂无该港口的明细数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;color:#888;">暂无该港口的明细数据</td></tr>';
   } else {
     tbody.innerHTML = data.map(function(d, i) {
-      return '<tr><td style="text-align:center">' + (i+1) + '</td><td>' + d.area + '</td><td>' + d.port + '</td><td>' + d.location + '</td><td>' + d.box + '</td><td>' + d.size + '</td><td>' + d.type + '</td><td>' + d.weight + '</td><td>' + d.time + '</td><td>' + d.stay + '</td><td>' + (d.note||'') + '</td></tr>';
+      return '<tr><td style="text-align:center">' + (i+1) + '</td><td>' + (d.waybill||'') + '</td><td>' + (d.box||'') + '</td><td>' + (d.product||'') + '</td><td>' + (d.custLevel||'') + '</td><td>' + (d.custType2||'') + '</td><td>' + (d.custType1||'') + '</td><td>' + (d.booking||'') + '</td><td>' + (d.gateIn||'') + '</td><td>' + (d.agent||'') + '</td><td>' + (d.shipName||'') + '</td><td>' + (d.shipVoy||'') + '</td><td>' + (d.bargeName||'') + '</td><td>' + (d.bargeVoy||'') + '</td></tr>';
     }).join('');
   }
   lower.classList.add('show');
