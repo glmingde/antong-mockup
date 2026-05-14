@@ -442,10 +442,10 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .bottom-table-wrap tr:hover td { background: #DDEEFF; }
 
 /* ===== 回场数据：配驳状态切换栏（与条件筛选栏样式一致） ===== */
-.barge-switch-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; flex-shrink: 0; }
-.barge-switch-btn { height: 22px; padding: 2px 14px; border: 1px solid #1F629B; border-radius: 12px; background: #F1F5F7; color: #333; cursor: pointer; font-size: 12px; font-family: inherit; margin-right: -1px; }
+.barge-switch-bar { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 0; padding: 6px 10px 0 10px; background: #F1F5F7; border: 1px solid #1F629B; border-bottom: none; flex-shrink: 0; }
+.barge-switch-btn { height: 22px; padding: 2px 14px; border: 1px solid #D8DCE0; border-bottom: none; border-radius: 4px 4px 0 0; background: #F1F5F7; color: #333; cursor: pointer; font-size: 12px; font-family: inherit; margin-right: -1px; }
 .barge-switch-btn:first-of-type { margin-right: 0; }
-.barge-switch-btn.active { background: #FFF; color: #1F629B; font-weight: bold; border-color: #1F629B; z-index: 1; }
+.barge-switch-btn.active { background: #FFF; color: #1F629B; font-weight: bold; border-color: #D8DCE0; z-index: 1; }
 .barge-switch-btn:hover:not(.active) { background: #E8F0F4; }
 .barge-switch-info { margin-left: auto; font-size: 11px; color: #666; }
 
