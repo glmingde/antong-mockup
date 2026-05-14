@@ -402,16 +402,21 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .data-table tr[data-row-ctx] { cursor: context-menu; }
 
 /* ===== 回场数据模块专用样式 ===== */
-.return-data-query-bar { display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; flex-shrink: 0; }
-.return-query-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.return-data-query-bar { display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; flex-shrink: 0; overflow: hidden; }
+.return-query-row { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; min-width: 0; }
 .return-query-row label { color: #555; white-space: nowrap; flex-shrink: 0; }
-.return-query-row input, .return-query-row select { height: 22px; padding: 2px 4px; border: 1px solid #C0C0C0; font-size: 12px; font-family: inherit; flex: 0 1 auto; min-width: 70px; max-width: 160px; }
-.return-query-row input[type="text"] { flex: 1 1 90px; min-width: 75px; max-width: 150px; }
-.return-query-row input[type="text"].input-date { flex: 0 1 80px; min-width: 70px; max-width: 100px; }
-.return-query-row select { flex: 0 1 80px; min-width: 60px; max-width: 120px; }
+.return-query-row input, .return-query-row select { height: 22px; padding: 2px 4px; border: 1px solid #C0C0C0; font-size: 12px; font-family: inherit; min-width: 55px; }
+/* 普通文本输入：弹性伸缩，按 flex 比例分配剩余空间 */
+.return-query-row input[type="text"] { flex: 3 3 80px; }
+/* 日期输入：偏短，柔性比例小 */
+.return-query-row input[type="text"].input-date { flex: 2 2 65px; max-width: 100px; }
+/* 下拉框：柔性比例居中 */
+.return-query-row select { flex: 2 2 65px; max-width: 130px; }
+/* checkbox 旁的小标签微调 */
+.return-query-row input[type="checkbox"] { flex: 0 0 auto; min-width: auto; width: 14px; height: 14px; }
 .return-query-row .btn-query { margin-left: 2px; flex-shrink: 0; }
-/* 筛选条件行横向铺满 */
-.return-query-row .query-spacer { flex: 1; min-width: 20px; }
+/* spacer 吸收全部剩余空间，比例最高 */
+.return-query-row .query-spacer { flex: 8 8 10px; }
 
 .return-data-layout { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
 .return-data-top-row { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
