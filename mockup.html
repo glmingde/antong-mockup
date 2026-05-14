@@ -467,7 +467,6 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .day-dist-inner .day-bar-track { flex: 1; height: 12px; background: #F0F0F0; border-radius: 2px; overflow: hidden; }
 .day-dist-inner .day-bar-fill { height: 100%; border-radius: 2px; }
 .day-dist-inner .day-val { width: 32px; text-align: right; font-weight: bold; }
-.day-clickable { cursor: pointer; color: #1A4A80; text-decoration: underline; }
 
 /* ===== 回场数据：未导箱号区域 ===== */
 .unexport-area { display: flex; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
@@ -483,8 +482,8 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .day-dist-bar { flex: 1; height: 14px; background: #F0F0F0; border-radius: 2px; margin: 0 8px; overflow: hidden; position: relative; }
 .day-dist-fill { height: 100%; background: linear-gradient(to right, #FFB080, #CC4400); border-radius: 2px; }
 
-.data-table thead tr:first-child th { top: 0; }
-.data-table thead tr:nth-child(2) th { top: 22px; }
+.data-table thead tr:first-child th { top: 0; z-index: 3; }
+.data-table thead tr:nth-child(2) th { top: 22px; z-index: 2; }
 </style>
 </head>
 <body>
@@ -1695,66 +1694,32 @@ function closePendingModal() {
   closeModal('modal-return-data-pending');
 }
 
-/* 未导箱号二级分级展开/收起（支持动态创建展开行） */
-function toggleExpand(rowId) {
-  var row = document.getElementById(rowId);
-  if (!row) {
-    var n = rowId.replace('expand-row-', '');
-    var dataRow = null;
-    var rows = document.querySelectorAll('#modal-return-data-pending tbody > tr:not(.tr-expand)');
-    for (var i = 0; i < rows.length; i++) {
-      var firstTd = rows[i].querySelector('td');
-      if (firstTd && firstTd.textContent.trim() === n) {
-        dataRow = rows[i];
-        break;
-      }
-    }
-    if (!dataRow) return;
-    row = document.createElement('tr');
-    row.className = 'tr-expand';
-    row.id = rowId;
-    row.innerHTML = '<td colspan="14"><div class="day-dist-inner">' +
-      '<div class="day-row"><span class="day-label">暂无数据</span></div>' +
-      '</div></td>';
-    dataRow.parentNode.insertBefore(row, dataRow.nextSibling);
-  }
-  row.classList.toggle('show');
-}
-
-/* 事件委托：给待驳看板表格的未导箱号列绑定展开功能 */
-(function bindPendingTableClick() {
-  var tbody = document.querySelector('#modal-return-data-pending tbody');
-  if (!tbody) return;
-  var dataRows = tbody.querySelectorAll('tr:not(.tr-expand)');
-  for (var i = 0; i < dataRows.length; i++) {
-    var tds = dataRows[i].querySelectorAll('td');
-    if (tds.length >= 2) {
-      tds[tds.length - 2].classList.add('day-clickable');
-    }
-  }
-  tbody.addEventListener('click', function(e) {
-    var td = e.target.closest('td');
-    if (!td || !td.classList.contains('day-clickable')) return;
-    var row = td.closest('tr');
-    if (!row) return;
-    var firstTd = row.querySelector('td');
-    if (!firstTd) return;
-    var seq = firstTd.textContent.trim();
-    if (!seq) return;
-    toggleExpand('expand-row-' + seq);
-  });
-})();
-
 /* 关闭下方明细面板 */
 function closePendingLower() {
   var lower = document.getElementById('pendingLower');
   if (lower) lower.classList.remove('show');
 }
 
-/* 配驳状态切换 */
+/* 配驳状态切换 + 表格过滤 */
 function switchBargeMode(btn, mode) {
   document.querySelectorAll('.barge-switch-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
+  /* 过滤表格行：已配驳船（序号≤15可见）、未配驳船（序号>15可见）、全部可见 */
+  var tbody = document.querySelector('#modal-return-data-pending tbody');
+  if (!tbody) return;
+  var rows = tbody.querySelectorAll('tr:not([style*=\"font-weight:bold\"])');
+  rows.forEach(function(r) {
+    var seqTd = r.querySelector('td:first-child');
+    if (!seqTd) return;
+    var seq = parseInt(seqTd.textContent.trim());
+    if (mode === 'all') {
+      r.style.display = '';
+    } else if (mode === 'assigned') {
+      r.style.display = (seq <= 15) ? '' : 'none';
+    } else if (mode === 'unassigned') {
+      r.style.display = (seq > 15) ? '' : 'none';
+    }
+  });
 }
 
 /* ===== 标准弹窗拖拽逻辑（通用） ===== */
