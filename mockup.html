@@ -442,17 +442,17 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
 .bottom-table-wrap tr:hover td { background: #DDEEFF; }
 
 /* ===== 回场数据：配驳状态切换栏（与条件筛选栏样式一致） ===== */
-.barge-switch-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; flex-shrink: 0; }
-.barge-switch-bar .switch-label { color: #555; white-space: nowrap; flex-shrink: 0; }
-.barge-switch-btn { height: 22px; padding: 2px 12px; border: 1px solid #1F629B; border-radius: 2px; background: #F1F5F7; color: #333; cursor: pointer; font-size: 12px; font-family: inherit; }
-.barge-switch-btn.active { background: #417DB0; color: #FFF; border-color: #366A98; }
-.barge-switch-btn:hover:not(.active) { background: #EAF4FF; }
+.barge-switch-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0; padding: 6px 10px; margin-bottom: 6px; background: #F1F5F7; border: 1px solid #1F629B; flex-shrink: 0; }
+.barge-switch-btn { height: 22px; padding: 2px 14px; border: 1px solid #1F629B; border-radius: 12px; background: #F1F5F7; color: #333; cursor: pointer; font-size: 12px; font-family: inherit; margin-right: -1px; }
+.barge-switch-btn:first-of-type { margin-right: 0; }
+.barge-switch-btn.active { background: #FFF; color: #1F629B; font-weight: bold; border-color: #1F629B; z-index: 1; }
+.barge-switch-btn:hover:not(.active) { background: #E8F0F4; }
 .barge-switch-info { margin-left: auto; font-size: 11px; color: #666; }
 
 /* ===== 待驳看板：上下结构 ===== */
 .pending-upper { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; }
 .main-content .pending-upper { flex: 1 1 0%; }
-.pending-lower { flex: 0 0 auto; max-height: 35vh; overflow: auto; border-top: 2px solid #2467A0; display: none; }
+.pending-lower { flex: 0 0 25vh; max-height: 25vh; overflow: auto; border-top: 2px solid #2467A0; display: none; }
 .pending-lower.show { display: flex; flex-direction: column; }
 .pending-lower-header { padding: 4px 8px; background: linear-gradient(to bottom, #DEEDF8, #C8DCF0); color: #1A4A80; font-size: 12px; font-weight: bold; border-bottom: 1px solid #D8DCE0; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
 .pending-lower-body { flex: 1; min-height: 0; overflow: auto; }
@@ -1195,7 +1195,6 @@ body { font-family: "Microsoft YaHei", "微软雅黑", SimSun, Arial, sans-serif
     <button class="toolbar-btn">刷新</button>
   </div>
   <div class="barge-switch-bar">
-    <span class="switch-label">片区分已配驳船/未配驳船</span>
     <button class="barge-switch-btn active" onclick="switchBargeMode(this,'all')">全部</button>
     <button class="barge-switch-btn" onclick="switchBargeMode(this,'assigned')">已配驳船</button>
     <button class="barge-switch-btn" onclick="switchBargeMode(this,'unassigned')">未配驳船</button>
